@@ -4,10 +4,11 @@ APEX's ambitious target is a research organism that can generate hypotheses, mod
 
 The first implementation prioritizes one comprehensible flow. It proves wiring and accounting while leaving the unproven intelligence visible.
 
-| Capability | v0.1 status | Next evidence needed |
+| Capability | Current implementation | Next evidence needed |
 |---|---|---|
 | Historical market ingestion | Massive CSV import exercised | Full requested-range coverage and revision/latency accounting |
 | Live market capture | v0.2 bounded REST capture built; synthetic acceptance passed; real access blocked | Successful provider capture during market hours, quote-unit verification, then streaming |
+| DigitalOcean shadow runtime | v0.3 Linux tick, process lock/recovery, systemd credentials, daily report and deployment package | Actual droplet installation, real data capture and scheduling/reboot evidence |
 | Premarket AI research | Not integrated | Port selected APEXAI producer; sealed factual packet; actual setup-reader use |
 | TradingView chart vision | Not connected or consumed | Verified tool/runtime route and a blinded contribution experiment |
 | Market-state features | Minimal subset implemented | Independent checks for each added feature and intended reader |
@@ -36,6 +37,6 @@ The AI desk can propose setups and research changes, but proposals enter this pr
 
 Add a persistent single-writer service with restart recovery, a real exchange calendar, broker paper-account verification, idempotent orders, reconciled positions, cost terms, quote provenance, stale-data behavior and an operator stop. Due exits must remain serviced during slow inference or a hung external provider; the current synchronous offline loop proves event ordering only.
 
-DigitalOcean, Robinhood and TradingView service access were not verified in this build session. No prior deployment was modified. Do not deploy this CLI as though it were the paper daemon.
+DigitalOcean, Robinhood and TradingView service access were not verified in this build session. No prior deployment was modified. The [Linux package](DIGITALOCEAN.md) deploys only the shadow observer, not a paper broker daemon.
 
 The eventual dashboard should expose freshness, stage execution, model choice/fallback, distributions, candidate rejection reasons, position obligations and independently reconstructed P&L directly from these artifacts.

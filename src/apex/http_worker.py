@@ -1,8 +1,8 @@
 """A killable read-only Alpaca transport worker. No caller-supplied URL or headers."""
 import base64
 import json
-import os
 import sys
+from .credentials import alpaca_credentials
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -21,7 +21,7 @@ def main():
     request = json.load(sys.stdin)
     if request.get("path") not in PATHS or set(request.get("params", {})) - PARAMETERS:
         raise ValueError("READ_ONLY_ENDPOINT_NOT_ALLOWED")
-    key, secret = os.environ.get("APCA_API_KEY_ID"), os.environ.get("APCA_API_SECRET_KEY")
+    key, secret = alpaca_credentials()
     if not key or not secret:
         print(json.dumps({"status": 0, "error": "BLOCKED_EXTERNAL_CREDENTIAL"}))
         return

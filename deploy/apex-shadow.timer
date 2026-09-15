@@ -1,0 +1,11 @@
+[Unit]
+Description=Recurring APEX shadow observations
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=60s
+AccuracySec=1s
+Unit=apex-shadow.service
+
+[Install]
+WantedBy=timers.target

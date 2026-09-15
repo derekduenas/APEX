@@ -1,0 +1,38 @@
+{
+  "status": "VALID",
+  "head": "b34fd9892f55faeb08507eb411cc8f0e63f40e332605c273e417901ba6a4b29d",
+  "cash": "10015.11",
+  "known_realized_net": "15.11",
+  "total_net_pnl": "15.11",
+  "open_exposure": [],
+  "closed": [
+    {
+      "entry_ref": "4dfc718071da5f335e127c6f76e6c811dbd98500d9a10e8c93da26f3962a9f16",
+      "candidate_ref": "1f62e9603e63d7347a7b765558f9f7de8099bc7bed99b166d75eb1a6d3f96828",
+      "gross_pnl": "4.59",
+      "net_pnl": "4.51"
+    },
+    {
+      "entry_ref": "664f09a833deed72fe819c1554362d924a816e3de9099a984f0aea9d65ec9da4",
+      "candidate_ref": "12659f4dfcd3bc1594d138bed47cfd48d2c07e9638de7064421826434d66de68",
+      "gross_pnl": "3.89",
+      "net_pnl": "3.81"
+    },
+    {
+      "entry_ref": "011cf0b2806a20f7f03b74c946103ddbd8e28ac85da4d97b6831eab085839777",
+      "candidate_ref": "e055dd49a53642d60c3bcefd6f33dc9ba579789a313398fa290cce0df8e14491",
+      "gross_pnl": "3.06",
+      "net_pnl": "2.98"
+    },
+    {
+      "entry_ref": "578159eba15d994a575fc52ad83b89f4bd2cd07117e3ac89a60dd957335255a5",
+      "candidate_ref": "fc4d31ce881baef24b03f424ba19932e85576b1803f1d3a72131306f88a267a5",
+      "gross_pnl": "3.89",
+      "net_pnl": "3.81"
+    }
+  ],
+  "problems": [],
+  "verified_forecasts": 4,
+  "capture_and_path_bindings": "VERIFIED",
+  "scope": "Internal artifact consistency, not authenticated source history or calibrated forecasting"
+}

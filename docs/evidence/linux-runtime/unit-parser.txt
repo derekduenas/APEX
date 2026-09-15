@@ -1,0 +1,3 @@
+Scope: parser check; ExecStart substituted with /usr/bin/true. No service executed.
+
+exit=0

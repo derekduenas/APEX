@@ -1,0 +1,13 @@
+APEX shadow — 2026-09-11
+Status: STALE_RUNTIME
+Input class: SYNTHETIC_ACCEPTANCE
+Last tick age: 312687.75756931305 seconds
+Cycles: {'SHADOW_OBSERVED': 1}
+Candidate observations: {'EXPERIMENTAL_LONG': 1}
+Models: {'GARCH11_T:FITTED': 1}
+Reasons: {}
+Latest forecast: 1000 paths from 393 returns
+Latest candidate: EXPERIMENTAL_LONG | shares 8 | reason None
+Model expected net: 2.5405541786061137 (uncalibrated estimate)
+Orders: 0 | fills: 0 | P&L: unavailable — shadow only
+Local shadow runtime only; no broker/account inventory; candidate observations are not unique trades

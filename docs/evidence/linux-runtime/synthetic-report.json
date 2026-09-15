@@ -1,0 +1,89 @@
+{
+  "status": "STALE_RUNTIME",
+  "market_date": "2026-09-11",
+  "generated_epoch": 1789446387.3360822,
+  "last_tick_age_s": 312687.3360822201,
+  "ticks": {
+    "SHADOW_OBSERVED": 1
+  },
+  "candidate_observations": {
+    "EXPERIMENTAL_LONG": 1
+  },
+  "models": {
+    "GARCH11_T:FITTED": 1
+  },
+  "reasons": {},
+  "incomplete_runs": [],
+  "latest": {
+    "accounting_basis": "SHADOW_CANDIDATES_ONLY_NO_TRADING_LEDGER",
+    "candidate": {
+      "authority": "NONE_SHADOW_ONLY",
+      "calibration": "UNCALIBRATED",
+      "competitor": "WAIT",
+      "cost_assumption": "Current half-spread retained at exit, displayed quantity; no queue or impact model",
+      "decision": "EXPERIMENTAL_LONG",
+      "expected_net": 2.5405541786061137,
+      "instrument": "FUNDED_LONG_STOCK",
+      "model_probability_net_positive": 0.989,
+      "quantity": 8,
+      "reason": null,
+      "sizing": "Fixed purchase-cost ceiling including entry fee; no Kelly; stop not treated as a loss bound"
+    },
+    "capture_class": "SYNTHETIC_ACCEPTANCE",
+    "capture_summary": {
+      "accepted": 397,
+      "capture_class": "SYNTHETIC_ACCEPTANCE",
+      "history_pagination_exhausted": true,
+      "last_shadow_reason": null,
+      "last_shadow_status": "OBSERVED",
+      "limits": [
+        "Bounded polling, not streaming or unattended service",
+        "No restart or portfolio state",
+        "Parent receipt is later than transport arrival",
+        "Lot size is operator-declared"
+      ],
+      "orders": 0,
+      "rejected": 0,
+      "request_errors": [],
+      "requests": 3,
+      "status": "CAPTURED"
+    },
+    "comparison": "AGREEMENT",
+    "decision_epoch": 1789133700.0300002,
+    "fills": 0,
+    "finished_ns": 1789133700030000000,
+    "forecast": {
+      "id": "83e019093f87b3ef58ed257710be8ffbdd5490f4e964a16fbd533b1918a1dace",
+      "models": [
+        {
+          "fit_calls": 1,
+          "model": "GARCH11_T",
+          "status": "FITTED"
+        }
+      ],
+      "paths": 1000,
+      "training_returns": 393
+    },
+    "health": {
+      "bar_conflicts": 0,
+      "calendar_basis": "REGULAR_WEEKDAY_CLOCK_ONLY_NOT_EXCHANGE_CALENDAR",
+      "gap_scope": "Between observed bars within one session; does not establish opening/closing or exchange-calendar completeness",
+      "internal_regular_session_gaps": [],
+      "latest_bar_age_from_completion_s": 0.03000020980834961,
+      "latest_quote_age_from_event_s": 0.03000020980834961,
+      "quote_conflicts": 0,
+      "visible_bars": 395,
+      "visible_quotes": 1
+    },
+    "orders": 0,
+    "pnl": null,
+    "reasons": [],
+    "run": "ticks/2026-09-11/1789133700000000000-38a137081f64",
+    "status": "SHADOW_OBSERVED"
+  },
+  "orders": 0,
+  "fills": 0,
+  "pnl": null,
+  "scope": "Local shadow runtime only; no broker/account inventory; candidate observations are not unique trades",
+  "report_digest": "32161894b3bc0e358dd8996b80802f3846a26aa6960534186be5eeff50566766"
+}

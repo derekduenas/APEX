@@ -2,7 +2,7 @@
 
 An integrated market-research system that asks: **what could happen next, what expression survives costs, and did the forecast actually help?**
 
-Version 0.2 adds bounded read-only Alpaca capture and shadow/replay agreement to the offline research vertical. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
+Version 0.3 adds a persistent Linux shadow runtime, systemd deployment package and daily status report to the capture/replay vertical. DigitalOcean is the target; actual droplet deployment is not yet verified. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
 
 ## Run it
 
@@ -34,7 +34,7 @@ The demo is an explicitly artificial positive-drift market designed to exercise 
 | Feedback | Forecasts joined to completed outcomes; Brier scores and interval coverage recorded; no automatic promotion |
 | Accounting | Separate reconstruction from quote evidence, quantity and declared fees; hash chain and artifact verification |
 
-These are **offline experimental fills**, not orders sent to a paper broker. The model is uncalibrated and the execution assumptions omit latency, queue priority and market impact. No broker client, trading credential, live service or deployment command is shipped.
+These are **offline experimental fills**, not orders sent to a paper broker. The model is uncalibrated and the execution assumptions omit latency, queue priority and market impact. The Linux deployment package operates only the read-only shadow capture; it has no broker client or order route.
 
 ## Historical data
 
@@ -52,7 +52,7 @@ Create `data/` first. Historical bar availability is **explicitly assumed at bar
 
 Bars alone exercise the forecast path; they do **not** supply executable quotes. Such a run produces WAIT with `QUOTE_UNAVAILABLE_OR_CONFLICTING`. There is no substitution of bar closes or invented spreads for observed quotes.
 
-The `capture-alpaca` command is the only command that makes provider requests. It uses a subprocess restricted to three read-only market-data endpoints. The demo capture uses an injected clock and transport and labels every result `SYNTHETIC_ACCEPTANCE`.
+The `capture-alpaca` command and its scheduled `shadow-tick` wrapper make provider requests through a subprocess restricted to three read-only market-data endpoints. The demo capture uses an injected clock and transport and labels every result `SYNTHETIC_ACCEPTANCE`.
 
 ## Bounded shadow capture
 
@@ -73,14 +73,26 @@ On the existing macOS host where the two Alpaca secrets already live in the `ape
 
 ```bash
 ops/apex_shadow_capture.sh --out runs/sip-commissioning-unique-id \\
-  --history-start 2026-09-15T13:30:00Z --symbol SPY --feed sip \\
-  --round-lot-shares 100
+  --history-start "$APEX_HISTORY_START" --symbol SPY --feed sip \\
+  --round-lot-shares "$APEX_ROUND_LOT_SHARES"
 apex verify-capture --capture runs/sip-commissioning-unique-id
 ```
 
 The launcher only exports the existing values to its child capture process. It has no broker endpoint, order command or streaming loop. The output directory must be new.
 
-**Current external status:** in the September 15 build session the Alpaca clock worked, but three stock-data connector calls returned internal errors. Standalone keys were absent. Consequently real successful market-data capture and an open-market run remain unproven; the capture control and failure handling are tested. See [capture commissioning](docs/CAPTURE_002.md).
+**Current external status:** in the September 15 build session the Alpaca clock worked, but three stock-data connector calls returned internal errors. Standalone keys were absent in this workspace. The operator reports a healthy existing SIP collector; its current host and connection to this new APEX runtime have not been independently verified. See [capture commissioning](docs/CAPTURE_002.md).
+
+## DigitalOcean runtime
+
+The cloud package uses systemd credential files, a separate `apex-shadow` user, persistent captures, an exclusive process lock and a whole-service timeout. It preserves interrupted runs and exposes stale/degraded status. The Mac Keychain launcher above is optional, not the cloud deployment path.
+
+Follow [DigitalOcean deployment and commissioning](docs/DIGITALOCEAN.md). The daily report is:
+
+```bash
+apex shadow-report --root /var/lib/apex-shadow
+```
+
+It shows model activity, candidate counts/reasons and the latest result. Orders/fills remain zero and P&L unavailable because the service observes candidates without executing them. This package is tested locally; a running droplet service is not claimed.
 
 See also [data contract](docs/DATA.md), [initial commissioning evidence](docs/COMMISSIONING.md), [reuse review](docs/REUSE.md), and [architecture and next milestones](docs/ARCHITECTURE.md).
 

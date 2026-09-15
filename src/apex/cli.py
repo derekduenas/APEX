@@ -53,8 +53,21 @@ def main():
     capture.add_argument("--variance", choices=("garch", "ewma"), default="garch")
     compare = subs.add_parser("verify-capture", help="Re-decode responses and compare shadow-prefix vs replay-as-of behavior")
     compare.add_argument("--capture", type=Path, required=True)
+    tick_parser = subs.add_parser("shadow-tick", help="One persistent Linux shadow cycle; systemd schedules repetitions")
+    tick_parser.add_argument("--root", type=Path, required=True)
+    tick_parser.add_argument("--settings", type=Path, required=True)
+    report_parser = subs.add_parser("shadow-report", help="Read-only daily shadow status, models and candidate reasons")
+    report_parser.add_argument("--root", type=Path, required=True)
+    report_parser.add_argument("--day")
+    report_parser.add_argument("--format", choices=("json", "text"), default="text")
     args = parser.parse_args()
-    if args.command == "demo-capture":
+    if args.command == "shadow-tick":
+        from .runtime import load_settings, tick
+        result = tick(args.root, load_settings(args.settings))
+    elif args.command == "shadow-report":
+        from .runtime import report
+        result = report(args.root, day=args.day)
+    elif args.command == "demo-capture":
         result = capture_demo(args.out, variance=args.variance)
     elif args.command == "capture-alpaca":
         result = capture_alpaca(args.out, history_start=args.history_start, config=Config(symbol=args.symbol, variance=args.variance),
@@ -74,10 +87,16 @@ def main():
         with args.out.open("x") as handle:
             handle.write(canonical(result))
         result = {"observations": len(result["observations"]), "availability": "BAR_COMPLETION_ASSUMPTION_V1"}
-    print(json.dumps(result, indent=2))
+    if args.command == "shadow-report" and args.format == "text":
+        from .runtime import report_text
+        print(report_text(result))
+    else:
+        print(json.dumps(result, indent=2))
     if result.get("status") == "MISMATCH" or result.get("accounting", {}).get("status") == "MISMATCH":
         raise SystemExit(2)
     if result.get("status") == "BLOCKED_NO_MARKET_DATA":
+        raise SystemExit(3)
+    if args.command == "shadow-tick" and result.get("status") not in ("SHADOW_OBSERVED", "IDLE_OUTSIDE_REGULAR_CLOCK_WINDOW"):
         raise SystemExit(3)
 
 

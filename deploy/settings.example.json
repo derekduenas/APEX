@@ -1,0 +1,10 @@
+{
+  "symbol": "SPY",
+  "feed": "sip",
+  "round_lot_shares": "OPERATOR_MUST_SET_FOR_SYMBOL",
+  "history_days": 7,
+  "max_pages": 3,
+  "request_timeout": 5,
+  "variance": "garch",
+  "min_free_bytes": 2147483648
+}
