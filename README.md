@@ -2,7 +2,7 @@
 
 An integrated market-research system that asks: **what could happen next, what expression survives costs, and did the forecast actually help?**
 
-Version 0.3 adds a persistent Linux shadow runtime, systemd deployment package and daily status report to the capture/replay vertical. DigitalOcean is the target; actual droplet deployment is not yet verified. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
+Version 0.4 adds chronological challenger learning, development/holdout evaluation and stronger reconstruction to the Linux shadow runtime. Its first retained SPY study exercised 99 GARCH-backed forecast points over 14 market sessions. DigitalOcean remains the deployment target; this release has not been commissioned on the host. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
 
 ## Run it
 
