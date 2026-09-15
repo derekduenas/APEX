@@ -1,13 +1,14 @@
-"""Offline commands only; import does not contact providers or a broker."""
+"""Offline research and explicit read-only capture. Import never makes requests."""
 import argparse
 import json
 from datetime import datetime
 from pathlib import Path
 
 from .core import Config, canonical
+from .capture import capture_alpaca, replay_capture
 from .data import from_massive_csv
 from .engine import run
-from .fixtures import demo_document
+from .fixtures import capture_demo, demo_document
 from .verification import verify_run
 
 
@@ -19,11 +20,14 @@ def epoch(text):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="APEX offline research; no broker execution")
+    parser = argparse.ArgumentParser(description="APEX research replay and read-only capture; no broker execution")
     subs = parser.add_subparsers(dest="command", required=True)
     demo = subs.add_parser("demo")
     demo.add_argument("--out", type=Path, required=True)
     demo.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    capture_control = subs.add_parser("demo-capture", help="Synthetic acceptance through the actual capture and shadow path")
+    capture_control.add_argument("--out", type=Path, required=True)
+    capture_control.add_argument("--variance", choices=("garch", "ewma"), default="garch")
     replay = subs.add_parser("replay")
     replay.add_argument("--input", type=Path, required=True)
     replay.add_argument("--out", type=Path, required=True)
@@ -38,8 +42,26 @@ def main():
     convert.add_argument("--out", type=Path, required=True)
     convert.add_argument("--retrieved-utc", required=True)
     convert.add_argument("--symbol", default="SPY")
+    capture = subs.add_parser("capture-alpaca", help="Bounded read-only REST capture; requires standalone Alpaca credentials")
+    capture.add_argument("--out", type=Path, required=True)
+    capture.add_argument("--history-start", required=True)
+    capture.add_argument("--symbol", default="SPY")
+    capture.add_argument("--feed", choices=("sip", "iex"), required=True)
+    capture.add_argument("--round-lot-shares", type=int, required=True)
+    capture.add_argument("--max-pages", type=int, default=3)
+    capture.add_argument("--timeout", type=float, default=5)
+    capture.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    compare = subs.add_parser("verify-capture", help="Re-decode responses and compare shadow-prefix vs replay-as-of behavior")
+    compare.add_argument("--capture", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "verify":
+    if args.command == "demo-capture":
+        result = capture_demo(args.out, variance=args.variance)
+    elif args.command == "capture-alpaca":
+        result = capture_alpaca(args.out, history_start=args.history_start, config=Config(symbol=args.symbol, variance=args.variance),
+                                feed=args.feed, round_lot_shares=args.round_lot_shares, max_pages=args.max_pages, timeout=args.timeout)
+    elif args.command == "verify-capture":
+        result = replay_capture(args.capture)
+    elif args.command == "verify":
         result = verify_run(args.run)
     elif args.command == "demo":
         doc, start, end = demo_document()
@@ -55,6 +77,8 @@ def main():
     print(json.dumps(result, indent=2))
     if result.get("status") == "MISMATCH" or result.get("accounting", {}).get("status") == "MISMATCH":
         raise SystemExit(2)
+    if result.get("status") == "BLOCKED_NO_MARKET_DATA":
+        raise SystemExit(3)
 
 
 if __name__ == "__main__":

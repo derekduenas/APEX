@@ -16,6 +16,7 @@ import scipy
 
 from .core import Config, Refused, canonical, code_manifest, digest, fee, money
 from .data import normalize, regular, session, twin, visible
+from .decision import evaluate, quote_at
 from .forecast import predict
 from .ledger import Ledger, reconstruct
 
@@ -55,20 +56,8 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
         variances, decisions = {}, {}
         scores = []
 
-        def quote_at(now):
-            quotes, conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote")
-            if not quotes:
-                return None, "QUOTE_UNAVAILABLE_OR_CONFLICTING"
-            q = quotes[-1]
-            # A conflict at or after the selected event makes the state unknown.
-            if any(c["event_epoch"] >= q["event_epoch"] for c in conflicts):
-                return None, "LATEST_QUOTE_CONFLICT"
-            if now - q["event_epoch"] > config.max_quote_age:
-                return None, "QUOTE_STALE"
-            return q, None
-
         for now in sorted(times):
-            q, quote_problem = quote_at(now)
+            q, quote_problem = quote_at(observations, now, config)
             if position and position["due"] <= now <= position["window_end"]:
                 observation_id = q["observation_id"] if q else None
                 # Retry only a new usable quote. Refusal isn't counted as an
@@ -137,34 +126,11 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
                 ledger.append("SCAN_REFUSED", now, {"reason": str(exc)})
                 continue
 
-            qty, expected, probability = 0, None, None
-            reason = quote_problem
-            if position:
-                reason = "EXISTING_POSITION_OR_OUTSTANDING_EXIT"
-            elif q:
-                budget = min(cash, money(config.max_notional))
-                qty = int(budget / Decimal(str(q["ask"])))
-                while qty and money(Decimal(str(q["ask"])) * qty) + fee(qty, config) > budget:
-                    qty -= 1
-                qty = min(qty, int(q["ask_size"]))
-                if qty <= 0:
-                    reason = "WHOLE_SHARE_OR_DISPLAYED_SIZE_UNAFFORDABLE"
-                else:
-                    # Hold current spread constant as an explicit exit-cost
-                    # assumption; observed future exit still crosses its bid.
-                    modeled_exit_bids = prediction["spot"] * np.exp(paths[:, -1]) - (q["ask"] - q["bid"]) / 2
-                    net_paths = (modeled_exit_bids - q["ask"]) * qty - float(fee(qty, config) * 2)
-                    expected, probability = float(net_paths.mean()), float((net_paths > 0).mean())
-                    reason = "AFTER_COST_MODEL_NOT_ELIGIBLE" if expected <= 0 or probability < config.minimum_probability else None
-            decision = "WAIT" if reason else "EXPERIMENTAL_LONG"
+            candidate = evaluate(prediction, paths, q, quote_problem, cash=cash, position_open=bool(position), config=config)
+            qty, reason, decision = candidate["quantity"], candidate["reason"], candidate["decision"]
             decisions[reason or decision] = decisions.get(reason or decision, 0) + 1
             qr = ledger.append("QUOTE", now, q) if q else None
-            candidate = {"forecast_ref": fr["hash"], "snapshot_ref": sr["hash"], "quote_ref": qr["hash"] if qr else None,
-                         "decision": decision, "reason": reason, "quantity": qty, "expected_net": expected,
-                         "model_probability_net_positive": probability, "competitor": "WAIT", "instrument": "FUNDED_LONG_STOCK",
-                         "authority": "OFFLINE_EXPERIMENT_ONLY", "calibration": "UNCALIBRATED",
-                         "cost_assumption": "Current half-spread retained at exit, displayed quantity; no queue or impact model",
-                         "sizing": "Fixed purchase-cost ceiling including entry fee; no Kelly; stop not treated as a loss bound"}
+            candidate.update(forecast_ref=fr["hash"], snapshot_ref=sr["hash"], quote_ref=qr["hash"] if qr else None)
             cr = ledger.append("CANDIDATE", now, candidate)
             if decision == "EXPERIMENTAL_LONG":
                 debit, charge = money(Decimal(str(q["ask"])) * qty), fee(qty, config)

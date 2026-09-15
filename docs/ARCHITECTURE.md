@@ -7,7 +7,7 @@ The first implementation prioritizes one comprehensible flow. It proves wiring a
 | Capability | v0.1 status | Next evidence needed |
 |---|---|---|
 | Historical market ingestion | Massive CSV import exercised | Full requested-range coverage and revision/latency accounting |
-| Live market capture | Not built here | Measured bar/quote receipt capture, bounded outages, provider-unit contracts |
+| Live market capture | v0.2 bounded REST capture built; synthetic acceptance passed; real access blocked | Successful provider capture during market hours, quote-unit verification, then streaming |
 | Premarket AI research | Not integrated | Port selected APEXAI producer; sealed factual packet; actual setup-reader use |
 | TradingView chart vision | Not connected or consumed | Verified tool/runtime route and a blinded contribution experiment |
 | Market-state features | Minimal subset implemented | Independent checks for each added feature and intended reader |
@@ -20,9 +20,9 @@ The first implementation prioritizes one comprehensible flow. It proves wiring a
 | Feedback | Matured-label scoring implemented | Frozen challenger protocol and controlled promotion, not self-approval |
 | Operator dashboard | Deferred | Read the actual ledger and health artifacts, not parallel summaries |
 
-## Next runnable release: capture and replay agreement
+## Capture and replay agreement: implementation landed in v0.2
 
-Build a read-only Alpaca adapter with a bounded invocation, explicit credential names, no credential logging, and preserved provider units. Collect completed bars and NBBO quotes with measured receipt times. The same frozen input contract must feed replay and the future paper service. A live connectivity indicator does not establish coverage or consumption.
+The read-only Alpaca adapter now bounds request count, response bytes and request wall time, preserves provider responses and quote-unit assumptions, and feeds the actual shadow readers. SIP and IEX are separately labeled; IEX is not presented as national NBBO. Standalone credentials are required for the HTTP route, independently of interactive connector access. See `CAPTURE_002.md` for the successful synthetic flight and actual external-access failures. The same frozen input contract feeds replay and the future paper service. A live connectivity indicator does not establish coverage or consumption.
 
 Acceptance: capture one bounded session segment, show each accepted/rejected input, exercise forecasts and candidate creation, and compare the normalized replay's decisions. If quotes are unavailable, the actual refusal must remain visible. This release does not require an edge claim or an order merely to demonstrate integration.
 

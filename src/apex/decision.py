@@ -1,0 +1,47 @@
+"""Shared quote selection and experimental candidate math for replay and shadow."""
+from decimal import Decimal
+
+import numpy as np
+
+from .core import Config, fee, money
+from .data import visible
+
+
+def quote_at(observations, now, config: Config):
+    quotes, conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote")
+    if not quotes:
+        return None, "QUOTE_UNAVAILABLE_OR_CONFLICTING"
+    quote = quotes[-1]
+    if any(c["event_epoch"] >= quote["event_epoch"] for c in conflicts):
+        return None, "LATEST_QUOTE_CONFLICT"
+    if now - quote["event_epoch"] > config.max_quote_age:
+        return None, "QUOTE_STALE"
+    return quote, None
+
+
+def evaluate(prediction, paths, quote, quote_problem, *, cash, position_open, config):
+    """One pure evaluator. Returning a candidate grants no execution authority."""
+    qty, expected, probability = 0, None, None
+    reason = quote_problem
+    if position_open:
+        reason = "EXISTING_POSITION_OR_OUTSTANDING_EXIT"
+    elif quote:
+        budget = min(cash, money(config.max_notional))
+        qty = int(budget / Decimal(str(quote["ask"])))
+        while qty and money(Decimal(str(quote["ask"])) * qty) + fee(qty, config) > budget:
+            qty -= 1
+        qty = min(qty, int(quote["ask_size"]))
+        if qty <= 0:
+            reason = "WHOLE_SHARE_OR_DISPLAYED_SIZE_UNAFFORDABLE"
+        else:
+            bids = prediction["spot"] * np.exp(paths[:, -1]) - (quote["ask"] - quote["bid"]) / 2
+            net_paths = (bids - quote["ask"]) * qty - float(fee(qty, config) * 2)
+            expected, probability = float(net_paths.mean()), float((net_paths > 0).mean())
+            reason = "AFTER_COST_MODEL_NOT_ELIGIBLE" if expected <= 0 or probability < config.minimum_probability else None
+    elif reason is None:
+        reason = "QUOTE_UNAVAILABLE_OR_CONFLICTING"
+    return {"decision": "WAIT" if reason else "EXPERIMENTAL_LONG", "reason": reason, "quantity": qty,
+            "expected_net": expected, "model_probability_net_positive": probability, "competitor": "WAIT",
+            "instrument": "FUNDED_LONG_STOCK", "authority": "OFFLINE_EXPERIMENT_ONLY", "calibration": "UNCALIBRATED",
+            "cost_assumption": "Current half-spread retained at exit, displayed quantity; no queue or impact model",
+            "sizing": "Fixed purchase-cost ceiling including entry fee; no Kelly; stop not treated as a loss bound"}

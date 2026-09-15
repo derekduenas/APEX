@@ -1,0 +1,77 @@
+{
+  "provenance": "MCP tool results; local request/return clock brackets, not HTTP packets or exchange timestamps",
+  "calls": [
+    {
+      "args": {
+        "feed": "sip",
+        "symbol_or_symbols": "SPY"
+      },
+      "received_epoch": 1789443456.93,
+      "request_epoch": 1789443456.629,
+      "response": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/alpaca.get_stock_latest_bar`\n\nCaused by:\n    Mcp error: -32603: Internal error",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "tool": "mcp__codex_apps__alpaca_get_stock_latest_bar"
+    },
+    {
+      "args": {
+        "feed": "sip",
+        "symbol_or_symbols": "SPY"
+      },
+      "received_epoch": 1789443457.515,
+      "request_epoch": 1789443457.244,
+      "response": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/alpaca.get_stock_latest_quote`\n\nCaused by:\n    Mcp error: -32603: Internal error",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "tool": "mcp__codex_apps__alpaca_get_stock_latest_quote"
+    },
+    {
+      "args": {
+        "feed": "iex",
+        "symbol_or_symbols": "SPY"
+      },
+      "received_epoch": 1789443478.113,
+      "request_epoch": 1789443477.481,
+      "response": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/alpaca.get_stock_snapshot`\n\nCaused by:\n    Mcp error: -32603: Internal error",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "tool": "mcp__codex_apps__alpaca_get_stock_snapshot"
+    },
+    {
+      "args": {},
+      "received_epoch": 1789444212.352,
+      "request_epoch": 1789444211.74,
+      "response": {
+        "content": [
+          {
+            "text": "{\"timestamp\":\"2026-09-14T23:50:12.306083-04:00\",\"is_open\":false,\"next_open\":\"2026-09-15T09:30:00-04:00\",\"next_close\":\"2026-09-15T16:00:00-04:00\"}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "structuredContent": {
+          "result": "{\"timestamp\":\"2026-09-14T23:50:12.306083-04:00\",\"is_open\":false,\"next_open\":\"2026-09-15T09:30:00-04:00\",\"next_close\":\"2026-09-15T16:00:00-04:00\"}"
+        }
+      },
+      "tool": "mcp__codex_apps__alpaca_get_clock"
+    }
+  ]
+}
