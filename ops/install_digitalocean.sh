@@ -5,8 +5,16 @@ umask 022
 test "$(id -u)" = 0 || { echo 'Run as root on the target Linux host' >&2; exit 2; }
 pin=${1:?Usage: bash ops/install_digitalocean.sh FULL_COMMIT_SHA}
 [[ "$pin" =~ ^[0-9a-f]{40}$ ]] || { echo 'An exact commit SHA is required' >&2; exit 2; }
-test "$(git rev-parse HEAD)" = "$pin" || { echo 'Checkout does not match requested release' >&2; exit 2; }
-test -z "$(git status --porcelain)" || { echo 'Checkout must be clean' >&2; exit 2; }
+if ! checked_head=$(git rev-parse --verify HEAD); then
+  echo 'Cannot verify checkout identity; resolve repository access/ownership before installing' >&2
+  exit 2
+fi
+test "$checked_head" = "$pin" || { echo 'Checkout does not match requested release' >&2; exit 2; }
+if ! checked_status=$(git status --porcelain); then
+  echo 'Cannot verify checkout cleanliness; Git failure is not a clean tree' >&2
+  exit 2
+fi
+test -z "$checked_status" || { echo 'Checkout must be clean' >&2; exit 2; }
 python3 -c 'import sys; assert sys.version_info >= (3,11), "Python 3.11+ required"'
 command -v systemd-analyze >/dev/null
 test -f /etc/apex-shadow/settings.json
@@ -44,7 +52,7 @@ install -m 644 "$release/deploy/apex-shadow.service" /etc/systemd/system/apex-sh
 install -m 644 "$release/deploy/apex-shadow.timer" /etc/systemd/system/apex-shadow.timer
 systemctl daemon-reload
 printf 'Installed release %s. Timer remains inactive.\n' "$pin"
-printf 'Commission: systemctl start apex-shadow.service\n'
-printf 'Inspect: journalctl -u apex-shadow.service --no-pager -n 80\n'
-printf 'Report: %s/venv/bin/apex shadow-report --root /var/lib/apex-shadow\n' "$release"
-printf 'After inspecting actual capture: systemctl enable --now apex-shadow.timer\n'
+printf 'Commission: sudo systemctl start apex-shadow.service\n'
+printf 'Inspect: sudo journalctl -u apex-shadow.service --no-pager -n 80\n'
+printf 'Report: sudo -u apex-shadow -- %s/venv/bin/apex shadow-report --root /var/lib/apex-shadow\n' "$release"
+printf 'After inspecting actual capture: sudo systemctl enable --now apex-shadow.timer\n'

@@ -1,0 +1,8 @@
+{
+  "base": "ba38fc99849af1b91eaf9de7472b6e7361209165",
+  "scenario": "git rev-parse succeeds; git status fails",
+  "returncode": 92,
+  "stdout": "REACHED_DEPENDENCY_SETUP\n",
+  "stderr": "fatal: simulated status failure\n",
+  "scope": "Installer process with substituted Git/id/Python commands; no system mutations"
+}

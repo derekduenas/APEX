@@ -1,0 +1,7 @@
+{
+  "scenario": "git rev-parse succeeds; git status fails",
+  "returncode": 2,
+  "stdout": "",
+  "stderr": "fatal: simulated status failure\nCannot verify checkout cleanliness; Git failure is not a clean tree\n",
+  "scope": "Installer process with substituted Git/id/Python commands; no system mutations"
+}
