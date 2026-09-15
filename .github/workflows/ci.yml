@@ -5,7 +5,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -36,6 +36,17 @@ jobs:
           apex verify-research --run runs/ci-null
           apex research-demo --world reversal --out runs/ci-reversal
           apex verify-research --run runs/ci-reversal
+      - name: Regime strategy lab, stress controls and persisted reconstruction
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          apex strategy-demo --world positive --out runs/ci-strategy-positive
+          apex verify-strategy-lab --run runs/ci-strategy-positive
+          apex strategy-demo --world persistent --out runs/ci-strategy
+          apex verify-strategy-lab --run runs/ci-strategy
+          apex strategy-demo --world null --out runs/ci-strategy-null
+          apex verify-strategy-lab --run runs/ci-strategy-null
+          apex strategy-demo --world reversal --out runs/ci-strategy-reversal
+          apex verify-strategy-lab --run runs/ci-strategy-reversal
       - name: Upload evidence, including failures
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -48,4 +59,8 @@ jobs:
             runs/ci-research
             runs/ci-null
             runs/ci-reversal
+            runs/ci-strategy-positive
+            runs/ci-strategy
+            runs/ci-strategy-null
+            runs/ci-strategy-reversal
           if-no-files-found: warn

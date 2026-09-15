@@ -1,0 +1,17 @@
+{
+  "additional_tests": {
+    "passed": 2,
+    "scope": "New end-to-end positive control and unchanged research regression; not additive to326 because one test overlaps"
+  },
+  "deployment": "NOT_CHANGED",
+  "fills": 0,
+  "final_suite_expected_tests": 327,
+  "local_full_regression": {
+    "passed": 326,
+    "scope": "Full suite before addition of positive control"
+  },
+  "new_market_evaluation": "RUNNING_NOT_REPORTED_AS_PASSED",
+  "new_market_input_sha256": "e45b9db0e6809d61853f2a6d9dad7ab8ed868acca4164540ec64b20fabfcb91a",
+  "orders": 0,
+  "profitability": "NOT_ESTABLISHED"
+}

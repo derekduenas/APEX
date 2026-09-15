@@ -1,0 +1,15 @@
+{
+  "status": "VALID",
+  "problems": [],
+  "ledger_head": "4525ba8d12cfaf11603e0872af5f491ff9f66f3ccb1ccf1dd495b3d15daaa078",
+  "verified_source_forecasts": 88,
+  "verified_intelligence": 132,
+  "verified_tournaments": 88,
+  "verified_outcomes": 132,
+  "verified_events": 355,
+  "source_input_and_paths": "VERIFIED",
+  "event_order_and_completeness": "VERIFIED",
+  "summary_and_evidence": "RECOMPUTED_FROM_VERIFIED_EVENTS",
+  "code_manifest_matches_current": true,
+  "scope": "Persisted causal consistency: nested research verification then exact replay through current regime, analog, strategy, feedback, selection and evidence readers. Successful variance optimization is not independently refitted. Shared deterministic calculations are not a second independent mathematical implementation. Hashes do not authenticate provider history, executed source, or prior research registration; no calibration, profit, or trading authority is established."
+}

@@ -72,8 +72,33 @@ def main():
     research_demo.add_argument("--variance", choices=("garch", "ewma"), default="ewma")
     research_verify = subs.add_parser("verify-research", help="Reconstruct research inputs, causal labels, model comparisons and scores")
     research_verify.add_argument("--run", type=Path, required=True)
+    strategy = subs.add_parser("strategy-lab", help="Regime-aware strategy tournament, stresses and causal outcome feedback")
+    strategy.add_argument("--input", type=Path, required=True)
+    strategy.add_argument("--plan", type=Path, required=True)
+    strategy.add_argument("--out", type=Path, required=True)
+    strategy.add_argument("--symbol", default="SPY")
+    strategy.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    strategy_demo = subs.add_parser("strategy-demo", help="Synthetic premarket-to-strategy experiment, never market evidence")
+    strategy_demo.add_argument("--out", type=Path, required=True)
+    strategy_demo.add_argument("--world", choices=("persistent", "null", "reversal", "positive"), default="persistent")
+    strategy_demo.add_argument("--variance", choices=("garch", "ewma"), default="ewma")
+    strategy_verify = subs.add_parser("verify-strategy-lab", help="Reconstruct intelligence, scenarios, strategy comparisons and feedback")
+    strategy_verify.add_argument("--run", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "research":
+    if args.command == "strategy-lab":
+        from .strategy_lab import run_lab
+        from .research import ResearchPlan
+        result = run_lab(args.input, args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())),
+                         config=Config(symbol=args.symbol, variance=args.variance))
+    elif args.command == "strategy-demo":
+        from .strategy_lab import run_lab
+        from .fixtures import strategy_demo_document
+        doc, plan = strategy_demo_document(world=args.world)
+        result = run_lab(canonical(doc).encode(), args.out, plan=plan, config=Config(variance=args.variance))
+    elif args.command == "verify-strategy-lab":
+        from .strategy_lab_verification import verify_lab
+        result = verify_lab(args.run)
+    elif args.command == "research":
         from .research import ResearchPlan, run_research
         result = run_research(args.input, args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())),
                               config=Config(symbol=args.symbol, variance=args.variance))

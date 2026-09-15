@@ -1,0 +1,39 @@
+{
+  "status": "VALID",
+  "head": "eb0ea6a02cb3fd2e7c5ece16d7b667e85aa53fb4de00986be052bb903d56c7e0",
+  "cash": "10015.11",
+  "known_realized_net": "15.11",
+  "total_net_pnl": "15.11",
+  "open_exposure": [],
+  "closed": [
+    {
+      "entry_ref": "9e8478b3db20e6e0e05f359e2f85eb6aea2e14d83c2afbc368fc7a8567a576b3",
+      "candidate_ref": "3357b247e6bb7d4b57980c29512b571707f50917e9fcae02617f27d7b8468b6d",
+      "gross_pnl": "4.59",
+      "net_pnl": "4.51"
+    },
+    {
+      "entry_ref": "6fc09ce555651c614a7eb85d5b15447e2fb61089f9a0a435c562ae60af941a1f",
+      "candidate_ref": "f74117518a99619fe2d29105be876724a60fc5531463026a6f78d9bb97eb3191",
+      "gross_pnl": "3.89",
+      "net_pnl": "3.81"
+    },
+    {
+      "entry_ref": "360e2e5d0401999f24555e486e1713e767b97e7e34a1c1ef3fbe8970da28600a",
+      "candidate_ref": "e641c6e76dbeb8b647ad2201d8bd9ad90a7965acfcf6b826a34c6ec7c121c85b",
+      "gross_pnl": "3.06",
+      "net_pnl": "2.98"
+    },
+    {
+      "entry_ref": "95e609b5870c9a59eb3521c19989597baaefb2a71cbb430ed322fbbf3756657e",
+      "candidate_ref": "8f3e1a2412d6e195056b31a6f707b1f0a41db5791e778506b6d56ce277ce2312",
+      "gross_pnl": "3.89",
+      "net_pnl": "3.81"
+    }
+  ],
+  "problems": [],
+  "verified_forecasts": 4,
+  "capture_and_path_bindings": "VERIFIED",
+  "decision_and_feedback_bindings": "VERIFIED",
+  "scope": "Internal causal/accounting consistency using production feature and decision readers; not authenticated source history or calibrated forecasting"
+}
