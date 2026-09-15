@@ -1,0 +1,9 @@
+{
+  "status": "AGREEMENT",
+  "checks": 3,
+  "model_observations": 3,
+  "capture_class": "SYNTHETIC_ACCEPTANCE",
+  "raw_responses": 3,
+  "orders": 0,
+  "scope": "Same production reader, incremental captured prefixes vs reconstructed as-of view; not live execution commissioning"
+}

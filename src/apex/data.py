@@ -40,7 +40,7 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
             if not required <= raw.keys():
                 raise Refused("MISSING_FIELDS:" + ",".join(sorted(required - raw.keys())))
             row = dict(raw)
-            if row["availability_basis"] not in BASES or not isinstance(row["symbol"], str) or not row["symbol"]:
+            if not isinstance(row["availability_basis"], str) or row["availability_basis"] not in BASES or not isinstance(row["symbol"], str) or not row["symbol"]:
                 raise Refused("INVALID_SOURCE_LABEL")
             if not all(finite(row[k]) for k in ("event_epoch", "available_epoch")):
                 raise Refused("INVALID_TIME")

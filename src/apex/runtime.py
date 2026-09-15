@@ -40,7 +40,25 @@ def _replace(path, value):
     temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
     _write(temporary, value)
     os.replace(temporary, path)
-    descriptor = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    _sync_directory(path.parent)
+
+
+def _publish(path, value):
+    """Publish a complete immutable record without replacing prior evidence.
+
+    A failed write retains its unique temporary file for inspection. Linking a
+    fully flushed file makes the record visible atomically and refuses an
+    existing destination, including a damaged one.
+    """
+    temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
+    _write(temporary, value)
+    os.link(temporary, path)
+    temporary.unlink()
+    _sync_directory(path.parent)
+
+
+def _sync_directory(directory):
+    descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
     try:
         os.fsync(descriptor)
     finally:
@@ -49,6 +67,47 @@ def _replace(path, value):
 
 def _read(path):
     return json.loads(path.read_bytes())
+
+
+def _runtime_record(path, kind):
+    """Read report fields defensively; this is shape checking, not authentication."""
+    try:
+        value = _read(path)
+        if not isinstance(value, dict):
+            raise ValueError("RECORD_OBJECT_REQUIRED")
+        # The report embeds the record. Reject non-finite numbers anywhere,
+        # including otherwise unused fields, before computing its digest.
+        digest(value)
+        timestamp = value["started_ns" if kind == "STARTED" else "finished_ns"]
+        if type(timestamp) is not int or timestamp <= 0:
+            raise ValueError("RECORD_TIMESTAMP_INVALID")
+        timestamp / 1e9  # also reject integers that overflow report conversion
+        if kind == "FINISHED":
+            if not isinstance(value["status"], str) or not value["status"]:
+                raise ValueError("RECORD_STATUS_INVALID")
+            reasons = value.get("reasons", [])
+            if not isinstance(reasons, list) or any(not isinstance(reason, str) for reason in reasons):
+                raise ValueError("RECORD_REASONS_INVALID")
+            candidate = value.get("candidate")
+            if candidate is not None:
+                if (not isinstance(candidate, dict) or not isinstance(candidate["decision"], str)
+                        or candidate["reason"] is not None and not isinstance(candidate["reason"], str)
+                        or "quantity" not in candidate or "expected_net" not in candidate):
+                    raise ValueError("RECORD_CANDIDATE_INVALID")
+            forecast = value.get("forecast")
+            if forecast is not None:
+                if (not isinstance(forecast, dict) or not isinstance(forecast["models"], list)
+                        or type(forecast["paths"]) is not int or type(forecast["training_returns"]) is not int):
+                    raise ValueError("RECORD_FORECAST_INVALID")
+                for model in forecast["models"]:
+                    if (not isinstance(model, dict) or not isinstance(model["model"], str)
+                            or not isinstance(model["status"], str)):
+                        raise ValueError("RECORD_MODEL_INVALID")
+        return value, None
+    except (OSError, ValueError, TypeError, KeyError, OverflowError) as exc:
+        # Do not include arbitrary corrupt bytes or exception text in reports.
+        return None, {"record": path.name, "reason": kind + "_RECORD_UNAVAILABLE",
+                      "error_type": type(exc).__name__}
 
 
 def load_settings(path):
@@ -78,23 +137,39 @@ def tick(root: Path, settings: dict, *, transport=http_transport, clock_ns=time.
         now_ns = clock_ns()
         active = root / "active.json"
         recovered = None
+        recovered_unavailable = None
         if active.exists():
-            previous = _read(active)
+            try:
+                previous = _read(active)
+                if not isinstance(previous, dict) or not isinstance(previous["run"], str) or not previous["run"]:
+                    raise ValueError("ACTIVE_RUN_INVALID")
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                raise Refused("ACTIVE_RUN_RECORD_UNAVAILABLE") from exc
             relative = Path(previous["run"])
-            if relative.is_absolute() or ".." in relative.parts:
-                raise Refused("ACTIVE_RUN_PATH_INVALID")
             prior = root / relative
+            if (relative.is_absolute() or ".." in relative.parts or len(relative.parts) != 3
+                    or relative.parts[0] != "ticks" or not prior.is_dir()
+                    or not prior.resolve().is_relative_to(root.resolve())):
+                raise Refused("ACTIVE_RUN_PATH_INVALID")
             if not (prior / "finished.json").exists():
-                _write(prior / "finished.json", {"status": "INTERRUPTED", "finished_ns": now_ns,
-                                               "reason": "Prior process released its lock without a terminal record; original capture retained"})
+                _publish(prior / "finished.json", {"status": "INTERRUPTED", "finished_ns": now_ns,
+                                                 "reason": "Prior process released its lock without a terminal record; original capture retained"})
                 recovered = previous["run"]
+            else:
+                _, issue = _runtime_record(prior / "finished.json", "FINISHED")
+                if issue:
+                    recovered_unavailable = {"run": previous["run"], **issue}
+                    if not (prior / "recovery.json").exists():
+                        _publish(prior / "recovery.json", {"status": "UNAVAILABLE_RUNTIME_EVIDENCE",
+                                                          "detected_ns": now_ns, **issue})
         day = session(now_ns / 1e9)
         run = root / "ticks" / day / (str(now_ns) + "-" + uuid.uuid4().hex[:12])
         run.mkdir(parents=True, exist_ok=False)
         opening = {"started_ns": now_ns, "settings": settings, "code": code_manifest(),
                    "mode": "SHADOW_ONLY", "recovered_interruption": recovered,
+                   "recovered_unavailable_evidence": recovered_unavailable,
                    "capture_class": "HOST_CAPTURE_ATTEMPT" if transport is http_transport and clock_ns is time.time_ns else "SYNTHETIC_ACCEPTANCE"}
-        _write(run / "started.json", opening)
+        _publish(run / "started.json", opening)
         _replace(active, {"run": str(run.relative_to(root))})
         try:
             if shutil.disk_usage(root).free < settings["min_free_bytes"]:
@@ -135,14 +210,16 @@ def tick(root: Path, settings: dict, *, transport=http_transport, clock_ns=time.
                           "candidate": candidate, "capture_summary": summary}
             result.update(finished_ns=clock_ns(), orders=0, fills=0, pnl=None,
                           accounting_basis="SHADOW_CANDIDATES_ONLY_NO_TRADING_LEDGER", run=str(run.relative_to(root)))
-            _write(run / "finished.json", result)
+            _publish(run / "finished.json", result)
         except BaseException as exc:
             # Arbitrary provider/OS exception text can contain a secret. Store
             # its class only; detailed credential-free capture markers remain.
-            _write(run / "finished.json", {"status": "FAILED", "error_type": type(exc).__name__, "finished_ns": clock_ns()})
+            if not (run / "finished.json").exists():
+                _publish(run / "finished.json", {"status": "FAILED", "error_type": type(exc).__name__, "finished_ns": clock_ns()})
             raise
         _replace(root / "latest.json", result)
         active.unlink()
+        _sync_directory(root)
         return result
 
 
@@ -154,16 +231,25 @@ def report(root: Path, *, day=None, now=None):
         raise Refused("REPORT_DATE_INVALID")
     statuses, decisions, reasons, models = Counter(), Counter(), Counter(), Counter()
     latest, latest_started = None, None
-    incomplete = []
+    incomplete, unavailable = [], []
     for run in sorted((root / "ticks" / day).glob("*")):
-        start = _read(run / "started.json")
-        latest_started = start["started_ns"] / 1e9
-        if not (run / "finished.json").exists():
+        start, start_issue = _runtime_record(run / "started.json", "STARTED")
+        latest_started = None if start_issue else start["started_ns"] / 1e9
+        latest = None
+        item, finish_issue = (None, None)
+        if (run / "finished.json").exists():
+            item, finish_issue = _runtime_record(run / "finished.json", "FINISHED")
+        issues = [issue for issue in (start_issue, finish_issue) if issue]
+        if issues:
+            unavailable.append({"run": str(run.relative_to(root)), "issues": issues})
+            statuses["UNAVAILABLE_RUNTIME_EVIDENCE"] += 1
+            reasons.update(issue["reason"] for issue in issues)
+            continue
+        if item is None:
             incomplete.append(str(run.relative_to(root)))
             statuses["INCOMPLETE"] += 1
             latest = None
             continue
-        item = _read(run / "finished.json")
         latest = item
         statuses[item["status"]] += 1
         for reason in item.get("reasons", []):
@@ -176,10 +262,11 @@ def report(root: Path, *, day=None, now=None):
         for model in (item.get("forecast") or {}).get("models", []):
             models[model["model"] + ":" + model["status"]] += 1
     age = None if latest_started is None else now - latest_started
-    status = "NO_RUNS" if age is None else "CLOCK_REWIND" if age < 0 else "STALE_RUNTIME" if age > 300 else "INCOMPLETE" if latest is None else latest["status"]
+    status = "UNAVAILABLE_RUNTIME_EVIDENCE" if unavailable else "NO_RUNS" if age is None else "CLOCK_REWIND" if age < 0 else "STALE_RUNTIME" if age > 300 else "INCOMPLETE" if latest is None else latest["status"]
     result = {"status": status, "market_date": day, "generated_epoch": now, "last_tick_age_s": age,
               "ticks": dict(statuses), "candidate_observations": dict(decisions), "models": dict(models),
               "reasons": dict(reasons), "incomplete_runs": incomplete, "latest": latest,
+              "unavailable_runs": unavailable,
               "orders": 0, "fills": 0, "pnl": None,
               "scope": "Local shadow runtime only; no broker/account inventory; candidate observations are not unique trades"}
     result["report_digest"] = digest(result)

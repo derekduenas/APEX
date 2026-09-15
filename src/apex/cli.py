@@ -60,8 +60,32 @@ def main():
     report_parser.add_argument("--root", type=Path, required=True)
     report_parser.add_argument("--day")
     report_parser.add_argument("--format", choices=("json", "text"), default="text")
+    research_parser = subs.add_parser("research", help="Frozen chronological model tournament; offline research only")
+    research_parser.add_argument("--input", type=Path, required=True)
+    research_parser.add_argument("--plan", type=Path, required=True, help="JSON with explicit epoch phase boundaries and fixed research policy")
+    research_parser.add_argument("--out", type=Path, required=True)
+    research_parser.add_argument("--symbol", default="SPY")
+    research_parser.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    research_demo = subs.add_parser("research-demo", help="Twelve synthetic sessions through the real research path")
+    research_demo.add_argument("--out", type=Path, required=True)
+    research_demo.add_argument("--world", choices=("persistent", "null", "reversal"), default="persistent")
+    research_demo.add_argument("--variance", choices=("garch", "ewma"), default="ewma")
+    research_verify = subs.add_parser("verify-research", help="Reconstruct research inputs, causal labels, model comparisons and scores")
+    research_verify.add_argument("--run", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "shadow-tick":
+    if args.command == "research":
+        from .research import ResearchPlan, run_research
+        result = run_research(args.input, args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())),
+                              config=Config(symbol=args.symbol, variance=args.variance))
+    elif args.command == "research-demo":
+        from .research import run_research
+        from .fixtures import research_demo_document
+        doc, plan = research_demo_document(world=args.world)
+        result = run_research(canonical(doc).encode(), args.out, plan=plan, config=Config(variance=args.variance))
+    elif args.command == "verify-research":
+        from .research_verification import verify_research
+        result = verify_research(args.run)
+    elif args.command == "shadow-tick":
         from .runtime import load_settings, tick
         result = tick(args.root, load_settings(args.settings))
     elif args.command == "shadow-report":

@@ -12,13 +12,13 @@ The first implementation prioritizes one comprehensible flow. It proves wiring a
 | Premarket AI research | Not integrated | Port selected APEXAI producer; sealed factual packet; actual setup-reader use |
 | TradingView chart vision | Not connected or consumed | Verified tool/runtime route and a blinded contribution experiment |
 | Market-state features | Minimal subset implemented | Independent checks for each added feature and intended reader |
-| Direction forecast | Shrunk mean hypothesis plus zero-drift comparison | Multiple chronological periods, costs, calibration, confidence intervals |
+| Direction forecast | Shrunk mean and zero drift; six-feature ridge in offline chronological tournament | Real-market holdout evidence, costs, calibration and robust uncertainty |
 | GARCH and conditional paths | Exercised on synthetic and returned historical bars | Holdout diagnostics and model comparison, including bad regimes |
 | Regime, jumps, fusion | Not implemented in the path | Defined output contract and incremental forecasting value |
 | Cross-instrument expression | Funded long stock versus WAIT only | Stocks/ETFs universe, options quotes, permissions and lifecycle-aware risk |
 | Sizing | Fixed purchase-cost ceiling | Account constraints and uncertainty-aware allocation; Kelly remains absent |
 | Trade lifecycle | Offline quote-based experimental fills | Measured latency, liquidity assumptions, restart recovery and paper adapter |
-| Feedback | Matured-label scoring implemented | Frozen challenger protocol and controlled promotion, not self-approval |
+| Feedback | Matured-label training, frozen development selection and separate holdout scoring implemented | Independent repeated experiments and controlled promotion, not self-approval |
 | Operator dashboard | Deferred | Read the actual ledger and health artifacts, not parallel summaries |
 
 ## Capture and replay agreement: implementation landed in v0.2

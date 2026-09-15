@@ -27,6 +27,15 @@ jobs:
         run: |
           apex demo-capture --out runs/ci-capture
           apex verify-capture --capture runs/ci-capture
+      - name: Chronological research, holdout and independent reconstruction
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          apex research-demo --world persistent --variance garch --out runs/ci-research
+          apex verify-research --run runs/ci-research
+          apex research-demo --world null --out runs/ci-null
+          apex verify-research --run runs/ci-null
+          apex research-demo --world reversal --out runs/ci-reversal
+          apex verify-research --run runs/ci-reversal
       - name: Upload evidence, including failures
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -36,4 +45,7 @@ jobs:
             test-results.xml
             runs/ci-control
             runs/ci-capture
+            runs/ci-research
+            runs/ci-null
+            runs/ci-reversal
           if-no-files-found: warn

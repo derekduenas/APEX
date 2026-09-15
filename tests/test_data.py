@@ -31,6 +31,17 @@ def test_malformed_row_is_named_and_does_not_abort_valid_rows():
     assert rejected == [{"input_index": 1, "reason": "MISSING_FIELDS:event_epoch"}]
 
 
+@pytest.mark.parametrize("basis", [[], {}, 7, None])
+def test_invalid_availability_basis_rejects_one_row_without_aborting_batch(basis):
+    doc, _, _ = demo_document()
+    valid = doc["observations"][0]
+    malformed = {**valid, "availability_basis": basis}
+    rows, rejected = normalize({**doc, "observations": [valid, malformed]})
+    assert len(rows) == 1
+    assert rows[0]["event_epoch"] == valid["event_epoch"]
+    assert rejected == [{"input_index": 1, "reason": "INVALID_SOURCE_LABEL"}]
+
+
 @pytest.mark.parametrize("field,value,reason", [("close", float("nan"), "INVALID_OHLCV"), ("volume", -1, "INCONSISTENT_OHLCV"), ("available_epoch", 0, "AVAILABLE_BEFORE_EVENT")])
 def test_invalid_data_refuses(field, value, reason):
     doc, _, _ = demo_document()
