@@ -146,6 +146,8 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
         ledger.close()
         ledger = None
         accounting = reconstruct(out / "ledger.jsonl")
+        if accounting["status"] != "VALID":
+            raise Refused("ACCOUNTING_RECONSTRUCTION_FAILED")
         summary = {"mode": "OFFLINE_EXPERIMENTAL_REPLAY", "counts": counts, "variance_models": variances, "decisions": decisions,
                    "accounting": accounting, "forecast_feedback": {"count": len(scores),
                    "mean_brier": float(np.mean([s["brier"] for s in scores])) if scores else None,

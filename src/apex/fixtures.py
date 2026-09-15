@@ -7,6 +7,43 @@ import numpy as np
 from .reused.vol_models import simulate_garch
 
 
+def research_demo_document(*, world="persistent", seed=731):
+    """Twelve artificial sessions: four warmup, four development, four holdout.
+
+    The persistent and reversal worlds contain an engineered lag relationship;
+    the null has independent zero-mean innovations. None is market evidence.
+    """
+    from datetime import timedelta
+    from .research import ResearchPlan
+    if world not in ("persistent", "null", "reversal"):
+        raise ValueError("Unknown synthetic research world")
+    rng = np.random.default_rng(seed)
+    day = datetime(2026, 8, 31, 13, 30, tzinfo=timezone.utc)
+    starts = []
+    while len(starts) < 12:
+        if day.weekday() < 5:
+            starts.append(day.timestamp())
+        day += timedelta(days=1)
+    price, observations = 100., []
+    for day_index, start in enumerate(starts):
+        previous = 0.
+        coefficient = 0. if world == "null" else -.65 if world == "reversal" and day_index >= 8 else .75
+        for minute in range(390):
+            event = start + minute * 60
+            old = price
+            previous = coefficient * previous + float(rng.normal(0, .00035))
+            price *= float(np.exp(previous))
+            observations.append({"kind": "bar", "symbol": "SPY", "event_epoch": event, "available_epoch": event + 60,
+                                 "availability_basis": "SYNTHETIC_CLOCK", "open": old, "high": max(old, price) + .01,
+                                 "low": min(old, price) - .01, "close": price, "volume": int(rng.integers(500, 2000))})
+            observations.append({"kind": "quote", "symbol": "SPY", "event_epoch": event + 60, "available_epoch": event + 60,
+                                 "availability_basis": "SYNTHETIC_CLOCK", "bid": price - .01, "ask": price + .01,
+                                 "bid_size": 100, "ask_size": 100})
+    plan = ResearchPlan(start=starts[0], development_start=starts[4], holdout_start=starts[8], end=starts[-1] + 390 * 60)
+    return {"schema": "APEX_DATA_V1", "source": "SYNTHETIC_RESEARCH_" + world.upper() + "_NOT_MARKET_EDGE",
+            "synthetic_world": world, "generator_seed": seed, "observations": observations}, plan
+
+
 def demo_document(*, drift=0.0003, quotes=True) -> tuple[dict, float, float]:
     starts = [datetime(2026, 9, 10, 13, 30, tzinfo=timezone.utc).timestamp(),
               datetime(2026, 9, 11, 13, 30, tzinfo=timezone.utc).timestamp()]

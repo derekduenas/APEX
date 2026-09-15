@@ -2,7 +2,7 @@
 
 An integrated market-research system that asks: **what could happen next, what expression survives costs, and did the forecast actually help?**
 
-Version 0.3 adds a persistent Linux shadow runtime, systemd deployment package and daily status report to the capture/replay vertical. DigitalOcean is the target; actual droplet deployment is not yet verified. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
+Version 0.4 adds chronological challenger learning, development/holdout evaluation and stronger reconstruction to the Linux shadow runtime. Its first retained SPY study exercised 99 GARCH-backed forecast points over 14 market sessions. DigitalOcean remains the deployment target; this release has not been commissioned on the host. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
 
 ## Run it
 
@@ -65,7 +65,7 @@ apex capture-alpaca --out runs/capture-unique-id \
 apex verify-capture --capture runs/capture-unique-id
 ```
 
-`APEX_HISTORY_START` must be a timezone-qualified timestamp within the last ten days. Quote sizes arrive in round lots; supply the correct share count per lot for the requested instrument. That conversion is recorded as an operator declaration, not automatically verified. There is no default conversion or silent feed downgrade.
+`APEX_HISTORY_START` must be a timezone-qualified timestamp within the last ten days. Verify the exact endpoint's quote-size encoding and effective symbol/date units before choosing the conversion. That conversion is recorded as an operator declaration, not automatically verified. There is no default conversion or silent feed downgrade.
 
 This captures up to three history pages, one latest bar and one latest quote, observes the real Twin/model/candidate path after each response, then exits. It creates no orders or positions. `verify-capture` decodes the saved bytes and compares the online-prefix results with offline as-of results. This is not a streaming daemon, and its HTTP timeout does not bound model fitting time.
 
@@ -89,7 +89,7 @@ The cloud package uses systemd credential files, a separate `apex-shadow` user, 
 Follow [DigitalOcean deployment and commissioning](docs/DIGITALOCEAN.md). The daily report is:
 
 ```bash
-apex shadow-report --root /var/lib/apex-shadow
+sudo -u apex-shadow -- /opt/apex-shadow/releases/EXACT_SHA/venv/bin/apex shadow-report --root /var/lib/apex-shadow
 ```
 
 It shows model activity, candidate counts/reasons and the latest result. Orders/fills remain zero and P&L unavailable because the service observes candidates without executing them. This package is tested locally; a running droplet service is not claimed.
@@ -98,9 +98,25 @@ See also [data contract](docs/DATA.md), [initial commissioning evidence](docs/CO
 
 ## What is next
 
+**v0.4 adds a working chronological research tournament.** Six causal features train a ridge challenger from matured labels; zero drift and the existing shrunk-mean model share the same variance paths. Selection uses development data and is frozen before a separate holdout. CRPS, Brier, quantile loss, interval coverage, reliability bins and paired session differences are reconstructed from retained artifacts. These are research diagnostics, not trading authorization.
+
+```bash
+apex research-demo --world persistent --variance garch --out runs/research-control-unique
+apex verify-research --run runs/research-control-unique
+```
+
+For real retained data, provide an `APEX_DATA_V1` input and a frozen JSON research plan:
+
+```bash
+apex research --input data/input.json --plan data/research-plan.json --out runs/research-unique
+apex verify-research --run runs/research-unique
+```
+
+The command makes no network requests or orders. See [the research contract and review](docs/EDGE_RESEARCH_001.md) for the plan fields, causal rules, repairs, evidence and remaining gaps. The ridge challenger runs in this offline research path; it is not silently promoted into the deployed shadow service.
+
 1. Commission the new capture adapter against healthy stock-data access during market hours; confirm completed bars and measured quote receipts, then replay them and prove equivalent decisions.
 2. Add the timestamped premarket/catalyst packet and setup readers, proving actual downstream consumption. LLM research output remains separate from capital authority.
-3. Freeze hypotheses and run chronological multi-session evaluation, calibration diagnostics and realistic execution sensitivity before commissioning live paper execution.
+3. Run the frozen tournament on multi-session market data, then establish calibration and realistic execution sensitivity before commissioning live paper execution.
 4. Add a restart-safe paper service and operator dashboard; then broader expression comparison and controlled challenger learning.
 
 TradingView vision, Kelly sizing, options/spreads, learned fusion, multi-asset portfolio allocation and autonomous research agents are not implemented in this release. They are additions to earn through comparative evidence, not boxes to mark green.

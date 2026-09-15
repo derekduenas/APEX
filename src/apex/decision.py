@@ -22,6 +22,7 @@ def quote_at(observations, now, config: Config):
 def evaluate(prediction, paths, quote, quote_problem, *, cash, position_open, config):
     """One pure evaluator. Returning a candidate grants no execution authority."""
     qty, expected, probability = 0, None, None
+    price_anchor = None
     reason = quote_problem
     if position_open:
         reason = "EXISTING_POSITION_OR_OUTSTANDING_EXIT"
@@ -34,7 +35,16 @@ def evaluate(prediction, paths, quote, quote_problem, *, cash, position_open, co
         if qty <= 0:
             reason = "WHOLE_SHARE_OR_DISPLAYED_SIZE_UNAFFORDABLE"
         else:
-            bids = prediction["spot"] * np.exp(paths[:, -1]) - (quote["ask"] - quote["bid"]) / 2
+            # The quote reveals today's current market. A stale bar must not
+            # imply a rebound to its old price. Reuse the H-minute return law
+            # prospectively from this quote midpoint, with its own target.
+            midpoint = (quote["ask"] + quote["bid"]) / 2
+            price_anchor = {"basis": "CURRENT_QUOTE_MIDPOINT", "spot": midpoint,
+                            "quote_id": quote["observation_id"], "event_epoch": quote["event_epoch"],
+                            "decision_epoch": prediction["created_epoch"],
+                            "target_epoch": prediction["created_epoch"] + prediction["horizon_minutes"] * 60,
+                            "assumption": "Same H-minute return law rebased at decision; distinct from bar-origin forecast"}
+            bids = midpoint * np.exp(paths[:, -1]) - (quote["ask"] - quote["bid"]) / 2
             net_paths = (bids - quote["ask"]) * qty - float(fee(qty, config) * 2)
             expected, probability = float(net_paths.mean()), float((net_paths > 0).mean())
             reason = "AFTER_COST_MODEL_NOT_ELIGIBLE" if expected <= 0 or probability < config.minimum_probability else None
@@ -42,6 +52,7 @@ def evaluate(prediction, paths, quote, quote_problem, *, cash, position_open, co
         reason = "QUOTE_UNAVAILABLE_OR_CONFLICTING"
     return {"decision": "WAIT" if reason else "EXPERIMENTAL_LONG", "reason": reason, "quantity": qty,
             "expected_net": expected, "model_probability_net_positive": probability, "competitor": "WAIT",
+            "price_anchor": price_anchor,
             "instrument": "FUNDED_LONG_STOCK", "authority": "OFFLINE_EXPERIMENT_ONLY", "calibration": "UNCALIBRATED",
             "cost_assumption": "Current half-spread retained at exit, displayed quantity; no queue or impact model",
             "sizing": "Fixed purchase-cost ceiling including entry fee; no Kelly; stop not treated as a loss bound"}
