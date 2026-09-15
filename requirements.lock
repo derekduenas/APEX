@@ -1,0 +1,5 @@
+# Exact directly used versions in the commissioning environment.
+# Transitive dependency hashes and container attestation are not established.
+numpy==2.3.5
+scipy==1.17.0
+pytest==9.1.1
