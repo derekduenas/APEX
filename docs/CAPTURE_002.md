@@ -54,3 +54,9 @@ These errors do not establish an entitlement problem, bad credentials or a marke
 The actual standalone CLI also ran. `APCA_API_KEY_ID` and `APCA_API_SECRET_KEY` were absent; one request returned `BLOCKED_EXTERNAL_CREDENTIAL`, zero observations were accepted, zero orders existed, and verification reported refusal parity only. The host's lack of standalone credentials does not explain the separately authenticated connector errors.
 
 **Verdict:** synthetic capture/shadow/replay integration is exercised. A successful real provider capture, continuous streaming, an exchange calendar, live execution, restart recovery and predictive edge remain unproven. The next commissioning run needs healthy stock-data access on the actual runtime during a market session. No further model label or synthetic run can substitute for that evidence.
+
+## Host correction and commissioning bridge
+
+Later host inventory established that the live Alpaca SIP fabric has both secrets in the macOS Keychain and is actively collecting trade, quote and minute-bar data. The earlier standalone failure was therefore a property of the build workspace, not a verdict on the operator host. `ops/apex_shadow_capture.sh` retrieves the existing `ALPACA_API_KEY_ID` and `ALPACA_API_SECRET_KEY` entries under the `apex` account and launches only this module's bounded read-only REST capture. It does not log the values and it does not reuse Robinhood credentials or broker routes.
+
+The existing SIP fabric remains the authority for streaming health; this bridge is the first direct commissioning of the new APEX capture → Twin → forecast → candidate → replay path on that credentialed host. It does not claim the REST capture itself is a continuous feed.

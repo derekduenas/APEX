@@ -69,6 +69,17 @@ apex verify-capture --capture runs/capture-unique-id
 
 This captures up to three history pages, one latest bar and one latest quote, observes the real Twin/model/candidate path after each response, then exits. It creates no orders or positions. `verify-capture` decodes the saved bytes and compares the online-prefix results with offline as-of results. This is not a streaming daemon, and its HTTP timeout does not bound model fitting time.
 
+On the existing macOS host where the two Alpaca secrets already live in the `apex` Keychain account, use the supplied launcher instead of copying either value into a terminal or file:
+
+```bash
+ops/apex_shadow_capture.sh --out runs/sip-commissioning-unique-id \\
+  --history-start 2026-09-15T13:30:00Z --symbol SPY --feed sip \\
+  --round-lot-shares 100
+apex verify-capture --capture runs/sip-commissioning-unique-id
+```
+
+The launcher only exports the existing values to its child capture process. It has no broker endpoint, order command or streaming loop. The output directory must be new.
+
 **Current external status:** in the September 15 build session the Alpaca clock worked, but three stock-data connector calls returned internal errors. Standalone keys were absent. Consequently real successful market-data capture and an open-market run remain unproven; the capture control and failure handling are tested. See [capture commissioning](docs/CAPTURE_002.md).
 
 See also [data contract](docs/DATA.md), [initial commissioning evidence](docs/COMMISSIONING.md), [reuse review](docs/REUSE.md), and [architecture and next milestones](docs/ARCHITECTURE.md).
