@@ -1,0 +1,18 @@
+{
+  "status": "CAPTURED",
+  "requests": 3,
+  "capture_class": "SYNTHETIC_ACCEPTANCE",
+  "accepted": 397,
+  "rejected": 0,
+  "request_errors": [],
+  "history_pagination_exhausted": true,
+  "last_shadow_status": "OBSERVED",
+  "last_shadow_reason": null,
+  "orders": 0,
+  "limits": [
+    "Bounded polling, not streaming or unattended service",
+    "No restart or portfolio state",
+    "Parent receipt is later than transport arrival",
+    "Lot size is operator-declared"
+  ]
+}

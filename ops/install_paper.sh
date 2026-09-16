@@ -13,8 +13,24 @@ checked_status=$(git status --porcelain)
 test "$checked_head" = "$pin" && test -z "$checked_status" || { echo 'Expected a clean checkout at the requested pin' >&2; exit 2; }
 python3 -c 'import sys; assert sys.version_info >= (3,11), "Python 3.11+ required"'
 command -v systemd-analyze >/dev/null
-test -f /etc/apex-paper/feed-settings.json || { echo "Configure /etc/apex-paper/feed-settings.json" >&2; exit 2; }
-test -f /etc/apex-paper/settings.json || { echo 'Configure /etc/apex-paper/settings.json from the reviewed example' >&2; exit 2; }
+# Initialize only missing paper settings from this reviewed release, never the shadow service settings.
+install -d -m 750 /etc/apex-paper
+python3 - <<'PYCONFIG'
+import os
+from pathlib import Path
+for source, target in [('deploy/paper-settings.example.json', '/etc/apex-paper/settings.json'),
+                       ('deploy/paper-feed-settings.example.json', '/etc/apex-paper/feed-settings.json')]:
+    try:
+        fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o640)
+    except FileExistsError:
+        print('Preserved existing paper settings:', target)
+    else:
+        with os.fdopen(fd, 'wb') as handle:
+            handle.write(Path(source).read_bytes())
+            handle.flush()
+            os.fsync(handle.fileno())
+        print('Created paper settings from reviewed example:', target)
+PYCONFIG
 if systemctl is-active --quiet apex-paper.service || systemctl is-active --quiet apex-paper.timer || systemctl is-active --quiet apex-paper-feed.service || systemctl is-active --quiet apex-paper-feed.timer; then
   echo 'Stop only the existing apex-paper timer/service before changing its release' >&2
   exit 2
@@ -37,7 +53,7 @@ install -d -m 750 -o apex-paper-feed -g apex-paper-feed /var/lib/apex-paper-feed
 install -d -m 700 -o apex-paper -g apex-paper /var/lib/apex-paper
 chown root:apex-paper /etc/apex-paper/feed-settings.json
 chmod 640 /etc/apex-paper/feed-settings.json
-"$release/venv/bin/python" -c 'from apex.runtime import load_settings; load_settings("/etc/apex-paper/feed-settings.json")'
+"$release/venv/bin/python" -c 'from pathlib import Path; from apex.runtime import load_settings; load_settings(Path("/etc/apex-paper/feed-settings.json"))'
 chown root:apex-paper /etc/apex-paper
 chmod 750 /etc/apex-paper
 chown root:apex-paper /etc/apex-paper/settings.json

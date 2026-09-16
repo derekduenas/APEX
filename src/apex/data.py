@@ -27,6 +27,19 @@ def epoch_ns(epoch):
     return int((Decimal(str(epoch)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
 
 
+def decision_cutoff_ns(now, now_ns=None):
+    """Keep an original integer cutoff authoritative; seconds are its display only.
+
+    Without an integer, interpret the caller's declared seconds clock as before.
+    Never reconstruct a measured receipt from its rounded float representation.
+    """
+    if now_ns is None:
+        return epoch_ns(now)
+    if type(now_ns) is not int or now_ns < 0 or now != now_ns / 1e9:
+        raise Refused("DECISION_CLOCK_SECONDS_DISAGREE_WITH_NANOSECONDS")
+    return now_ns
+
+
 def duration_ns(seconds):
     """Floor a declared duration to nanoseconds; never extend an age allowance."""
     return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
@@ -177,9 +190,9 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
     return sorted(distinct.values(), key=lambda r: (r["available_epoch"], r["event_epoch"], r["observation_id"])), rejected
 
 
-def visible(rows: list[dict], *, now: float, symbol: str, kind: str) -> tuple[list[dict], list[dict]]:
+def visible(rows: list[dict], *, now: float, symbol: str, kind: str, now_ns: int | None = None) -> tuple[list[dict], list[dict]]:
     groups: dict[int, list] = {}
-    cutoff_ns = epoch_ns(now)
+    cutoff_ns = decision_cutoff_ns(now, now_ns)
     for row in rows:
         if row["symbol"] == symbol and row["kind"] == kind and available_ns(row) <= cutoff_ns:
             groups.setdefault(event_ns(row), []).append(row)
@@ -191,12 +204,12 @@ def visible(rows: list[dict], *, now: float, symbol: str, kind: str) -> tuple[li
         else:
             # Market values agree: preserve earliest knowable evidence, with all
             # raw provenance retained in the captured input document.
-            out.append(min(group, key=lambda r: (r["available_epoch"], r["observation_id"])))
+            out.append(min(group, key=lambda r: (available_ns(r), r["observation_id"])))
     return out, conflicts
 
 
-def twin(rows: list[dict], now: float, symbol: str) -> tuple[dict, list[dict]]:
-    bars, conflicts = visible(rows, now=now, symbol=symbol, kind="bar")
+def twin(rows: list[dict], now: float, symbol: str, *, now_ns: int | None = None) -> tuple[dict, list[dict]]:
+    bars, conflicts = visible(rows, now=now, symbol=symbol, kind="bar", now_ns=now_ns)
     bars = [b for b in bars if regular(b["event_epoch"])]
     today = [b for b in bars if session(b["event_epoch"]) == session(now)]
     if not today or now - (today[-1]["event_epoch"] + 60) > 120:

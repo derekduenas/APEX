@@ -1,0 +1,12 @@
+{
+  "scope": "SYNTHETIC transport/clock counterexample; actual capture, reader and verifier",
+  "receipt_ns": 1789133700035000096,
+  "legacy_cutoff_ns": 1789133700035000000,
+  "cutoff_error_ns": -96,
+  "legacy_visible_quotes": 0,
+  "fixed_visible_quotes": 1,
+  "quote_age_s": 0.03500008583068848,
+  "candidate_reason": null,
+  "capture_replay": "AGREEMENT",
+  "rejected_rows": 0
+}

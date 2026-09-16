@@ -1,0 +1,20 @@
+{
+  "full_suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "556",
+    "time": "616.678",
+    "timestamp": "2026-09-16T14:45:31.397079+00:00",
+    "hostname": "localhost"
+  },
+  "source_test_ops_deploy_manifest_unchanged": true,
+  "capture_cli_verification": "AGREEMENT",
+  "demo_cli_verification": "VALID",
+  "installer_config_block": "Created 7-day/8-page settings, mode 640; repeat preserved existing file",
+  "settings_validation": "Both examples passed",
+  "shell_syntax": "Passed",
+  "host_ssh": "Network is unreachable",
+  "live_commissioning": false
+}

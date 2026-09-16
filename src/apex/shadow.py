@@ -40,9 +40,9 @@ def _strategy_preview(intelligence, state, forecast, paths, *, now, config):
     return compact
 
 
-def observe(observations, now, config: Config):
-    bars, bar_conflicts = visible(observations, now=now, symbol=config.symbol, kind="bar")
-    quotes, quote_conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote")
+def observe(observations, now, config: Config, *, now_ns=None):
+    bars, bar_conflicts = visible(observations, now=now, symbol=config.symbol, kind="bar", now_ns=now_ns)
+    quotes, quote_conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote", now_ns=now_ns)
     session_bars = [b for b in bars if regular(b["event_epoch"])]
     gaps = [{"after_event": left["event_epoch"], "before_event": right["event_epoch"],
              "missing_minutes": int((right["event_epoch"] - left["event_epoch"]) / 60) - 1}
@@ -57,13 +57,15 @@ def observe(observations, now, config: Config):
               "calendar_basis": "REGULAR_WEEKDAY_CLOCK_ONLY_NOT_EXCHANGE_CALENDAR"}
     result = {"now": now, "health": health, "execution_authority": "NONE_SHADOW_ONLY", "forecast": None,
               "snapshot": None, "candidate": None, "intelligence": None, "strategy_preview": None}
+    if now_ns is not None:
+        result["now_ns"] = now_ns
     if not regular(now):
         return {**result, "status": "REFUSED", "reason": "OUTSIDE_REGULAR_CLOCK_WINDOW"}
     try:
-        state, returns = twin(observations, now, config.symbol)
+        state, returns = twin(observations, now, config.symbol, now_ns=now_ns)
         result["snapshot"] = state
         try:
-            result["intelligence"] = classify_regime(observations, now=now, symbol=config.symbol)
+            result["intelligence"] = classify_regime(observations, now=now, symbol=config.symbol, now_ns=now_ns)
         except Refused as exc:
             result["intelligence"] = {"status": "REFUSED", "reason": str(exc), "authority": "NONE_SHADOW_ONLY"}
         forecast, paths = predict(returns, state, config)
@@ -77,7 +79,7 @@ def observe(observations, now, config: Config):
         else:
             result["strategy_preview"] = {"status": "NOT_AVAILABLE", "reason": "INTELLIGENCE_REFUSED",
                                           "authority": "NONE_SHADOW_ONLY"}
-        q, problem = quote_at(observations, now, config)
+        q, problem = quote_at(observations, now, config, now_ns=now_ns)
         candidate = evaluate(forecast, paths, q, problem, cash=money(config.starting_cash), position_open=False, config=config)
         # This candidate is a hypothetical standalone decision. Repeated shadow
         # observations are not a portfolio and never reserve or spend money.
