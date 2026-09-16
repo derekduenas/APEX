@@ -137,6 +137,14 @@ def _events(root, *, day=None, kinds=None):
 
 
 def _source_problem(document, rows, rejected, mode):
+    from .admissibility import admissibility
+    from .data import collection_problem, decision_only
+    if decision_only(document):
+        return "BLOCKED_DECISION_SNAPSHOTS_NOT_EXECUTION_EVIDENCE"
+    if collection_problem(document):
+        return "BLOCKED_INCOMPLETE_QUOTE_COLLECTION"
+    if admissibility(document, rows)["input_class"] == "MIXED_SYNTHETIC_AND_RECORDED_INPUT":
+        return "BLOCKED_MIXED_SYNTHETIC_AND_RECORDED_INPUT"
     status = document.get("source_status", document.get("status", ""))
     if status in ("NO_AUTH", "UNAUTHORIZED", "NOT_ENTITLED", "SUBSCRIPTION_DENIED", "BLOCKED_NO_AUTH"):
         return "BLOCKED_NO_AUTH"
@@ -247,8 +255,12 @@ def _tick(root, document, *, calendar, config, mode, now, entry_cutoff=None, acc
         _immutable(root / "inputs" / (input_id + ".json"), document)
         _event(root, now, "TICK_STARTED", {"input_id": input_id, "calendar_contract_id": calendar.record()["calendar_contract_id"],
                                           "clock_basis": "SYSTEM_TIME" if mode == "LIVE_PAPER" else "EXPLICIT_CHRONOLOGICAL_REPLAY", "code": code_manifest()})
-        rows, rejected = normalize(document)
-        source_problem = _source_problem(document, rows, rejected, mode)
+        try:
+            rows, rejected = normalize(document)
+            source_problem = _source_problem(document, rows, rejected, mode)
+        except Refused:
+            rows, rejected = [], []
+            source_problem = "BLOCKED_INVALID_INPUT_DOCUMENT"
         quote, quote_problem = quote_at(rows, now, config)
         # Invalid bars block entries but a separately valid quote may still
         # service an existing exit. Wrong provenance never enters the book.

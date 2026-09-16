@@ -150,8 +150,30 @@ def main():
     continuation.add_argument("--out", type=Path, required=True)
     continuation_verify = subs.add_parser("verify-continuation")
     continuation_verify.add_argument("--run", type=Path, required=True)
+    quotes_parser = subs.add_parser("fetch-decision-quotes")
+    quotes_parser.add_argument("--plan", type=Path, required=True)
+    quotes_parser.add_argument("--out", type=Path, required=True)
+    quotes_parser.add_argument("--symbol", default="SPY")
+    quotes_parser.add_argument("--feed", choices=("sip", "iex"), required=True)
+    quotes_parser.add_argument("--round-lot-shares", type=int, required=True)
+    quotes_parser.add_argument("--timeout", type=float, default=10)
+    merge_parser = subs.add_parser("merge-inputs")
+    merge_parser.add_argument("--input", type=Path, required=True, action="append", dest="inputs")
+    merge_parser.add_argument("--out", type=Path, required=True)
+    merge_parser.add_argument("--retrieved-utc", required=True)
     args = parser.parse_args()
-    if args.command == "continuation-experiment":
+    if args.command == "fetch-decision-quotes":
+        from .decision_quotes import fetch_decision_quotes
+        from .research import ResearchPlan
+        result = fetch_decision_quotes(args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())), config=Config(symbol=args.symbol), feed=args.feed, round_lot_shares=args.round_lot_shares, timeout=args.timeout)
+    elif args.command == "merge-inputs":
+        epoch(args.retrieved_utc)
+        from .data import merged_document
+        document = merged_document([json.loads(p.read_text()) for p in args.inputs], retrieved_utc=args.retrieved_utc)
+        with args.out.open("x") as handle:
+            handle.write(canonical(document))
+        result = {"components": len(document["components"]), "observations": len(document["observations"])}
+    elif args.command == "continuation-experiment":
         from .continuation import run_continuation
         result = run_continuation(args.input, args.plan, args.out)
     elif args.command == "verify-continuation":
@@ -285,6 +307,8 @@ def main():
         print(report_text(result))
     else:
         print(json.dumps(result, indent=2))
+    if args.command == "fetch-decision-quotes" and result.get("collection_status") != "COMPLETE":
+        raise SystemExit(3)
     if args.command == "verify-continuation" and result.get("status") != "VALID":
         raise SystemExit(2)
     if result.get("status") == "MISMATCH" or result.get("accounting", {}).get("status") == "MISMATCH":

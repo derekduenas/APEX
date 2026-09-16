@@ -60,3 +60,7 @@ The actual standalone CLI also ran. `APCA_API_KEY_ID` and `APCA_API_SECRET_KEY` 
 The operator later reported a healthy live Alpaca SIP fabric and Keychain credentials. Source inspection established a macOS launcher exists, but did not verify the collector's current host or liveness. The earlier standalone failure was a property of the build workspace, not a verdict on the operator host. `ops/apex_shadow_capture.sh` retrieves the existing `ALPACA_API_KEY_ID` and `ALPACA_API_SECRET_KEY` entries under the `apex` account and launches only this module's bounded read-only REST capture. It does not log the values and it does not reuse Robinhood credentials or broker routes.
 
 This bridge was prepared for commissioning the new APEX capture → Twin → forecast → candidate → replay path; it was not run on the credentialed host. DigitalOcean is now the explicit operating target; see [Linux deployment](DIGITALOCEAN.md). The REST capture is not a continuous feed.
+
+## Subsequent quote integration correction
+
+The earlier text records that release's provider-documentation assumptions. The historical quote integration does not establish provider units from quote/trade magnitude comparisons. Raw size fields now use neutral names; conversion remains unverified and candidate quantities are conservatively capped by the raw size. The actual v0.7 paper runtime already has a measured-receipt live gate. See [QUOTE_INTEGRITY_001.md](QUOTE_INTEGRITY_001.md) for the integrated source and its acceptance boundaries.

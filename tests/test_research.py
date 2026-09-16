@@ -126,7 +126,8 @@ def test_unavailable_quotes_do_not_become_invented_fills(research_flight, tmp_pa
     bars_only = {**doc, "observations": [r for r in doc["observations"] if r["kind"] == "bar"]}
     result = run_research(canonical(bars_only).encode(), tmp_path/"bars", plan=plan, config=Config(variance="ewma", paths=100))
     assert result["forecast_count"] == 88
-    assert result["candidate_observations"] == {"long": 0, "wait": 264}
+    assert {k: result["candidate_observations"][k] for k in ("long", "wait")} == {"long": 0, "wait": 264}
+    assert result["candidate_observations"]["wait_reasons"] == {"QUOTE_UNAVAILABLE_OR_CONFLICTING": 264}
     records = read_verified(tmp_path/"bars"/"ledger.jsonl")
     assert not any(r["kind"] in ("ENTRY", "EXIT") for r in records)
 
@@ -140,19 +141,19 @@ def test_invalid_phase_or_overlapping_plan_refuses_before_run(tmp_path):
     assert not (tmp_path/"no").exists()
 
 
-def test_realistic_receipt_delay_flows_through_actual_tournament(research_flight, tmp_path):
+def test_simulated_receipt_delay_flows_through_actual_tournament(research_flight, tmp_path):
     _, original, plan, _ = research_flight
     doc = copy.deepcopy(original)
     for row in doc["observations"]:
         row["available_epoch"] += .25
-        row["availability_basis"] = "MEASURED_RECEIPT"
+        row["availability_basis"] = "SYNTHETIC_CLOCK"
     root = tmp_path/"measured"
     result = run_research(canonical(doc).encode(), root, plan=plan, config=Config(variance="ewma", paths=100))
     assert result["forecast_count"] == 88
     assert result["holdout"]["paired_samples"] == 44
     assert result["input_class"] == "SYNTHETIC_RESEARCH_CONTROL"
     # These timestamps are fabricated by this test, not provider evidence.
-    # The receipt-labelled path is exercised without claiming a live capture.
+    # Simulated delivery delay stays a synthetic control; measured capture has its own tests.
     samples = [r for r in read_verified(root/"ledger.jsonl") if r["kind"] == "RESEARCH_SAMPLE"]
     assert samples
     assert all(r["payload"]["decision_epoch"] - r["payload"]["price_origin_epoch"] == 5. for r in samples)

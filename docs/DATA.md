@@ -17,3 +17,7 @@ This release supports regular US-equity weekday clock windows, not an exchange h
 Every run captures input bytes once and records their SHA-256, executable source hashes, numeric-library versions, configuration, saved path arrays and a chronological ledger. `verify` binds these artifacts and independently reconstructs accounting. It does not claim to rerun and independently derive every model parameter, prove authentic vendor history, or defend against an attacker able to replace every artifact and retained digest.
 
 Output directories are exclusive. Failures after claiming a directory leave `FAILED.json`. Interrupted processes can leave partial ledgers; they are not resumable live sessions. Successful runs write `COMPLETE`; that marker means the replay ended, while the session may still carry an outstanding position and null total P&L.
+
+## Historical quote repair
+
+`QUOTE_LATENCY_ASSUMPTION_V1` means an exact declared event + 1 second, checked with integer `event_ns` and `available_ns`; it is not a measured receipt. The reader uses integer nanoseconds for visibility and event grouping. Incomplete collections are refused, including through merges. Decision snapshots are research-only evidence and cannot enter the execution replay or paper account. Quote-size conversion remains operator-declared and unverified; see [QUOTE_INTEGRITY_001.md](QUOTE_INTEGRITY_001.md).

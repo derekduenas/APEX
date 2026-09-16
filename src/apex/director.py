@@ -98,6 +98,8 @@ def _preflight(raw, plan, config, symbols):
     _require(isinstance(document, dict) and isinstance(document.get('observations'), list), 'DIRECTOR_INPUT_INVALID')
     _require(len(document['observations']) <= POLICY['maximum_observations'], 'DIRECTOR_OBSERVATION_BUDGET_EXCEEDED')
     observations, rejected = normalize(document)
+    from .admissibility import require_mode
+    require_mode(document, observations, "SYNTHETIC_CONTROL" if input_class_of(document, observations) == "SYNTHETIC_RESEARCH_CONTROL" else "OFFLINE_RESEARCH")
     _require(not rejected and observations, 'DIRECTOR_INVALID_OR_EMPTY_OBSERVATIONS')
     bars = [b for b in observations if b['kind'] == 'bar' and regular(b['event_epoch'])
             and plan.start <= b['event_epoch'] < plan.end and b['available_epoch'] <= plan.end]

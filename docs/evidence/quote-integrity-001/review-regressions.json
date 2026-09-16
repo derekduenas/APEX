@@ -1,0 +1,24 @@
+{
+  "upstream_commit": "b3ec2d7f0f73de8e27345c18e36c53361570dab4",
+  "base_remote_commit": "bdeb3560f4a17c23565a390ddeb4c12a869aeb2c",
+  "base_local_commit": "06d7dc70cb5c84d240ca22d0e3c3bad6961a8662",
+  "focused_final_cases": "59 passed in 5.23s before two research-test expectation updates; application source unchanged",
+  "corrected_research_tests": "2 passed in 35.85s",
+  "prior_runs": [
+    {
+      "log": "quote-integrity-full-001.log",
+      "status": "INTERRUPTED_AFTER_FAILURE",
+      "reason": "Simulated stale quote mislabeled measured in old lifecycle test"
+    },
+    {
+      "log": "quote-integrity-full-002.log",
+      "status": "INTERRUPTED",
+      "reason": "Parent synthetic provenance case corrected before final source freeze"
+    },
+    {
+      "log": "quote-integrity-full-003.log",
+      "status": "INTERRUPTED_AFTER_FAILURES",
+      "reason": "Old summary shape and simulated research receipt label expectations"
+    }
+  ]
+}
