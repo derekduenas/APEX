@@ -5,7 +5,7 @@ import csv
 import io
 import math
 import re
-from decimal import Decimal, ROUND_FLOOR
+from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -21,10 +21,15 @@ BASES = {"SYNTHETIC_CLOCK", "MEASURED_RECEIPT", "BAR_COMPLETION_ASSUMPTION_V1", 
 
 
 def epoch_ns(epoch):
-    """Interpret the declared seconds clock as decimal; never round a future ns backward."""
+    """Floor the declared decimal decision clock to an integer-nanosecond cutoff."""
     if isinstance(epoch, (int, float)) and epoch == int(epoch):
         return int(epoch) * 1_000_000_000
     return int((Decimal(str(epoch)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
+
+
+def duration_ns(seconds):
+    """Floor a declared duration to nanoseconds; never extend an age allowance."""
+    return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
 
 
 def event_ns(row):
@@ -32,7 +37,15 @@ def event_ns(row):
 
 
 def available_ns(row):
-    return row["available_ns"] if "available_ns" in row else epoch_ns(row["available_epoch"])
+    if "available_ns" in row:
+        return row["available_ns"]
+    seconds = row["available_epoch"]
+    # Fractional float seconds cannot recover their original provider nanoseconds.
+    # Use the next representable float as a conservative upper bound, then ceil.
+    # Exact integer clocks retain their declared meaning. Adapters must retain ns.
+    if isinstance(seconds, float) and not seconds.is_integer():
+        seconds = math.nextafter(seconds, math.inf)
+    return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_CEILING))
 
 
 def decision_only(document):

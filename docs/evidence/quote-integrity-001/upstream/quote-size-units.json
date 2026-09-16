@@ -1,0 +1,278 @@
+{
+ "decisive_comparison": {
+  "conclusion": "A lots reading implies 1884000 shares displayed at the inside while the largest single trade in the same windows was 18326 shares, a factor of about 103. The magnitudes of quote sizes and trade sizes coincide instead. For this endpoint, symbol and period the values are SHARES.",
+  "implied_displayed_shares_under_lots_reading": 1884000,
+  "largest_actual_single_trade_shares": 18326,
+  "largest_quote_size_value": 18840,
+  "ratio_to_largest_observed_trade": 102.8,
+  "trade_sizes_are_shares_per_provider_schema": true
+ },
+ "documentation_claim": "Alpaca's published streaming documentation labels quote sizes as round lots: https://docs.alpaca.markets/us/docs/real-time-stock-pricing-data . This measurement does not dispute what that page says; it reports what the HISTORICAL REST endpoints returned for this symbol and period, which cannot be reconciled with a lots reading.",
+ "endpoints": {
+  "feed": "sip",
+  "quotes": "/v2/stocks/quotes",
+  "trades": "/v2/stocks/trades"
+ },
+ "granularity_note": "Quote sizes here are quantized: every observed value below 100 is 40 or 80, and the modal values are 40, 80, 120, 160, 200, 240. The cause is not established. It does not bear on the units question, since a lots reading would require a 100 multiple rather than a 40 one.",
+ "question": "Are Alpaca HISTORICAL quote sizes (bs/as) round lots or shares, for SPY over the study period?",
+ "quote_size_profile": {
+  "distinct_values_under_100": [
+   40,
+   80
+  ],
+  "max": 18840,
+  "median": 120,
+  "min": 40,
+  "n": 28000,
+  "name": "quote bs/as",
+  "share_divisible_by_100": 0.1244,
+  "share_of_values_below_100": 0.3781,
+  "ten_most_common": [
+   [
+    40,
+    5878
+   ],
+   [
+    80,
+    4709
+   ],
+   [
+    120,
+    4060
+   ],
+   [
+    160,
+    2612
+   ],
+   [
+    200,
+    2137
+   ],
+   [
+    240,
+    1692
+   ],
+   [
+    280,
+    1053
+   ],
+   [
+    320,
+    595
+   ],
+   [
+    400,
+    471
+   ],
+   [
+    600,
+    429
+   ]
+  ]
+ },
+ "scope": "SPY only, SIP feed, one 30-second window on each of the 14 study sessions, 2026-08-24 to 2026-09-11, collected 2026-09-15. It establishes nothing about other symbols, feeds, periods or the streaming API.",
+ "structural_mitigation": "Independent of this evidence, the evaluator now floors permitted quantity at the raw provider size, because one provider unit is never fewer than one share. A multiplier that is wrong can therefore only fail to expand size, never expand it past what was displayed. See decision.evaluate and test_permitted_quantity_is_floored_at_the_raw_provider_size.",
+ "symbol": "SPY",
+ "trade_size_profile": {
+  "distinct_values_under_100": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20
+  ],
+  "max": 18326,
+  "median": 40,
+  "min": 1,
+  "n": 12393,
+  "name": "trade s (SHARES per provider schema)",
+  "share_divisible_by_100": 0.1074,
+  "share_of_values_below_100": 0.8089,
+  "ten_most_common": [
+   [
+    40,
+    2292
+   ],
+   [
+    1,
+    1819
+   ],
+   [
+    100,
+    1001
+   ],
+   [
+    20,
+    704
+   ],
+   [
+    80,
+    633
+   ],
+   [
+    2,
+    510
+   ],
+   [
+    10,
+    390
+   ],
+   [
+    50,
+    369
+   ],
+   [
+    25,
+    363
+   ],
+   [
+    120,
+    232
+   ]
+  ]
+ },
+ "why_it_matters": "The adapter multiplies provider size by a caller-supplied round_lot_shares and the evaluator caps permitted quantity at the converted size. An overstated multiplier inflates permitted quantity. Evidence settles the default; it does not by itself remove the risk.",
+ "windows": [
+  {
+   "date": "2026-08-24",
+   "end": "2026-08-24T14:00:30Z",
+   "quotes_body_sha256": "28b7a02d06dcac642a91f1d6906b051b02b59f0e4134ad3fc3617a9324af8e72",
+   "quotes_returned": 1000,
+   "start": "2026-08-24T14:00:00Z",
+   "trades_body_sha256": "6b172422cb386e51bf7b68b5b6dbb7155deb5e4f77eb02eefe15dbc45706bd9a",
+   "trades_returned": 565
+  },
+  {
+   "date": "2026-08-25",
+   "end": "2026-08-25T14:00:30Z",
+   "quotes_body_sha256": "39afe228d8ec91f2c447fe1952b03c88268c78e99e3728ccc550c7e60e2a2afe",
+   "quotes_returned": 1000,
+   "start": "2026-08-25T14:00:00Z",
+   "trades_body_sha256": "961060a8b731d3ad6242b9eb893c06fb93f0ec9d57ac96345b72fcc64a0675df",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-08-26",
+   "end": "2026-08-26T14:00:30Z",
+   "quotes_body_sha256": "8b8bea1fa39df94de608d0ba78a6bb0a9493e96479049315c484b3a7f7f2561c",
+   "quotes_returned": 1000,
+   "start": "2026-08-26T14:00:00Z",
+   "trades_body_sha256": "3526665d5f618b121b03684539f5dc0085c91efcb9eaa606d47f1e0a5bbffc4c",
+   "trades_returned": 712
+  },
+  {
+   "date": "2026-08-27",
+   "end": "2026-08-27T14:00:30Z",
+   "quotes_body_sha256": "5a18174b4f9a010aed13d9a9f87010dfd9d8d79010cdcc6b9069f033ba152ac3",
+   "quotes_returned": 1000,
+   "start": "2026-08-27T14:00:00Z",
+   "trades_body_sha256": "380287ac28825811453930120ae46f568c37d7383c1f79a69694328050b7ff38",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-08-28",
+   "end": "2026-08-28T14:00:30Z",
+   "quotes_body_sha256": "f3c43587d0a37c73c4c30fed6e5eecf2f6e8f93446fef77ee4dd49319f2c3c2e",
+   "quotes_returned": 1000,
+   "start": "2026-08-28T14:00:00Z",
+   "trades_body_sha256": "577cf12db69354c9f103710236a4b05d6f8c965a4289a0837b4a10fa0bb5a8a4",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-08-31",
+   "end": "2026-08-31T14:00:30Z",
+   "quotes_body_sha256": "2177bf45b2b0ec0fe03c2486e94600ec79a201732eb2782ebdf0644b98853e04",
+   "quotes_returned": 1000,
+   "start": "2026-08-31T14:00:00Z",
+   "trades_body_sha256": "7b57b9282184c91eac8fa6b546154b56ea10e21fbd1ca31136cea9d0d050f437",
+   "trades_returned": 796
+  },
+  {
+   "date": "2026-09-01",
+   "end": "2026-09-01T14:00:30Z",
+   "quotes_body_sha256": "46a61477a63b3ca5a2502149fb7b54945686bdee3a2752f8463037ec0bf279ca",
+   "quotes_returned": 1000,
+   "start": "2026-09-01T14:00:00Z",
+   "trades_body_sha256": "6b5132f72c3ca49b5c3f39036b0bc87e8312fc93fa78ba044c7f35e09bc1c071",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-09-02",
+   "end": "2026-09-02T14:00:30Z",
+   "quotes_body_sha256": "6f86bde19288f2db228598e5eeb0f7e929919bec3bf53db94a907fa33dea0acb",
+   "quotes_returned": 1000,
+   "start": "2026-09-02T14:00:00Z",
+   "trades_body_sha256": "ca55530054eeb66c18ee469e801d5758f1927ab9c6bf74ddc31a567be93726b9",
+   "trades_returned": 784
+  },
+  {
+   "date": "2026-09-03",
+   "end": "2026-09-03T14:00:30Z",
+   "quotes_body_sha256": "819d6dec5f05287889130810d97194214124e6a7fceafb8022a4f332cc1725d9",
+   "quotes_returned": 1000,
+   "start": "2026-09-03T14:00:00Z",
+   "trades_body_sha256": "e3b5db5a99301c09ab1a6510c27f138a03c0d2f14271140afb4e130f6ee29be1",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-09-04",
+   "end": "2026-09-04T14:00:30Z",
+   "quotes_body_sha256": "6318864568ae9eacf34a2d7c183ecb13ae0b055554d5eecc92ae18f7664e6ea0",
+   "quotes_returned": 1000,
+   "start": "2026-09-04T14:00:00Z",
+   "trades_body_sha256": "6d65079db8cd867b95febe532499084e00c3dd97f1731b864a6ef856932cb27e",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-09-08",
+   "end": "2026-09-08T14:00:30Z",
+   "quotes_body_sha256": "e425e8fda0e7d3c42aa17f25aaf0c03dc634346c4dcaf13ef8885ecd28639964",
+   "quotes_returned": 1000,
+   "start": "2026-09-08T14:00:00Z",
+   "trades_body_sha256": "b2cbcc33b73b3d4948937e3eaec2f4e5ca338d7a4ef4f4e5ffdf6a57850f0d7e",
+   "trades_returned": 869
+  },
+  {
+   "date": "2026-09-09",
+   "end": "2026-09-09T14:00:30Z",
+   "quotes_body_sha256": "7fd8469442055d16e576264173a4c82fe28ca453fb106221a80b63fce55cc47f",
+   "quotes_returned": 1000,
+   "start": "2026-09-09T14:00:00Z",
+   "trades_body_sha256": "f6460c587f58b6630a453aa79435a35ec9678bda3b4ecffaa6acbdc1834dc364",
+   "trades_returned": 667
+  },
+  {
+   "date": "2026-09-10",
+   "end": "2026-09-10T14:00:30Z",
+   "quotes_body_sha256": "691f4790424288f4f231a54e1f91a56d44921b58a61dec581adecd447e205123",
+   "quotes_returned": 1000,
+   "start": "2026-09-10T14:00:00Z",
+   "trades_body_sha256": "dce63ddfa356481ca502fae56c8eccd29335001e692899be53954922c1604f71",
+   "trades_returned": 1000
+  },
+  {
+   "date": "2026-09-11",
+   "end": "2026-09-11T14:00:30Z",
+   "quotes_body_sha256": "6bba684c8005c9f8524b5a707ed2bfd669ac59761d3938f67ad1b12ae830b166",
+   "quotes_returned": 1000,
+   "start": "2026-09-11T14:00:00Z",
+   "trades_body_sha256": "91447045c9cf2f840d605b0dbab080bf0550a5967d34ebc201cc55882d222ab0",
+   "trades_returned": 1000
+  }
+ ]
+}

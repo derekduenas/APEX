@@ -20,7 +20,7 @@ The parent measures request and receipt in wall-clock nanoseconds. Receipt is wh
 
 Provider RFC3339 timestamps are retained in full and parsed to nanoseconds. Future events and incomplete bars refuse before conversion into the existing floating-second replay schema. Downstream epoch comparisons still use that schema; this release does not claim nanosecond event ordering throughout the engine.
 
-Alpaca documents quote sizes in round lots. The caller must supply `--round-lot-shares`; conversion retains raw lot sizes and is labeled `OPERATOR_DECLARED_LOT_SIZE_NOT_INDEPENDENTLY_VERIFIED`. The synthetic control uses 100 shares per lot. This is not a blanket verification that every live instrument uses 100. SIP and IEX coverage are named separately. [Provider quote schema](https://docs.alpaca.markets/us/docs/real-time-stock-pricing-data), [latest-quote endpoint and feeds](https://docs.alpaca.markets/us/reference/stocklatestquotes-1).
+The original release used a caller-declared multiplier and a synthetic fixture with 100 shares per provider unit. That fixture exercises conversion arithmetic; it is not evidence of provider units. Current raw fields use neutral size names and conversion is labeled unverified. The recovered SPY/SIP historical REST study supports using multiplier 1 for that study, but quote/trade magnitude comparisons do not independently prove units or generalize to streaming. See [the retained dated study](evidence/quote-integrity-001/upstream/quote-size-units.json) and [review reconciliation](QUOTE_REVIEW_002.md). Candidate sizing retains the conservative raw-size ceiling.
 
 ## Request and failure contracts
 

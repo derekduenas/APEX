@@ -4,7 +4,7 @@ from decimal import Decimal
 import numpy as np
 
 from .core import Config, fee, finite, money
-from .data import visible, event_ns, epoch_ns
+from .data import visible, event_ns, epoch_ns, duration_ns
 
 
 def quote_at(observations, now, config: Config):
@@ -14,7 +14,7 @@ def quote_at(observations, now, config: Config):
     quote = quotes[-1]
     if any(c.get("event_ns", epoch_ns(c["event_epoch"])) >= event_ns(quote) for c in conflicts):
         return None, "LATEST_QUOTE_CONFLICT"
-    if epoch_ns(now) - event_ns(quote) > epoch_ns(config.max_quote_age):
+    if epoch_ns(now) - event_ns(quote) > duration_ns(config.max_quote_age):
         return None, "QUOTE_STALE"
     return quote, None
 

@@ -1,0 +1,10 @@
+{
+  "suite": "511 passed in 673.26s",
+  "exit_code": 0,
+  "focused": "40 passed in 1.05s",
+  "source_test_hashes_unchanged": true,
+  "actual_demo": "runs/quote-review-002-demo",
+  "actual_verify": "VALID",
+  "recovered_market_document_reader": "183 accepted; 181 usable, 1 conflict, 13 stale",
+  "fresh_fetcher_commissioning": false
+}

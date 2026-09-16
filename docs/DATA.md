@@ -21,3 +21,5 @@ Output directories are exclusive. Failures after claiming a directory leave `FAI
 ## Historical quote repair
 
 `QUOTE_LATENCY_ASSUMPTION_V1` means an exact declared event + 1 second, checked with integer `event_ns` and `available_ns`; it is not a measured receipt. The reader uses integer nanoseconds for visibility and event grouping. Incomplete collections are refused, including through merges. Decision snapshots are research-only evidence and cannot enter the execution replay or paper account. Quote-size conversion remains operator-declared and unverified; see [QUOTE_INTEGRITY_001.md](QUOTE_INTEGRITY_001.md).
+
+Fractional seconds-only availability is conservatively bounded using the next representable float and rounded upward to nanoseconds; cutoffs round downward. Integer nanosecond fields take precedence. This fallback can delay visibility and cannot recover lost event-time precision. See [review reconciliation](QUOTE_REVIEW_002.md).

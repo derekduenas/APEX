@@ -39,7 +39,7 @@ def admissibility(document: dict, observations: list) -> dict:
                 "REFUSED": set(), "SYNTHETIC_CONTROL": {"SYNTHETIC_CONTROL"},
                 "OFFLINE_RESEARCH": {"OFFLINE_RESEARCH"},
                 "SHADOW_OBSERVATION": {"OFFLINE_RESEARCH", "SHADOW_OBSERVATION"},
-            }[ceiling] for m in MODES[1:]},
+            }.get(ceiling, set()) for m in MODES[1:]},
             "note": "A ceiling states what the data cannot disqualify. It grants no execution authority."}
 
 

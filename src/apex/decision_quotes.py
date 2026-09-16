@@ -17,11 +17,13 @@ from pathlib import Path
 
 from .capture import ENDPOINTS, http_transport
 from .core import Config, Refused, canonical, code_manifest
-from .data import timestamp_ns, epoch_ns, QUOTE_LATENCY_SECONDS, from_alpaca_quotes, normalize, regular
+from .data import timestamp_ns, epoch_ns, QUOTE_LATENCY_NS, QUOTE_LATENCY_SECONDS, from_alpaca_quotes, normalize, regular
 from .research import ResearchPlan, decision_instants
 
 ENDPOINTS = {**ENDPOINTS, "quotes": "/v2/stocks/quotes"}
-# Enough to capture a final event-time group whole. The largest group measured on this provider's data was 3.
+# Bounded request budget, not a claim that groups cannot exceed 50. Upstream's
+# quote-window-selection.json reports a sampled maximum of 5. A page-filling
+# final group is quarantined regardless of that measurement; see QUOTE_REVIEW_002.md.
 FINAL_GROUP_LIMIT = 50
 
 
@@ -67,7 +69,7 @@ def _fetch_decision_quotes(out: Path, *, plan: ResearchPlan, config: Config, fee
             stamps = [timestamp_ns(r.get("t")) for r in raw]
             if stamps != sorted(stamps, reverse=True):
                 raise Refused("PROVIDER_QUOTE_ORDER_INVALID")
-            if any(t > epoch_ns(now) - 1_000_000_000 for t in stamps):
+            if any(t > epoch_ns(now) - QUOTE_LATENCY_NS for t in stamps):
                 raise Refused("PROVIDER_RETURNED_QUOTE_NOT_YET_AVAILABLE_AT_DECISION")
             if any(t < epoch_ns(now - config.max_quote_age) for t in stamps):
                 raise Refused("PROVIDER_RETURNED_QUOTE_OUTSIDE_WINDOW")
