@@ -52,6 +52,14 @@ jobs:
         run: |
           apex director-demo --world catchup --out runs/ci-director
           apex verify-director --run runs/ci-director
+      - name: Persistent paper account and loss control
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          apex paper-demo --out runs/ci-paper-positive
+          apex verify-paper --root runs/ci-paper-positive
+          apex paper-demo --world adverse --out runs/ci-paper-adverse
+          apex verify-paper --root runs/ci-paper-adverse
+          apex paper-report --root runs/ci-paper-positive --format text
       - name: Upload evidence, including failures
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -69,4 +77,6 @@ jobs:
             runs/ci-strategy-null
             runs/ci-strategy-reversal
             runs/ci-director
+            runs/ci-paper-positive
+            runs/ci-paper-adverse
           if-no-files-found: warn

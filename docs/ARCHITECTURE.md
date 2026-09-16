@@ -1,42 +1,129 @@
-# Destination and delivery sequence
+# Destination and current architecture
 
-APEX's ambitious target is a research organism that can generate hypotheses, model alternative futures, choose executable expressions, observe outcomes, and improve under controlled comparison. Novelty and profitability remain questions to test.
+APEX's target is a system that can generate hypotheses, model alternative futures,
+choose executable expressions, observe outcomes and improve through controlled
+comparison. v0.7 connects research and durable simulated paper accounting, but
+the full AI-directed goal is not complete and the new runtime is not continuously
+running. Novelty and profitable edge remain questions to test.
 
-The first implementation prioritizes one comprehensible flow. It proves wiring and accounting while leaving the unproven intelligence visible.
+## Implemented boundaries
 
-| Capability | Current implementation | Next evidence needed |
+| Component | Actual reader and output | Authority and remaining limit |
 |---|---|---|
-| Historical market ingestion | Massive CSV import exercised | Full requested-range coverage and revision/latency accounting |
-| Live market capture | v0.2 bounded REST capture built; synthetic acceptance passed; real access blocked | Successful provider capture during market hours, quote-unit verification, then streaming |
-| DigitalOcean shadow runtime | v0.3 Linux tick, process lock/recovery, systemd credentials, daily report and deployment package | Actual droplet installation, real data capture and scheduling/reboot evidence |
-| Premarket context | Causal gap/range/volume/source-age reader integrated into strategy setup eligibility | News/filings integration and an actual LLM brief remain absent |
-| TradingView chart vision | Not connected or consumed | Verified tool/runtime route and a blinded contribution experiment |
-| Market-state features | Minimal subset implemented | Independent checks for each added feature and intended reader |
-| Direction forecast | Shrunk mean and zero drift; six-feature ridge in offline chronological tournament | Real-market holdout evidence, costs, calibration and robust uncertainty |
-| GARCH and conditional paths | Exercised on synthetic and returned historical bars | Holdout diagnostics and model comparison, including bad regimes |
-| Regime and strategy laboratory | Descriptive regime changes analogue matching and setup eligibility; shared-path strategy and stress tournament implemented | Fresh independent market validation, richer causal inputs, and calibrated admission |
-| Cross-instrument expression | Funded long stock versus WAIT only | Stocks/ETFs universe, options quotes, permissions and lifecycle-aware risk |
-| Sizing | Fixed purchase-cost ceiling | Account constraints and uncertainty-aware allocation; Kelly remains absent |
-| Trade lifecycle | Offline quote-based experimental fills | Measured latency, liquidity assumptions, restart recovery and paper adapter |
-| Feedback | Matured-label training, frozen holdout, per-strategy counterfactual outcomes, coverage alarm and fixed-family session diagnostics | Independent repeated experiments and controlled promotion, not self-approval |
-| Operator dashboard | Deferred | Read the actual ledger and health artifacts, not parallel summaries |
+| Market input | Massive historical import and bounded read-only Alpaca capture normalize `APEX_DATA_V1` observations | Historical availability assumptions remain distinct from measured receipts; recent SIP denied and historical ticks not entitled in the latest checks |
+| Market state | Completed as-of bars, returns, volume, close-weighted VWAP proxy, factual setup and regime readers | No consumed news/filing feed, population model or chart-vision reader |
+| Forecast | Shrunk empirical mean and zero drift; GARCH conditional variance and named EWMA fallback | Uncalibrated numerical hypotheses; same-model path counts do not establish market probabilities |
+| Research | Chronological ridge tournament, historical analogues, strategy/stress laboratory and peer experiment | Frozen development/holdout evaluation; no automatic paper promotion |
+| Research director | Strict proposal → laboratory → verification → peer experiment → verification → report | One reviewed study or defer; no broker orders, policy rewriting or capital authorization |
+| Subscription planner | Bounded Codex CLI structured proposal with saved ChatGPT authentication | Auth available; required isolation unverified; no runtime inference completed; no API-billing fallback |
+| Path outlook | Forecast-bound fitted, zero-direction and adverse/high-volatility sensitivity worlds | Price/excursion quantiles and illustrative economics only; no inferred world probabilities, admission changes or general predictor |
+| Paper controller | File-fed ticks connect the fixed shrunk-mean candidate to pending orders and due exit service | Local simulated funded-long account; no LLM paper-policy selection or broker connection |
+| Paper book | Transactional SQLite orders, quote evidence, fills, positions, fees, cash and P&L | Independent account arithmetic reconstruction; assumed latency/slippage, no queue or market-impact model |
+| Host packaging | Separate shadow and paper systemd services, process bounds, persistent state and status readers | Paper feed publisher and remote deployment uncommissioned; latest SSH attempt was `Network unreachable` |
+| Operator reporting | JSON/text account reports, stale heartbeat, retained decisions and input failures | No complete interactive dashboard or external host-health monitor |
 
-## Capture and replay agreement: implementation landed in v0.2
+## Research evidence and paper policy are separate
 
-The read-only Alpaca adapter now bounds request count, response bytes and request wall time, preserves provider responses and quote-unit assumptions, and feeds the actual shadow readers. SIP and IEX are separately labeled; IEX is not presented as national NBBO. Standalone credentials are required for the HTTP route, independently of interactive connector access. See `CAPTURE_002.md` for the successful synthetic flight and actual external-access failures. The same frozen input contract feeds replay and the future paper service. A live connectivity indicator does not establish coverage or consumption.
+The laboratory compares directional and strategy hypotheses using causal samples,
+shared paths, matured labels and frozen holdouts. The director runs an allowed
+study and derives a descriptive next research action from retained evidence. Its
+verifier reconstructs child research artifacts and the final report. An accepted
+proposal is not a deployment instruction.
 
-Acceptance: capture one bounded session segment, show each accepted/rejected input, exercise forecasts and candidate creation, and compare the normalized replay's decisions. If quotes are unavailable, the actual refusal must remain visible. This release does not require an edge claim or an order merely to demonstrate integration.
+The completed AAPL/SPY/XLK peer study had 20 matched holdout forecasts across five
+sessions and did not improve economics over its matched own-stock model. That
+result does not select the paper policy. The controller deliberately records
+`NO_LLM_POLICY_SELECTION_CONSUMED_BY_THIS_FIXED_NUMERICAL_EXPERIMENT` and uses the
+existing shrunk empirical mean candidate path.
 
-## Research commissioning
+Three proposed mechanisms—pressure absorption/decay, source-linked earnings
+reconciliation and closing-auction liquidity response—remain
+[design-only](EDGE_RESEARCH_002.md). Current minute OHLCV cannot supply their
+missing tick, release-receipt or auction evidence. The path outlook exposes
+declared sensitivities; it does not implement or validate these proposed edges.
+The [mechanism forecast design](MECHANISM_FORECAST_001.md) develops the operator's
+combination-lock idea into a proposed causal branch search and transient/persistent
+impact comparison. This is also a design-only next direction.
 
-Freeze a data universe, decision horizon, costs, hypothesis count and evaluation dates before comparing candidates. Separate training, calibration and unseen evaluation. Purge training labels that overlap later partitions and record every attempted hypothesis. Keep zero-drift and WAIT baselines. Report uncertainty, costs, drawdowns, turnover and unresolved positions; a single favorable historical segment establishes no edge.
+## Durable simulated execution
 
-The AI desk can propose setups and research changes, but proposals enter this protocol as challengers. It cannot rewrite outcomes or promote its own probability labels. Conformal intervals are a research candidate, not an automatic certificate of conditional market accuracy.
+Each paper tick acquires a single controller lock, binds immutable policy and
+session contracts, persists input evidence, and opens the verified account.
+Expiration and due exit service precede new model work. The entry evidence in
+the primary SQLite database carries the scheduled exit obligation; external
+obligation JSON files are redundant copies. A missing copy cannot erase the
+database obligation. Failed or unfilled exits retain exposure for later service.
 
-## Live paper commissioning
+New orders require a strictly later eligible quote. Event and receipt timestamps
+must follow the decision; minimum simulated latency, freshness, displayed size,
+cash, notional limits, fees, slippage and the entry price limit apply. Entry expiry
+is bounded by both the entry window and exit due time and is serviced before quote
+processing. The account makes full funded purchases and full exits; it supplies
+no margin, shorting, partial fill or queue simulation.
 
-Add a persistent single-writer service with restart recovery, a real exchange calendar, broker paper-account verification, idempotent orders, reconciled positions, cost terms, quote provenance, stale-data behavior and an operator stop. Due exits must remain serviced during slow inference or a hung external provider; the current synchronous offline loop proves event ordering only.
+The primary book commits event and account state together with SQLite WAL and
+FULL synchronous transactions. Reopening reconstructs history and checks the
+unchanged account contract. The independent reader reconstructs Decimal accounting
+and event completeness using retained quote evidence. Shared validators establish
+timing/provenance consistency; they do not authenticate market data. Runtime
+decision-file hashes do not substitute for independent forecast reconstruction.
 
-DigitalOcean, Robinhood and TradingView service access were not verified in this build session. No prior deployment was modified. The [Linux package](DIGITALOCEAN.md) deploys only the shadow observer, not a paper broker daemon.
+The live service uses system time and requires measured receipt provenance.
+Recorded replay advances an explicit chronological clock; synthetic replay stays
+explicitly synthetic. Quotes are never inferred from bars. Missing or stale marks
+make affected unrealized results and equity unavailable, while cash, realized P&L
+and position obligations persist.
 
-The eventual dashboard should expose freshness, stage execution, model choice/fallback, distributions, candidate rejection reasons, position obligations and independently reconstructed P&L directly from these artifacts.
+The retained positive, adverse and no-quote controls produced +$3.61, −$2.74 and
+$0.00 realized simulated net P&L. **All are synthetic controls, not market results.**
+See [v0.7 runtime details](PAPER_RUNTIME_001.md) and the
+[release acceptance record](evidence/paper-runtime-001/acceptance.json) for the
+completed gates and exact test count.
+
+## Service and planner commissioning
+
+`ops/install_paper.sh` installs a clean exact-commit release separately from the
+shadow observer. A dedicated `apex-paper` service consumes atomically published
+files and stores its account under `/var/lib/apex-paper`. It has no data-provider
+or broker network path. A separate publisher must supply authorized measured
+quotes, completed bars and an explicitly sourced session calendar. That publisher
+has not been commissioned.
+
+The timer schedules five seconds after each invocation ends, with a 45-second
+whole-service bound. Exit ordering within a tick does not guarantee uninterrupted
+execution while a prior tick is blocked. The installer leaves scheduling inactive
+unless `--activate` completes a current measured-quote commissioning tick. Host
+restart tests, retained-state recovery, live quote-unit verification, backup and
+an independent stale-service monitor remain deployment evidence to obtain.
+
+The subscription planner uses the documented saved-login
+[Codex authentication](https://learn.chatgpt.com/docs/auth) and
+[noninteractive CLI](https://learn.chatgpt.com/docs/non-interactive-mode) route.
+It checks ChatGPT auth, restricts tools and permissions, requires a successful
+host isolation probe, and bounds request/output/process work before accepting a
+proposal. The current CLI status confirms ChatGPT authentication and model catalog
+access only. Isolation probes timed out, so inference never started. The
+[sanitized evidence](evidence/paper-runtime-001/brain-access.json) makes that gap
+explicit. `brain-status` does not run probes or inference.
+
+Connecting future AI research choices to paper experiments still needs an
+implemented consumer of reviewed policy decisions, causal evidence and controlled
+comparison. An authenticated subscription alone does not create that integration.
+
+## Next evidence needed
+
+1. Restore authorized market-data access and commission a measured feed publisher
+   on the intended host; prove normalized online decisions agree with retained
+   as-of replay and preserve failures and stale-data behavior.
+2. Install and commission the persistent paper service on that host, including
+   current quotes, restart recovery, retained obligations and independently
+   reconstructed account reports. A service label alone proves none of these.
+3. Commission supported Codex isolation and a bounded actual inference, then
+   connect reviewed research choices to paper experiments without self-promotion.
+4. Acquire each new hypothesis's required observations, freeze the search budget
+   and evaluation partitions before viewing outcomes, and compare against strong
+   price-only and WAIT baselines with costs and uncertainty.
+
+TradingView vision, Kelly sizing, options lifecycle handling, learned fusion,
+multi-asset allocation and unrestricted autonomous strategy development remain
+unimplemented. They require their own contracts and comparative evidence.

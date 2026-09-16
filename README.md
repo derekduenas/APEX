@@ -2,7 +2,7 @@
 
 An integrated market-research system that asks: **what could happen next, what expression survives costs, and did the forecast actually help?**
 
-Version 0.6 adds a bounded AI research director and a market–sector–stock catch-up hypothesis. The director runs the existing regime-aware strategy laboratory, then tests whether peer information improves a matched stock-only forecast using the same causal samples and conditional paths. The retained v0.5 SPY study now verifies completely: all 319 tournaments chose WAIT, with no profitable-edge finding. DigitalOcean remains the deployment target. This release has not been commissioned on the host and does not establish profitable edge or broker authority.
+Version 0.7 adds a persistent simulated paper account, later-quote orders, restart recovery, net P&L reporting and a three-world path outlook. The paper policy is the existing fixed shrunk-mean experiment; it does not consume runtime LLM policy selection. The bounded AI research director remains a separate research path. The full AI-directed system is **not complete or continuously running**: the market-feed publisher and remote paper service are uncommissioned, and Codex isolation remains unverified despite confirmed ChatGPT authentication. No runtime AI call or profitable market edge is claimed. See [the v0.7 implementation and evidence](docs/PAPER_RUNTIME_001.md).
 
 ## Run it
 
@@ -30,11 +30,25 @@ The demo is an explicitly artificial positive-drift market designed to exercise 
 | Forecast | Shrunk empirical mean hypothesis and zero-drift comparison; GARCH(1,1) Student-t variance, named EWMA fallback |
 | Simulated futures | 1,000 saved paths over 15 minutes, conditional variance recursion, recorded random seed |
 | Candidate | Fully funded long stock versus WAIT, observed spread, displayed size, assumed commissions, fixed purchase-cost ceiling |
-| Experimental execution | Ask entry, bid exit, exit serviced before new entries, missing exits retain exposure |
+| Experimental execution | Offline replay plus a separate persistent paper controller; pending paper orders require a later eligible quote |
 | Feedback | Forecasts joined to completed outcomes; Brier scores and interval coverage recorded; no automatic promotion |
-| Accounting | Separate reconstruction from quote evidence, quantity and declared fees; hash chain and artifact verification |
+| Accounting | Independent quote/fee arithmetic; persistent SQLite paper orders, positions, realized and unrealized net P&L |
 
-These are **offline experimental fills**, not orders sent to a paper broker. The model is uncalibrated and the execution assumptions omit latency, queue priority and market impact. The Linux deployment package operates only the read-only shadow capture; it has no broker client or order route.
+All fills are experimental simulations; no broker receives orders. The paper account models a minimum latency and configured adverse slippage, while queue priority and market impact remain unmodeled. The model is uncalibrated. Separate Linux packages support read-only shadow capture and a file-fed simulated paper service; neither has a broker order route.
+
+## Persistent paper account
+
+```sh
+python -m apex.cli paper-demo --world positive --out runs/paper-positive-unique
+python -m apex.cli verify-paper --root runs/paper-positive-unique
+python -m apex.cli paper-report --root runs/paper-positive-unique --format text
+python -m apex.cli paper-demo --world adverse --out runs/paper-adverse-unique
+python -m apex.cli paper-demo --world no-quotes --out runs/paper-no-quotes-unique
+```
+
+The retained controls produced +$3.61, −$2.74 and $0.00 realized simulated net P&L respectively. **All three are synthetic, not market results.** The no-quote control creates no orders or fills. Orders, full-position fills, costs and cash commit transactionally; due exits recover from the primary database even if a redundant obligation file is missing. Stale marks remain unavailable. [Paper runtime documentation](docs/PAPER_RUNTIME_001.md) explains recorded replay, verification scope and the separate host installer.
+
+The new `path_outlook` shows fitted-direction, zero-direction and adverse/high-volatility scenarios using each forecast's retained paths. It reports conditional price and excursion quantiles and illustrative economics. These are uncalibrated diagnostics, with no inferred world probabilities or effect on the fixed paper admission policy.
 
 ## Historical data
 
@@ -80,7 +94,7 @@ apex verify-capture --capture runs/sip-commissioning-unique-id
 
 The launcher only exports the existing values to its child capture process. It has no broker endpoint, order command or streaming loop. The output directory must be new.
 
-**Current external status:** in the September 15 build session the Alpaca clock worked, but three stock-data connector calls returned internal errors. Standalone keys were absent in this workspace. The operator reports a healthy existing SIP collector; its current host and connection to this new APEX runtime have not been independently verified. See [capture commissioning](docs/CAPTURE_002.md).
+**Current external status:** the September 16 check reached the Alpaca clock and calendar, but the latest SIP quote request exposed a subscription denial. Massive historical stock trade and quote requests returned `NOT_ENTITLED`. The reported existing SIP collector has not been connected to this paper runtime, and the remote SSH attempt returned `Network unreachable`. See [retained data-access evidence](docs/evidence/paper-runtime-001/data-access.json) and [capture commissioning](docs/CAPTURE_002.md).
 
 ## DigitalOcean runtime
 
@@ -92,7 +106,7 @@ Follow [DigitalOcean deployment and commissioning](docs/DIGITALOCEAN.md). The da
 sudo -u apex-shadow -- /opt/apex-shadow/releases/EXACT_SHA/venv/bin/apex shadow-report --root /var/lib/apex-shadow
 ```
 
-It shows model activity, candidate counts/reasons and the latest result. Orders/fills remain zero and P&L unavailable because the service observes candidates without executing them. This package is tested locally; a running droplet service is not claimed.
+It shows model activity, candidate counts/reasons and the latest result. The shadow service keeps orders/fills at zero and P&L unavailable because it only observes candidates. The new [paper installer](ops/install_paper.sh) uses a separate `apex-paper` account and persistent account directory. It needs a commissioned publisher of measured input and current quotes; `--activate` requires a successful commissioning tick. Neither a running paper service nor a commissioned publisher is claimed. See [paper deployment](docs/PAPER_RUNTIME_001.md#separate-linux-paper-service).
 
 See also [data contract](docs/DATA.md), [initial commissioning evidence](docs/COMMISSIONING.md), [reuse review](docs/REUSE.md), and [architecture and next milestones](docs/ARCHITECTURE.md).
 
@@ -116,10 +130,10 @@ The command makes no network requests or orders. See [the research contract and 
 
 1. Commission the new capture adapter against healthy stock-data access during market hours; confirm completed bars and measured quote receipts, then replay them and prove equivalent decisions.
 2. Extend the implemented factual premarket/setup reader with timestamped catalysts and cross-sectional context, and measure incremental value. LLM research output remains separate from capital authority.
-3. Run the frozen tournament on multi-session market data, then establish calibration and realistic execution sensitivity before commissioning live paper execution.
-4. Add a restart-safe paper service and operator dashboard; then broader expression comparison and controlled challenger learning.
+3. Test new frozen hypotheses on their required market data. The completed peer study did not improve held-out economic results; fresh calibration and cost evidence are still needed.
+4. Commission the implemented persistent paper service and subscription planner on the target host, connect reviewed AI research choices to paper experiments, and build an operator dashboard from their actual artifacts.
 
-TradingView vision, Kelly sizing, options/spreads, learned fusion, multi-asset portfolio allocation and autonomous research agents are not implemented in this release. They are additions to earn through comparative evidence, not boxes to mark green.
+TradingView vision, Kelly sizing, options/spreads, learned fusion, multi-asset portfolio allocation and unrestricted autonomous strategy development are not implemented. The bounded director can run one reviewed study or defer; it cannot promote itself into capital authority.
 
 ## Regime-aware strategy laboratory
 
@@ -147,6 +161,11 @@ apex verify-director --run runs/director-catchup
 The demo has a fixed scripted proposal and synthetic data. For captured inputs,
 `apex director` accepts a retained external AI/human `--proposal` or an explicit
 `--model` using OpenAI Responses with separately configured `OPENAI_API_KEY`.
+The separate `--codex-model` route uses supported saved ChatGPT sign-in through
+Codex CLI, with a required isolation check. `apex brain-status` confirmed ChatGPT
+authentication and CLI 0.154.0, but this host's sandbox probes timed out. No runtime
+AI call completed and there is no API-billing fallback. See the
+[subscription planner status and official documentation](docs/PAPER_RUNTIME_001.md#subscription-powered-research-planner).
 Missing runtime AI configuration refuses; it does not silently simulate an AI
 call. The director runs one reviewed study or defers. It cannot change cost/risk
 policy, deploy models, create broker orders or grant capital authority.
@@ -159,9 +178,16 @@ with assumed bar-completion availability and no contemporaneous quote evidence.
 
 The completed AAPL/SPY/XLK study did not support the peer hypothesis: 20 matched
 held-out forecasts across five sessions showed slightly worse CRPS and no
-economic improvement versus the matched own-stock model. All 392 tests passed;
-the recorded-data director independently reconstructed as VALID. See
+economic improvement versus the matched own-stock model. The v0.6 acceptance
+record contained 392 passing tests; the recorded-data director independently
+reconstructed as VALID. Current release gates are recorded separately in
+[v0.7 acceptance evidence](docs/evidence/paper-runtime-001/acceptance.json). See
 [the retained evidence](docs/evidence/peer-dislocation-001/verification-scope.md)
 and [the active-search development directive](docs/ACTIVE_HUNTING_DIRECTIVE.md).
 Three [additional edge research proposals](docs/EDGE_RESEARCH_002.md) describe the
 next experiments; they are design-only and require new observations and readers.
+The [mechanism forecast proposal](docs/MECHANISM_FORECAST_001.md) develops the
+operator's combination-lock idea into causal branch search and a
+transient-versus-persistent impact comparison. This also remains design-only;
+the present fixed family of scenarios is not an exhaustive search of market
+mechanisms or a validated universal predictor.

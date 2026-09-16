@@ -1,0 +1,13 @@
+{
+  "date": "2026-09-16",
+  "existing_services_modified": false,
+  "installation_attempted": false,
+  "live_paper_running_confirmed": false,
+  "method": "Read-only SSH uname -sr with BatchMode, strict existing host-key check and 5-second connect timeout",
+  "observed_error": "Network is unreachable",
+  "remote_command_executed": false,
+  "result": "NETWORK_UNREACHABLE",
+  "schema": "APEX_HOST_ACCESS_CHECK_V1",
+  "target": "apex@165.227.88.64",
+  "timer_activated": false
+}

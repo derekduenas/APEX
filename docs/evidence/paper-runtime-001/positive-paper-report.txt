@@ -1,0 +1,11 @@
+APEX paper account — all fills are simulated
+Mode: SYNTHETIC_PAPER
+Status: ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE
+As of epoch: 1789134600.0
+Cash: 10003.61
+Realized net P&L: 3.61
+Unrealized net P&L: 0.00
+Equity: 10003.61
+Orders: 2 | Fills: 2
+Open positions: 0 | Pending orders: 0
+Accounting verification: VALID

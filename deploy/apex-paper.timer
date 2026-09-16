@@ -1,0 +1,11 @@
+[Unit]
+Description=Recurring APEX simulated paper position servicing
+
+[Timer]
+OnBootSec=15s
+OnUnitInactiveSec=5s
+AccuracySec=1s
+Unit=apex-paper.service
+
+[Install]
+WantedBy=timers.target

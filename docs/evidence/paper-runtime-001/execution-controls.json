@@ -1,0 +1,58 @@
+{
+  "authority": "SIMULATED_PAPER_ONLY_NO_BROKER_OR_REAL_CAPITAL",
+  "controls": [
+    {
+      "case": "positive",
+      "cash": "10003.61",
+      "equity": "10003.61",
+      "fills": 2,
+      "mode": "SYNTHETIC_PAPER",
+      "orders": 2,
+      "realized_net": "3.61",
+      "scope": "Synthetic software execution control; not market returns",
+      "status": "ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    },
+    {
+      "case": "adverse",
+      "cash": "9997.26",
+      "equity": "9997.26",
+      "fills": 2,
+      "mode": "SYNTHETIC_PAPER",
+      "orders": 2,
+      "realized_net": "-2.74",
+      "scope": "Synthetic software execution control; not market returns",
+      "status": "ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    },
+    {
+      "case": "no-quotes",
+      "cash": "10000.00",
+      "equity": "10000.00",
+      "fills": 0,
+      "mode": "SYNTHETIC_PAPER",
+      "orders": 0,
+      "realized_net": "0.00",
+      "scope": "Synthetic software execution control; not market returns",
+      "status": "ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    },
+    {
+      "case": "source-blocked",
+      "cash": "10000.00",
+      "equity": "10000.00",
+      "fills": 0,
+      "mode": "LIVE_PAPER",
+      "orders": 0,
+      "realized_net": "0.00",
+      "scope": "Actual source-refusal service boundary only; no working live feed",
+      "status": "BLOCKED_NO_AUTH",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    }
+  ],
+  "schema": "APEX_PAPER_EXECUTION_CONTROLS_V1"
+}

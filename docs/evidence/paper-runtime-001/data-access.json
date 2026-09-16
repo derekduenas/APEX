@@ -1,0 +1,240 @@
+{
+  "schema": "APEX_DATA_ACCESS_EVIDENCE_V1",
+  "recorded_date_utc": "2026-09-16",
+  "scope": "Read-only entitlement and schema checks. No outcomes evaluated, no orders, no broker connection, no key material. Alpaca paper-feed smoke is separate from the blocked Massive historical experiment.",
+  "massive_historical_tick_smoke": {
+    "plugin_auth": true,
+    "window_utc": {
+      "start": "2026-09-15T14:00:00Z",
+      "end_exclusive": "2026-09-15T14:01:00Z"
+    },
+    "interval_selection": "Fixed previous-session interval selected before reading any observations; first ten ascending records only.",
+    "invocation_started_utc": "2026-09-16T01:13:24.782Z",
+    "invocation_finished_utc": "2026-09-16T01:13:43.012Z",
+    "timing_scope": "Tool invocation envelope only; not measured HTTP receipt or historical market-data availability.",
+    "checks": [
+      {
+        "tool": "mcp__codex_apps__massive_call_api",
+        "path": "/v3/trades/AAPL",
+        "params": {
+          "timestamp.gte": "1789480800000000000",
+          "timestamp.lt": "1789480860000000000",
+          "order": "asc",
+          "sort": "timestamp",
+          "limit": 10
+        },
+        "response_text": "Warning [NOT_ENTITLED]: This data isn't included in your current plan. Upgrade at https://massive.com/pricing",
+        "tool_is_error": false,
+        "observed_rows": 0,
+        "http_status": null,
+        "request_id": null,
+        "verdict": "NOT_ENTITLED"
+      },
+      {
+        "tool": "mcp__codex_apps__massive_call_api",
+        "path": "/v3/quotes/AAPL",
+        "params": {
+          "timestamp.gte": "1789480800000000000",
+          "timestamp.lt": "1789480860000000000",
+          "order": "asc",
+          "sort": "timestamp",
+          "limit": 10
+        },
+        "response_text": "Warning [NOT_ENTITLED]: This data isn't included in your current plan. Upgrade at https://massive.com/pricing",
+        "tool_is_error": false,
+        "observed_rows": 0,
+        "http_status": null,
+        "request_id": null,
+        "verdict": "NOT_ENTITLED"
+      }
+    ],
+    "outcome": "Both historical equity trade and NBBO quote requests refused by account entitlement. Tool isError=false must not be interpreted as a successful data response."
+  },
+  "endpoint_documentation": {
+    "retrieved_via": "mcp__codex_apps__massive_search_endpoints exact-path verbose lookup; official stock REST pages independently checked",
+    "stocks_trades": {
+      "path": "/v3/trades/{stockTicker}",
+      "url": "https://massive.com/docs/rest/stocks/trades-quotes/trades",
+      "fields": [
+        "price",
+        "size",
+        "decimal_size",
+        "exchange",
+        "conditions",
+        "correction",
+        "id",
+        "participant_timestamp",
+        "sip_timestamp",
+        "sequence_number",
+        "tape",
+        "trf_id",
+        "trf_timestamp"
+      ],
+      "timestamps": "Nanosecond Unix integer participant timestamp is exchange generation time; SIP timestamp is SIP receipt. Optional TRF timestamp is reporting-facility receipt. None measures receipt by APEX.",
+      "identity": "Trade id unique only for ticker/exchange/TRF combination. Sequence documented increasing and unique per ticker, non-contiguous, resetting each session/day. Cross-stream quote/trade total ordering is not established.",
+      "aggressor_sign": "No authoritative buyer/seller aggressor field documented. Any quote-rule trade sign is an explicitly inferred proxy, with unresolved and late-report cases retained."
+    },
+    "stocks_nbbo": {
+      "path": "/v3/quotes/{stockTicker}",
+      "url": "https://massive.com/docs/rest/stocks/trades-quotes/quotes",
+      "fields": [
+        "bid_price",
+        "ask_price",
+        "bid_size",
+        "ask_size",
+        "bid_exchange",
+        "ask_exchange",
+        "conditions",
+        "indicators",
+        "participant_timestamp",
+        "sip_timestamp",
+        "sequence_number",
+        "tape"
+      ],
+      "scope": "NBBO top of book only. Current docs describe sizes in shares; instrument/date/feed units still need fixture validation.",
+      "depth_limitation": "No order identifiers, queue positions, add/cancel event stream, deeper price levels, hidden liquidity or auction imbalance feed was found. Changes in displayed NBBO size cannot establish true order replenishment."
+    },
+    "options": {
+      "documented_paths": [
+        "/options/v3/quotes/{ticker}",
+        "/v3/quotes/{optionsTicker}",
+        "/v3/trades/{optionsTicker}",
+        "/v3/reference/options/contracts",
+        "/v3/reference/options/contracts/{options_ticker}"
+      ],
+      "point_in_time_reference": "Contracts list documents as_of date and expired flag; per-contract overview also supports as_of. Current catalog presence is not first-seen historical receipt.",
+      "market_data_entitlement": "NOT_TESTED; no options quote/trade request used as a fallback.",
+      "catalog_smoke": {
+        "tool": "mcp__codex_apps__massive_call_api",
+        "path": "/v3/reference/options/contracts",
+        "params": {
+          "underlying_ticker": "AAPL",
+          "as_of": "2026-09-15",
+          "expiration_date": "2026-09-18",
+          "contract_type": "call",
+          "sort": "strike_price",
+          "order": "asc",
+          "limit": 1
+        },
+        "selection": "One contract by fixed ascending strike, not selected from a price/outcome.",
+        "result": {
+          "ticker": "O:AAPL260918C00050000",
+          "underlying_ticker": "AAPL",
+          "contract_type": "call",
+          "exercise_style": "american",
+          "expiration_date": "2026-09-18",
+          "shares_per_contract": 100,
+          "strike_price": 50,
+          "primary_exchange": "BATO"
+        },
+        "result_rows": 1,
+        "next_page_present": true,
+        "next_page_followed": false,
+        "verdict": "CATALOG_REFERENCE_AVAILABLE_ONLY"
+      }
+    }
+  },
+  "alpaca_existing_paper_feed_smoke": {
+    "plugin_auth": true,
+    "checks": [
+      {
+        "tool": "mcp__codex_apps__alpaca_get_clock",
+        "request": {},
+        "invocation_started_utc": "2026-09-16T01:15:34.901Z",
+        "invocation_finished_utc": "2026-09-16T01:15:35.448Z",
+        "response": {
+          "content": [
+            {
+              "text": "{\"timestamp\":\"2026-09-15T21:15:35.400779-04:00\",\"is_open\":false,\"next_open\":\"2026-09-16T09:30:00-04:00\",\"next_close\":\"2026-09-16T16:00:00-04:00\"}",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "structuredContent": {
+            "result": "{\"timestamp\":\"2026-09-15T21:15:35.400779-04:00\",\"is_open\":false,\"next_open\":\"2026-09-16T09:30:00-04:00\",\"next_close\":\"2026-09-16T16:00:00-04:00\"}"
+          }
+        },
+        "interpretation": "SUCCESS_REFERENCE_CLOCK_OR_CALENDAR_ONLY"
+      },
+      {
+        "tool": "mcp__codex_apps__alpaca_get_calendar",
+        "request": {
+          "end_date": "2026-09-16",
+          "start_date": "2026-09-15"
+        },
+        "invocation_started_utc": "2026-09-16T01:15:34.901Z",
+        "invocation_finished_utc": "2026-09-16T01:15:35.552Z",
+        "response": {
+          "content": [
+            {
+              "text": "{\"request\":{\"start_date\":\"2026-09-15\",\"end_date\":\"2026-09-16\"},\"calendar\":[{\"date\":\"2026-09-15\",\"open\":\"2026-09-15T09:30:00\",\"close\":\"2026-09-15T16:00:00\"},{\"date\":\"2026-09-16\",\"open\":\"2026-09-16T09:30:00\",\"close\":\"2026-09-16T16:00:00\"}]}",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "structuredContent": {
+            "result": "{\"request\":{\"start_date\":\"2026-09-15\",\"end_date\":\"2026-09-16\"},\"calendar\":[{\"date\":\"2026-09-15\",\"open\":\"2026-09-15T09:30:00\",\"close\":\"2026-09-15T16:00:00\"},{\"date\":\"2026-09-16\",\"open\":\"2026-09-16T09:30:00\",\"close\":\"2026-09-16T16:00:00\"}]}"
+          }
+        },
+        "interpretation": "SUCCESS_REFERENCE_CLOCK_OR_CALENDAR_ONLY"
+      },
+      {
+        "tool": "mcp__codex_apps__alpaca_get_stock_latest_quote",
+        "request": {
+          "feed": "sip",
+          "symbol_or_symbols": "AAPL"
+        },
+        "invocation_started_utc": "2026-09-16T01:15:34.901Z",
+        "invocation_finished_utc": "2026-09-16T01:15:35.680Z",
+        "response": {
+          "content": [
+            {
+              "text": "get_stock_latest_quote: error internal_error",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "structuredContent": {
+            "error": {
+              "code": "internal_error",
+              "details": {
+                "original_error": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n",
+                "symbols": [
+                  "AAPL"
+                ]
+              },
+              "message": "Failed to fetch latest stock quote."
+            },
+            "error_code": "INVALID_ARGUMENT",
+            "tool": "get_stock_latest_quote"
+          }
+        },
+        "interpretation": "BLOCKED_RECENT_SIP_SUBSCRIPTION_NOT_GENERIC_TRANSPORT_FAILURE"
+      }
+    ],
+    "outcome": "Clock and calendar callable. Latest AAPL SIP quote returned generic internal_error with explicit original subscription restriction. No live quote was admitted.",
+    "fallback_used": false,
+    "not_a_massive_backtest_substitution": true,
+    "standalone_capture_readiness": "Not established by plugin clock/calendar access; persistent credentials and real capture/receipt path require separate commissioning."
+  },
+  "next_backtest_contract": {
+    "status": "PROPOSED_SCOPE_NOT_FROZEN_OR_EXECUTED",
+    "hypothesis": "Change in downside price response to inferred sell flow, followed by pressure decay; NBBO recovery proxy only.",
+    "first_gate": "Obtain authorized historical trades plus NBBO and validate one preselected complete regular-session interval before efficacy evaluation. Keep the original failed peer experiment separate.",
+    "required_evidence": [
+      "Full pagination and coverage manifest; raw provider rows and conditions/correction policy",
+      "Lossless nanosecond integers; exchange/SIP/TRF clocks separate from acquisition and prospective APEX receipt",
+      "No future quote used to sign a trade; mark unresolved ties, inside-spread signs and late reports unknown or exclude under a frozen rule",
+      "Fixed decision windows, training/development/holdout, search budget and primary five-minute horizon frozen before outcomes",
+      "Ask entry and bid exit after a declared latency assumption; actual measured latency reserved for prospective capture",
+      "Identical opportunities and own-price/reversal, inferred flow, spread and NBBO-size baselines; complete missing/unknown/no-signal denominator"
+    ],
+    "prohibitions": [
+      "No true replenishment or depth claim from NBBO",
+      "No treating SIP time as APEX receipt",
+      "No calibrated profit probability from scenario counts",
+      "No replacement with existing minute bars",
+      "No trading admission or paper profitability claim from endpoint availability"
+    ]
+  }
+}

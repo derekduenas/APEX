@@ -1,0 +1,171 @@
+{
+  "actual_cli_gates": [
+    {
+      "command": "python -m apex.cli demo --out runs/paper-v07-lifecycle-002",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m apex.cli verify --run runs/paper-v07-lifecycle-002",
+      "exit_code": 0,
+      "status": "VALID"
+    },
+    {
+      "command": "python -m apex.cli paper-demo --world positive --out runs/paper-v07-positive-002",
+      "exit_code": 0,
+      "independent_verify_paper_exit_code": 0,
+      "independent_verify_paper_status": "VALID"
+    },
+    {
+      "command": "python -m apex.cli paper-demo --world adverse --out runs/paper-v07-adverse-002",
+      "exit_code": 0,
+      "independent_verify_paper_exit_code": 0,
+      "independent_verify_paper_status": "VALID"
+    },
+    {
+      "command": "python -m apex.cli paper-demo --world no-quotes --out runs/paper-v07-no-quotes-002",
+      "exit_code": 0,
+      "independent_verify_paper_exit_code": 0,
+      "independent_verify_paper_status": "VALID"
+    },
+    {
+      "command": "python -m apex.cli paper-service-tick --root runs/paper-v07-source-blocked-002 --input data/paper-runtime-001/denied-input.json --session data/paper-runtime-001/session.json --settings data/paper-runtime-001/settings.json",
+      "exit_code": 3,
+      "expected_status": "BLOCKED_NO_AUTH",
+      "independent_verify_paper_exit_code": 0,
+      "scope": "One real-clock invocation with empty source-denial document; not a live feed or running daemon"
+    },
+    {
+      "command": "python -m apex.cli paper-report --root runs/paper-v07-positive-002 --format text",
+      "exit_code": 0
+    }
+  ],
+  "ai": {
+    "api_billing_fallback": false,
+    "chatgpt_cli_auth_available": true,
+    "cli_version": "0.154.0",
+    "isolation_verified": false,
+    "paper_policy_consumes_llm_choices": false,
+    "runtime_llm_call_completed": false
+  },
+  "date_utc": "2026-09-16",
+  "deployment": {
+    "continuous_live_paper_running": false,
+    "historical_ticks": "MASSIVE_NOT_ENTITLED",
+    "host_access": "NETWORK_UNREACHABLE",
+    "installer_shell_syntax": "PASSED",
+    "market_quotes": "ALPACA_RECENT_SIP_SUBSCRIPTION_DENIED",
+    "publisher_commissioned": false,
+    "remote_installer_run": false,
+    "service_activated": false
+  },
+  "evidence_files": {
+    "adverse-paper-book.json": "96bfcde114245cf9bb7677030c57cf603fb369ce00ecf5f95658ae947d7e3b38",
+    "adverse-paper-report.json": "55b284726b6ae05bedd99c9d816b733a2dbd64a776f5a701fea76a0335c9d10b",
+    "adverse-verification.json": "ec8f566f0e9ccc2c70c2dbeabd1a24cbdd055a5ce429f9c64199afb8c01b1cbd",
+    "brain-access.json": "dcb3304a5c33e35ff9aeefb0adf03ee1c5bd2cc14669fd131645ba9a6db4d5d5",
+    "data-access.json": "01d47392dd39680791453a41db664739e8a911e8c7564d15b796ee2277e5e4f9",
+    "execution-controls.json": "02523531b522cdb3b2b91d08efc588287de889f7ff6cda1cd920a0ac7591a3f0",
+    "final-tests.xml": "0f77d1d51f5c6df34e64336447138b5c1e6ad4a79e8a72503704857a8c2cb1cb",
+    "github-approved-sync.json": "0e2a30706a1a116844312bea267d35e9b03e8f85638dc435081fe5eeccfab9cb",
+    "host-access.json": "68b6c6cbeecbd4b18fdad97ce51b3698c03e77ba259e77a583a6a92e4502254c",
+    "lifecycle.json": "5e9bfcb75be0b5c7c4523baec97905b413c66892c3029ba601356b04b44491b0",
+    "no-quotes-paper-book.json": "79560242a0036bdbe74603092f58e1df7465418433a9532326f80562afedac50",
+    "no-quotes-paper-report.json": "dc8d9f1e1b9594ba8ca600757d72c59b113e6f6f45211dd240530919700ae1ca",
+    "no-quotes-verification.json": "77ea6b8ef25bbae55e28b50f982c3e37cddfcef87985e949363947faf652fde8",
+    "positive-paper-book.json": "2bbd2be4511a7b6d985948e3eb788e34c6e2a1f9d66e815480ac63b70e594e07",
+    "positive-paper-report.json": "32419bdd4a9f1202212f04fc6bd267379feabd12246eb2c50c99912fa3e8de14",
+    "positive-paper-report.txt": "9e4ca17b2902e127cf69f3fc8fefa34756700e89decc3599b1bfb71b92ff8166",
+    "positive-verification.json": "5d53c5115c729496ccc76e6cfc6c75f848b214c01dbaa6aea16ed4710b3ca497",
+    "source-blocked-paper-book.json": "3a098c55f54c32a9ec5412c33c827884241256e982713b77286cd7bdae2d2087",
+    "source-blocked-paper-report.json": "6e1ba6111be147abb078add78033e8e276453a542f472e3c46f9cb4e9228e398",
+    "source-blocked-verification.json": "0efe208369aeaccbc8232286ce54eb651ee1ef4aeeedc886066169672f94a751",
+    "synthetic-path-outlook.json": "0c5dced0fbafee832cce918f721db83313e6f4b1eefd203e0ea41f06da408ad4",
+    "tested-source-manifest.json": "1ae61b8940c90c6f443cb708244e67ce0f90fda1493680a026312bbbaa82f57f",
+    "verify-lifecycle.json": "5ca3a6115903e2558f67d2772e995baa7be698dffb04b6de240e09cf89b20cfb"
+  },
+  "execution_controls": [
+    {
+      "case": "positive",
+      "cash": "10003.61",
+      "equity": "10003.61",
+      "fills": 2,
+      "mode": "SYNTHETIC_PAPER",
+      "orders": 2,
+      "realized_net": "3.61",
+      "scope": "Synthetic software execution control; not market returns",
+      "status": "ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    },
+    {
+      "case": "adverse",
+      "cash": "9997.26",
+      "equity": "9997.26",
+      "fills": 2,
+      "mode": "SYNTHETIC_PAPER",
+      "orders": 2,
+      "realized_net": "-2.74",
+      "scope": "Synthetic software execution control; not market returns",
+      "status": "ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    },
+    {
+      "case": "no-quotes",
+      "cash": "10000.00",
+      "equity": "10000.00",
+      "fills": 0,
+      "mode": "SYNTHETIC_PAPER",
+      "orders": 0,
+      "realized_net": "0.00",
+      "scope": "Synthetic software execution control; not market returns",
+      "status": "ENTRY_WINDOW_CLOSED_EXIT_SERVICE_ACTIVE",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    },
+    {
+      "case": "source-blocked",
+      "cash": "10000.00",
+      "equity": "10000.00",
+      "fills": 0,
+      "mode": "LIVE_PAPER",
+      "orders": 0,
+      "realized_net": "0.00",
+      "scope": "Actual source-refusal service boundary only; no working live feed",
+      "status": "BLOCKED_NO_AUTH",
+      "unrealized_net": "0.00",
+      "verification": "VALID"
+    }
+  ],
+  "release_scope": "Persistent simulated paper account, fixed numerical controller, diagnostic conditional paths, bounded subscription research adapter and uncommissioned host package",
+  "research_scope": {
+    "adaptive_action_branch_search": "DESIGN_ONLY",
+    "new_absorption_news_auction_hypotheses": "DESIGN_ONLY_DATA_AND_READERS_REQUIRED",
+    "new_market_backtest_completed_in_this_release": false,
+    "path_outlook": "IMPLEMENTED_UNCALIBRATED_DIAGNOSTIC_ONLY",
+    "prior_peer_hypothesis_supported": false,
+    "synthetic_controls_are_market_returns": false
+  },
+  "review_repairs": [
+    "Primary-account exit obligation recovery despite missing or tampered redundant files",
+    "Live report recomputes marks against actual time and exposes stale heartbeat",
+    "Pending entry expiry bounded before original exit preparation; one-minute horizon at +60/+90 seconds cannot first fill"
+  ],
+  "schema": "APEX_PAPER_RUNTIME_ACCEPTANCE_V1",
+  "status": "LOCAL_ACCEPTANCE_PASSED_EXTERNAL_COMMISSIONING_BLOCKED",
+  "tests": {
+    "command": "PYTHONPATH=src python -m pytest -q --junitxml=apex-v07-final-tests.xml",
+    "current_source_and_tests_match": true,
+    "earlier_pass": "452 tests passed before final short-horizon repair; superseded by this final 454-test suite",
+    "errors": 0,
+    "failed": 0,
+    "junit_file": "final-tests.xml",
+    "junit_sha256": "0f77d1d51f5c6df34e64336447138b5c1e6ad4a79e8a72503704857a8c2cb1cb",
+    "passed": 454,
+    "seconds": 499.934,
+    "skipped": 0,
+    "source_manifest": "tested-source-manifest.json"
+  },
+  "verification_scope": "Independent Decimal accounting and retained event completeness; shared timing and provenance validators; internal consistency, not independently authenticated provider history or real broker fills",
+  "version": "0.7.0"
+}
