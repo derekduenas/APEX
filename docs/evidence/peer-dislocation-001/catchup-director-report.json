@@ -1,0 +1,325 @@
+{
+  "schema": "APEX_DIRECTOR_REPORT_V1",
+  "status": "RESEARCH_COMPLETE",
+  "decision": "EXPLORATORY_EVIDENCE_ONLY",
+  "reason": "REVIEW_HELDOUT_EXPLORATORY_RESULTS",
+  "input_class": "SYNTHETIC_RESEARCH_CONTROL",
+  "planner_provenance": "EXTERNAL_PROPOSAL_NOT_AUTHENTICATED",
+  "model": null,
+  "runtime_llm_call_completed": false,
+  "action": "RUN_PEER_DISLOCATION_STUDY",
+  "symbols": {
+    "target_symbol": "AAPL",
+    "market_symbol": "SPY",
+    "sector_symbol": "XLK"
+  },
+  "proposal_digest": "c032fca90f56221028efe482e9150ea10872ab07c1aecb99d5089c840712f3dc",
+  "research_attempts": 1,
+  "research_attempt_budget": 1,
+  "repeated_experiment_control": "NOT_STATISTICALLY_CONTROLLED_ACROSS_RUNS",
+  "evidence": {
+    "laboratory": {
+      "tournaments": 88,
+      "strategy_scenario_evaluations": 3960000,
+      "research_opportunities": 29,
+      "completed_counterfactual_episodes": 132,
+      "selected_strategy_counts": {
+        "HOLD_LONG": 29,
+        "WAIT": 59
+      },
+      "regimes": {
+        "RANGE|LOW_VOL|NORMAL_PARTICIPATION": 3,
+        "RANGE|NORMAL_VOL|NORMAL_PARTICIPATION": 26,
+        "UP_TREND|LOW_VOL|NORMAL_PARTICIPATION": 3,
+        "UP_TREND|NORMAL_VOL|NORMAL_PARTICIPATION": 56
+      }
+    },
+    "peer_experiment": {
+      "account_pnl": null,
+      "counts": {
+        "eligible_setups": 77,
+        "forecasts": 88,
+        "matured_outcomes": 132,
+        "paired_outcomes": 64,
+        "peer_available": 96,
+        "research_opportunities": 49,
+        "source_samples": 132,
+        "unmatured_samples": 0
+      },
+      "development": {
+        "eligible_setups": 25,
+        "matured_samples": 44,
+        "models": {
+          "OWN_STOCK_RIDGE": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 1.5065575684596177,
+            "all_matured_policy_mean_net_including_waits": 2.267266704403591,
+            "brier": 9.375000000000017e-08,
+            "crps": 0.0007965308995325395,
+            "hold_long_mean_net": 3.859846027225746,
+            "paired_long_decisions": 25,
+            "policy_mean_net": 3.1174917185549376,
+            "policy_mean_net_cost_3x": 2.0715166566319745,
+            "wait_mean_net": 0.0
+          },
+          "PEER_LAG_RIDGE": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 1.5065575684596177,
+            "all_matured_policy_mean_net_including_waits": 2.267266704403591,
+            "brier": 9.375000000000017e-08,
+            "crps": 0.0008037495342123344,
+            "hold_long_mean_net": 3.859846027225746,
+            "paired_long_decisions": 25,
+            "policy_mean_net": 3.1174917185549376,
+            "policy_mean_net_cost_3x": 2.0715166566319745,
+            "wait_mean_net": 0.0
+          },
+          "SHRUNK_MEAN": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 1.5065575684596177,
+            "all_matured_policy_mean_net_including_waits": 2.267266704403591,
+            "brier": 0.004887968749999998,
+            "crps": 0.0029903391817102352,
+            "hold_long_mean_net": 3.859846027225746,
+            "paired_long_decisions": 25,
+            "policy_mean_net": 3.1174917185549376,
+            "policy_mean_net_cost_3x": 2.0715166566319745,
+            "wait_mean_net": 0.0
+          },
+          "ZERO_DRIFT": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 0.0,
+            "all_matured_policy_mean_net_including_waits": 0.0,
+            "brier": 0.25,
+            "crps": 0.004591627489095828,
+            "hold_long_mean_net": 3.859846027225746,
+            "paired_long_decisions": 0,
+            "policy_mean_net": 0.0,
+            "policy_mean_net_cost_3x": 0.0,
+            "wait_mean_net": 0.0
+          }
+        },
+        "paired_brier_delta_vs_own_stock": 0.0,
+        "paired_brier_delta_vs_zero": -0.24999990625,
+        "paired_crps_delta_vs_own_stock": 7.218634679794839e-06,
+        "paired_crps_delta_vs_zero": -0.0037878779548834937,
+        "paired_samples": 32,
+        "peer_available": 32,
+        "sessions": [
+          "2026-09-04",
+          "2026-09-07",
+          "2026-09-08",
+          "2026-09-09"
+        ],
+        "source_samples": 44,
+        "unpaired_matured_samples": 12
+      },
+      "fills": 0,
+      "holdout": {
+        "eligible_setups": 24,
+        "matured_samples": 44,
+        "models": {
+          "OWN_STOCK_RIDGE": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 1.346974331994018,
+            "all_matured_policy_mean_net_including_waits": 2.009796993151215,
+            "brier": 6.250000000000012e-08,
+            "crps": 0.0006705081479123139,
+            "hold_long_mean_net": 3.565030348047703,
+            "paired_long_decisions": 24,
+            "policy_mean_net": 2.7634708655829208,
+            "policy_mean_net_cost_3x": 1.8520897064917747,
+            "wait_mean_net": 0.0
+          },
+          "PEER_LAG_RIDGE": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 1.346974331994018,
+            "all_matured_policy_mean_net_including_waits": 2.009796993151215,
+            "brier": 6.250000000000012e-08,
+            "crps": 0.000670721694167271,
+            "hold_long_mean_net": 3.565030348047703,
+            "paired_long_decisions": 24,
+            "policy_mean_net": 2.7634708655829208,
+            "policy_mean_net_cost_3x": 1.8520897064917747,
+            "wait_mean_net": 0.0
+          },
+          "SHRUNK_MEAN": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 1.346974331994018,
+            "all_matured_policy_mean_net_including_waits": 2.009796993151215,
+            "brier": 0.0063002187499999985,
+            "crps": 0.0028147644924625664,
+            "hold_long_mean_net": 3.565030348047703,
+            "paired_long_decisions": 24,
+            "policy_mean_net": 2.7634708655829208,
+            "policy_mean_net_cost_3x": 1.8520897064917747,
+            "wait_mean_net": 0.0
+          },
+          "ZERO_DRIFT": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 0.0,
+            "all_matured_policy_mean_net_including_waits": 0.0,
+            "brier": 0.25,
+            "crps": 0.004280250661646492,
+            "hold_long_mean_net": 3.565030348047703,
+            "paired_long_decisions": 0,
+            "policy_mean_net": 0.0,
+            "policy_mean_net_cost_3x": 0.0,
+            "wait_mean_net": 0.0
+          }
+        },
+        "paired_brier_delta_vs_own_stock": 0.0,
+        "paired_brier_delta_vs_zero": -0.2499999375,
+        "paired_crps_delta_vs_own_stock": 2.135462549571066e-07,
+        "paired_crps_delta_vs_zero": -0.0036095289674792207,
+        "paired_samples": 32,
+        "peer_available": 32,
+        "sessions": [
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15"
+        ],
+        "source_samples": 44,
+        "unpaired_matured_samples": 12
+      },
+      "hypothesis": {
+        "ablation": "OWN_STOCK_RIDGE uses the same admitted rows, cutoff, scaler policy and alpha; removes only lag_gap",
+        "baseline_models": [
+          "ZERO_DRIFT",
+          "SHRUNK_MEAN",
+          "OWN_STOCK_RIDGE"
+        ],
+        "candidate_policy": "Observed eligible peer setup AND available fitted model AND modeled after-cost mean greater than zero",
+        "challenger": "PEER_LAG_RIDGE",
+        "cost_stress_multiplier": 3.0,
+        "cost_stress_role": "Sensitivity only; 3x stress does not gate or claim robust admission",
+        "economic_comparison": "All policies share observed peer setup eligibility; isolates lag_gap forecast addition conditional on that setup, not the total contribution of peer information",
+        "entry_policy": "Fixed HOLD_LONG or WAIT at the first one-minute grid strictly after decision; fixed absolute target",
+        "feature": "six_own_stock_features_plus_lag_gap",
+        "feature_policy": "Frozen stock six plus lag_gap; training-only population standardization, unpenalized intercept",
+        "freeze_policy": "At holdout start, keep labels and targets at or before holdout minus declared embargo",
+        "hypothesis_id": "POSITIVE_PEER_SHOCK_DELAYED_REPRICING_V1",
+        "paths": "Source GARCH/EWMA innovations shared across models; linear full-path drift overlay",
+        "peer_shock_minutes": 5,
+        "peer_training_minutes": 120,
+        "promotion": "NONE",
+        "training_policy": "All valid peer states with exact matured complete target paths, including non-setups",
+        "tuning": "NONE"
+      },
+      "input_class": "SYNTHETIC_RESEARCH_CONTROL",
+      "limitations": [
+        "One preregistered-in-this-manifest hypothesis; no external registration or global search-budget accounting",
+        "Peer betas and lag gaps are descriptive association, not proof of forced flows or causality",
+        "Full-path linear drift timing is an assumption; scenario frequencies remain uncalibrated",
+        "Paired forecast comparisons retain identical samples; no significance test or winner promotion",
+        "Cost stress holds the decision fixed; independent counterfactual opportunities are not portfolio P&L",
+        "No quotes or executed fills are synthesized; source availability and revision limits remain"
+      ],
+      "orders": 0,
+      "phase_counts": {
+        "DEVELOPMENT": 44,
+        "HOLDOUT": 44,
+        "WARMUP": 44
+      },
+      "readiness": "RESEARCH_ONLY_NO_PROMOTION_OR_TRADING_AUTHORITY",
+      "refusals": {
+        "CHALLENGER_UNAVAILABLE": 24,
+        "NO_ELIGIBLE_PEER_SETUP": 19,
+        "PEER_DATA_UNAVAILABLE": 36
+      },
+      "schema": "APEX_PEER_EXPERIMENT_RESULT_V1",
+      "source_refusals": {
+        "CURRENT_COMPLETED_BAR_UNAVAILABLE_OR_STALE": 12,
+        "INSUFFICIENT_CONTIGUOUS_SESSION_RETURNS:30": 1,
+        "NONCONTIGUOUS_CURRENT_SESSION_RETURNS": 11
+      },
+      "status": "RESEARCH_COMPLETE",
+      "warmup": {
+        "eligible_setups": 28,
+        "matured_samples": 44,
+        "models": {
+          "OWN_STOCK_RIDGE": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 0.0,
+            "all_matured_policy_mean_net_including_waits": 0.0,
+            "brier": null,
+            "crps": null,
+            "hold_long_mean_net": null,
+            "paired_long_decisions": 0,
+            "policy_mean_net": null,
+            "policy_mean_net_cost_3x": null,
+            "wait_mean_net": null
+          },
+          "PEER_LAG_RIDGE": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 0.0,
+            "all_matured_policy_mean_net_including_waits": 0.0,
+            "brier": null,
+            "crps": null,
+            "hold_long_mean_net": null,
+            "paired_long_decisions": 0,
+            "policy_mean_net": null,
+            "policy_mean_net_cost_3x": null,
+            "wait_mean_net": null
+          },
+          "SHRUNK_MEAN": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 0.0,
+            "all_matured_policy_mean_net_including_waits": 0.0,
+            "brier": null,
+            "crps": null,
+            "hold_long_mean_net": null,
+            "paired_long_decisions": 0,
+            "policy_mean_net": null,
+            "policy_mean_net_cost_3x": null,
+            "wait_mean_net": null
+          },
+          "ZERO_DRIFT": {
+            "all_matured_policy_mean_net_cost_3x_including_waits": 0.0,
+            "all_matured_policy_mean_net_including_waits": 0.0,
+            "brier": null,
+            "crps": null,
+            "hold_long_mean_net": null,
+            "paired_long_decisions": 0,
+            "policy_mean_net": null,
+            "policy_mean_net_cost_3x": null,
+            "wait_mean_net": null
+          }
+        },
+        "paired_brier_delta_vs_own_stock": null,
+        "paired_brier_delta_vs_zero": null,
+        "paired_crps_delta_vs_own_stock": null,
+        "paired_crps_delta_vs_zero": null,
+        "paired_samples": 0,
+        "peer_available": 32,
+        "sessions": [],
+        "source_samples": 44,
+        "unpaired_matured_samples": 44
+      }
+    }
+  },
+  "hypothesis_assessment": {
+    "status": "HYPOTHESIS_NOT_SUPPORTED",
+    "paired_samples": 32,
+    "observed_session_count": 4,
+    "observed_sessions": [
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-14",
+      "2026-09-15"
+    ],
+    "metrics": {
+      "crps_delta_vs_own_stock": 2.135462549571066e-07,
+      "peer_policy_mean_net": 2.7634708655829208,
+      "own_stock_policy_mean_net": 2.7634708655829208,
+      "peer_policy_mean_net_cost_3x": 1.8520897064917747,
+      "own_stock_policy_mean_net_cost_3x": 1.8520897064917747
+    },
+    "policy_mean_net_delta_vs_own_stock": 0.0,
+    "policy_mean_net_cost_3x_delta_vs_own_stock": 0.0,
+    "next_action": "REJECT_OR_REVISE_PEER_HYPOTHESIS_ON_NEW_DATA",
+    "scope": "Descriptive paired-sample review only; no significance, independence, calibration or market-edge claim"
+  },
+  "next_research_action": "REJECT_OR_REVISE_PEER_HYPOTHESIS_ON_NEW_DATA",
+  "capital_authority": "NONE_RESEARCH_ONLY",
+  "orders": 0,
+  "fills": 0,
+  "account_pnl": null,
+  "readiness": "RESEARCH_ONLY_NO_STRATEGY_PROMOTION_OR_BROKER_AUTHORITY",
+  "limitations": [
+    "The AI chooses one reviewed study or WAIT; it cannot redesign policy or deploy models.",
+    "A fresh run directory does not make reused data an untouched holdout or control repeated experimentation.",
+    "Synthetic results are controls, not observed market performance.",
+    "Minute-bar counterfactual economics are not executable fills or account returns."
+  ]
+}

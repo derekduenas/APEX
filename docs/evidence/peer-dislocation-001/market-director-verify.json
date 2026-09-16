@@ -1,0 +1,10 @@
+{
+  "status": "VALID",
+  "problems": [],
+  "ledger_head": "ffaff3f6c136418d255ba8b297726020528343d8690876e55f697c532e39ff73",
+  "verified_stages": 6,
+  "research_attempts": 1,
+  "decision": "EXPLORATORY_EVIDENCE_ONLY",
+  "code_matches_current": true,
+  "scope": "Verifies retained input, proposal, policy, stage ordering, child completion and recomputes the report using independently invoked child readers. Shared calculations are not a second mathematical implementation. Hashes do not authenticate provider history, LLM authorship, executed source or prospective registration. No edge, calibration, live execution readiness or trading authority is established."
+}

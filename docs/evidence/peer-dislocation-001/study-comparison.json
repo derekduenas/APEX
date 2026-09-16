@@ -1,0 +1,121 @@
+{
+  "schema": "APEX_PEER_STUDY_COMPARISON_V1",
+  "studies": {
+    "market": {
+      "input_class": "RECORDED_RESEARCH_WITH_DECLARED_AVAILABILITY_LIMITS",
+      "counts": {
+        "eligible_setups": 1,
+        "forecasts": 60,
+        "matured_outcomes": 90,
+        "paired_outcomes": 20,
+        "peer_available": 60,
+        "research_opportunities": 0,
+        "source_samples": 90,
+        "unmatured_samples": 0
+      },
+      "holdout": {
+        "status": "HYPOTHESIS_NOT_SUPPORTED",
+        "paired_samples": 20,
+        "observed_session_count": 5,
+        "observed_sessions": [
+          "2026-08-17",
+          "2026-08-18",
+          "2026-08-19",
+          "2026-08-20",
+          "2026-08-21"
+        ],
+        "metrics": {
+          "crps_delta_vs_own_stock": 4.2095359428661227e-07,
+          "peer_policy_mean_net": 0.0,
+          "own_stock_policy_mean_net": 0.0,
+          "peer_policy_mean_net_cost_3x": 0.0,
+          "own_stock_policy_mean_net_cost_3x": 0.0
+        },
+        "policy_mean_net_delta_vs_own_stock": 0.0,
+        "policy_mean_net_cost_3x_delta_vs_own_stock": 0.0,
+        "next_action": "REJECT_OR_REVISE_PEER_HYPOTHESIS_ON_NEW_DATA",
+        "scope": "Descriptive paired-sample review only; no significance, independence, calibration or market-edge claim"
+      },
+      "orders": 0,
+      "fills": 0,
+      "account_pnl": null
+    },
+    "catchup": {
+      "input_class": "SYNTHETIC_RESEARCH_CONTROL",
+      "counts": {
+        "eligible_setups": 77,
+        "forecasts": 88,
+        "matured_outcomes": 132,
+        "paired_outcomes": 64,
+        "peer_available": 96,
+        "research_opportunities": 49,
+        "source_samples": 132,
+        "unmatured_samples": 0
+      },
+      "holdout": {
+        "status": "HYPOTHESIS_NOT_SUPPORTED",
+        "paired_samples": 32,
+        "observed_session_count": 4,
+        "observed_sessions": [
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15"
+        ],
+        "metrics": {
+          "crps_delta_vs_own_stock": 2.135462549571066e-07,
+          "peer_policy_mean_net": 2.7634708655829208,
+          "own_stock_policy_mean_net": 2.7634708655829208,
+          "peer_policy_mean_net_cost_3x": 1.8520897064917747,
+          "own_stock_policy_mean_net_cost_3x": 1.8520897064917747
+        },
+        "policy_mean_net_delta_vs_own_stock": 0.0,
+        "policy_mean_net_cost_3x_delta_vs_own_stock": 0.0,
+        "next_action": "REJECT_OR_REVISE_PEER_HYPOTHESIS_ON_NEW_DATA",
+        "scope": "Descriptive paired-sample review only; no significance, independence, calibration or market-edge claim"
+      },
+      "orders": 0,
+      "fills": 0,
+      "account_pnl": null
+    },
+    "continuation": {
+      "input_class": "SYNTHETIC_RESEARCH_CONTROL",
+      "counts": {
+        "eligible_setups": 77,
+        "forecasts": 88,
+        "matured_outcomes": 132,
+        "paired_outcomes": 64,
+        "peer_available": 96,
+        "research_opportunities": 49,
+        "source_samples": 132,
+        "unmatured_samples": 0
+      },
+      "holdout": {
+        "status": "HYPOTHESIS_NOT_SUPPORTED",
+        "paired_samples": 32,
+        "observed_session_count": 4,
+        "observed_sessions": [
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15"
+        ],
+        "metrics": {
+          "crps_delta_vs_own_stock": 1.6849459231328516e-06,
+          "peer_policy_mean_net": -3.705296472755059,
+          "own_stock_policy_mean_net": -3.705296472755059,
+          "peer_policy_mean_net_cost_3x": -4.6298503990119535,
+          "own_stock_policy_mean_net_cost_3x": -4.6298503990119535
+        },
+        "policy_mean_net_delta_vs_own_stock": 0.0,
+        "policy_mean_net_cost_3x_delta_vs_own_stock": 0.0,
+        "next_action": "REJECT_OR_REVISE_PEER_HYPOTHESIS_ON_NEW_DATA",
+        "scope": "Descriptive paired-sample review only; no significance, independence, calibration or market-edge claim"
+      },
+      "orders": 0,
+      "fills": 0,
+      "account_pnl": null
+    }
+  },
+  "scope": "Retained descriptive controls and one recorded study. Independent opportunities are not portfolio P&L; no profitable-edge finding."
+}
