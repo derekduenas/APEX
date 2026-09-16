@@ -144,8 +144,20 @@ def main():
     paper_report.add_argument("--out", type=Path)
     paper_verify = subs.add_parser("verify-paper", help="Independently reconstruct paper-account arithmetic and retained event references")
     paper_verify.add_argument("--root", type=Path, required=True)
+    continuation = subs.add_parser("continuation-experiment", help="Frozen bar-only diagnostic; no execution")
+    continuation.add_argument("--input", type=Path, required=True)
+    continuation.add_argument("--plan", type=Path, required=True)
+    continuation.add_argument("--out", type=Path, required=True)
+    continuation_verify = subs.add_parser("verify-continuation")
+    continuation_verify.add_argument("--run", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "paper-demo":
+    if args.command == "continuation-experiment":
+        from .continuation import run_continuation
+        result = run_continuation(args.input, args.plan, args.out)
+    elif args.command == "verify-continuation":
+        from .continuation import verify_continuation
+        result = verify_continuation(args.run)
+    elif args.command == "paper-demo":
         from .paper_runtime import PaperSession, replay
         doc, start, _ = demo_document(quotes=args.world != "no-quotes")
         doc["source"] = "SYNTHETIC_PAPER_" + args.world.upper().replace("-", "_") + "_EXECUTION_CONTROL_NOT_EDGE"
@@ -273,6 +285,8 @@ def main():
         print(report_text(result))
     else:
         print(json.dumps(result, indent=2))
+    if args.command == "verify-continuation" and result.get("status") != "VALID":
+        raise SystemExit(2)
     if result.get("status") == "MISMATCH" or result.get("accounting", {}).get("status") == "MISMATCH":
         raise SystemExit(2)
     if result.get("status") == "BLOCKED_NO_MARKET_DATA":

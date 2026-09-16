@@ -1,0 +1,23 @@
+{
+  "experiment_id": "continuation-001",
+  "symbol": "SPY",
+  "from": "2026-01-01",
+  "to": "2026-05-31",
+  "feature": "log(opening_0930_30min_close / opening_0930_30min_open)",
+  "decision_local": "10:00:05 America/New_York",
+  "target": "log(closing_1530_30min_close / closing_1530_30min_open)",
+  "policy": "sign(feature); zero feature means zero exposure",
+  "comparators": ["always_long", "always_short", "always_flat"],
+  "fitting": "NONE; all eligible sessions evaluated once; no parameter selection",
+  "availability": "bar start + 30 minutes ASSUMED, not measured; historical revised aggregates",
+  "exclusions": "weekends, missing exact 09:30 or 15:30 ET bar, invalid/nonfinite OHLCV, duplicate timestamps rejected",
+  "primary": "mean policy signed target minus always-long target, basis points",
+  "uncertainty": "circular moving block bootstrap of paired daily differences, block 5 eligible sessions, 10000 resamples, seed 74001, percentile 95% interval",
+  "cost_sensitivity_bps": [0, 1, 2, 5, 10],
+  "cost_scope": "illustrative round-trip deductions from signed log-return; not executed returns, no fill/borrow inference",
+  "promotion": "NEVER from this diagnostic pilot; quotes, independent holdout and execution validation required",
+  "power": "At 100 independent sessions, approximate 80% power at two-sided 5% requires standardized mean difference 0.28. Serial dependence increases this threshold. No small-edge power claim.",
+  "prior_exposure": "Known project experiments used June-September 2026; no claim that this historical range is globally unseen by researchers or published literature.",
+  "provider": "Massive unadjusted 30-minute historical aggregates; exact windows required",
+  "bounds": "No optimizer, no policy changes after outcomes, no market orders, no account PnL"
+}

@@ -1,0 +1,14 @@
+{
+  "pytest": "458 passed in 489.98s",
+  "source_manifest_unchanged": true,
+  "actual_demo": "runs/continuation-lifecycle-002",
+  "actual_verify": "VALID",
+  "continuation_run": "runs/continuation-real-001",
+  "continuation_reconstruction": "VALID",
+  "independent_primary": "MATCH",
+  "real_market_trades": 0,
+  "brain_inference": false,
+  "continuous_paper_service": "NOT_COMMISSIONED",
+  "options_quote_access": "NOT_ENTITLED",
+  "earlier_regression_attempt": "Intentionally interrupted after CLI mismatch exit-code fix; retained log; superseded by full final-source run"
+}

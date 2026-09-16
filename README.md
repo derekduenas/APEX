@@ -191,3 +191,7 @@ operator's combination-lock idea into causal branch search and a
 transient-versus-persistent impact comparison. This also remains design-only;
 the present fixed family of scenarios is not an exhaustive search of market
 mechanisms or a validated universal predictor.
+
+The fixed opening-to-closing continuation pilot is implemented through `apex continuation-experiment` and `apex verify-continuation`. Its first 102-session historical result was negative before costs; it is not a promoted trading policy. See [CONTINUATION_001.md](docs/CONTINUATION_001.md) and the frozen [plan](plans/continuation-001.json).
+
+Options are a separate proposed research track. Contract metadata was accessible, but the historical options-quote probe returned NOT_ENTITLED. See [OPTIONS_RESEARCH_001.md](docs/OPTIONS_RESEARCH_001.md). No options execution is implemented.

@@ -1,0 +1,11 @@
+{
+  "status": "TIMED_OUT",
+  "scope": "Same managed apex_planner restricted profile; harmless /bin/true; no model inference",
+  "timeout_seconds_approximate": 10,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "root_cause": "UNDETERMINED",
+  "process_snapshot": "INCONCLUSIVE",
+  "permissions_relaxed": false,
+  "brain_active": false
+}

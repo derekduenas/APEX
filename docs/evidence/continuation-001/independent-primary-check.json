@@ -1,0 +1,8 @@
+{
+  "scope": "Independent stdlib calculation of primary mean from captured exact ET windows; does not authenticate source or check bootstrap",
+  "sessions": 102,
+  "mean_signed_target_bps": -1.5577706145761192,
+  "mean_long_target_bps": 2.6719195028083678,
+  "primary_difference_vs_long_bps": -4.229690117384487,
+  "status": "MATCH"
+}

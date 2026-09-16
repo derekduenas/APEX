@@ -1,0 +1,69 @@
+{
+  "recorded_at": "2026-09-16T02:39:26.407527+00:00",
+  "recorded_at_scope": "Manifest assembly time after retrieval, not measured market availability",
+  "provider": "Massive connector",
+  "requests": [
+    {
+      "path": "/v2/aggs/ticker/SPY/range/30/minute/2026-01-01/2026-01-31",
+      "params": {
+        "adjusted": false,
+        "sort": "asc",
+        "limit": 50000
+      },
+      "returned_rows": 640,
+      "next_page_hint_present": false
+    },
+    {
+      "path": "/v2/aggs/ticker/SPY/range/30/minute/2026-02-01/2026-02-28",
+      "params": {
+        "adjusted": false,
+        "sort": "asc",
+        "limit": 50000
+      },
+      "returned_rows": 608,
+      "next_page_hint_present": false
+    },
+    {
+      "path": "/v2/aggs/ticker/SPY/range/30/minute/2026-03-01/2026-03-31",
+      "params": {
+        "adjusted": false,
+        "sort": "asc",
+        "limit": 50000
+      },
+      "returned_rows": 704,
+      "next_page_hint_present": false
+    },
+    {
+      "path": "/v2/aggs/ticker/SPY/range/30/minute/2026-04-01/2026-04-30",
+      "params": {
+        "adjusted": false,
+        "sort": "asc",
+        "limit": 50000
+      },
+      "returned_rows": 672,
+      "next_page_hint_present": false
+    },
+    {
+      "path": "/v2/aggs/ticker/SPY/range/30/minute/2026-05-01/2026-05-31",
+      "params": {
+        "adjusted": false,
+        "sort": "asc",
+        "limit": 50000
+      },
+      "returned_rows": 640,
+      "next_page_hint_present": false
+    }
+  ],
+  "export": "SQL UNION ALL ticker,t,o,h,l,c,v; sorted t; transformed CSV, not raw HTTP response",
+  "rows": 3264,
+  "files_sha256": {
+    "apr-connector-receipt.json": "8f04fe7571a3285cb9c1f3086d62e7bc5ad32fd70d81269637cb0a6d330593dc",
+    "feb-connector-receipt.json": "bef22707dfd687db3a8f27a80a900b34a5c0ec50597d3b618979f8086d2c6e01",
+    "bars.csv": "0da2aba58f5e2153bdbdecf1b7e846abb380cfad430b335b67898449d4978f98",
+    "may-connector-receipt.json": "1788f827ad4f3dabd1d05985be79984a4324d254901665828a51a821ecdc7b94",
+    "jan-connector-receipt.json": "7bbc1d2a45e470af92444b6264e0c5d300a0bdd4159f64625eec1a39092d9b6b",
+    "mar-connector-receipt.json": "c401ae34dae4b635f38270f49ef063b36075db4d6ede58dd47283f4e0abdd41c"
+  },
+  "frozen_plan_commit": "1144b1f",
+  "authentication_scope": "Connector-returned data, no independent exchange authentication"
+}

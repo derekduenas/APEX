@@ -1,0 +1,19 @@
+{
+  "check_date": "2026-09-16",
+  "scope": "Capability probe only; no strategy evaluation or position",
+  "contract_reference": "RETURNED_STANDARD_SPY_CALL_METADATA",
+  "contract": "O:SPY260918C00750000",
+  "as_of": "2026-09-15",
+  "quote_request": {
+    "path": "/v3/quotes/O:SPY260918C00750000",
+    "params": {
+      "timestamp": "2026-09-15",
+      "order": "asc",
+      "sort": "timestamp",
+      "limit": 1
+    }
+  },
+  "provider_response": "NOT_ENTITLED",
+  "historical_quotes_obtained": 0,
+  "options_trades": 0
+}
