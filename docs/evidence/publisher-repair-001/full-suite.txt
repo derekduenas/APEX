@@ -1,0 +1,46 @@
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 39%]
+........................................................................ [ 52%]
+.........................................F.............................. [ 65%]
+........................................................................ [ 78%]
+........................................................................ [ 91%]
+..............................................                           [100%]
+=================================== FAILURES ===================================
+_________ test_simulated_receipt_delay_flows_through_actual_tournament _________
+
+research_flight = (PosixPath('/tmp/pytest-of-root/pytest-9/research0/flight'), {'schema': 'APEX_DATA_V1', 'source': 'SYNTHETIC_RESEARCH_...RCH_RESULT_V1', 'status': 'RESEARCH_COMPLETE', 'input_class': 'SYNTHETIC_RESEARCH_CONTROL', 'forecast_count': 88, ...})
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-9/test_simulated_receipt_delay_f0')
+
+    def test_simulated_receipt_delay_flows_through_actual_tournament(research_flight, tmp_path):
+        _, original, plan, _ = research_flight
+        doc = copy.deepcopy(original)
+        for row in doc["observations"]:
+            row["available_epoch"] += .25
+            row["availability_basis"] = "SYNTHETIC_CLOCK"
+        root = tmp_path/"measured"
+>       result = run_research(canonical(doc).encode(), root, plan=plan, config=Config(variance="ewma", paths=100))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_research.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/apex/research.py:217: in run_research
+    admitted = require_mode(document, observations,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+document = {'generator_seed': 731, 'observations': [{'availability_basis': 'SYNTHETIC_CLOCK', 'available_epoch': 1788183060.25, '...': 1788183180.25, ...}, ...], 'schema': 'APEX_DATA_V1', 'source': 'SYNTHETIC_RESEARCH_PERSISTENT_NOT_MARKET_EDGE', ...}
+observations = [], mode = 'SYNTHETIC_CONTROL'
+
+    def require_mode(document: dict, observations: list, mode: str) -> dict:
+        """Refuse by name when an input is asked to support more than it can."""
+        if mode not in MODES[1:]:
+            raise Refused("UNKNOWN_OPERATING_MODE")
+        verdict = admissibility(document, observations)
+        if not verdict["modes"][mode]:
+>           raise Refused("INPUT_NOT_ADMISSIBLE_FOR_" + mode + ":" + verdict["ceiling_reason"])
+E           apex.core.Refused: INPUT_NOT_ADMISSIBLE_FOR_SYNTHETIC_CONTROL:NO_OBSERVATIONS_OR_UNRECOGNIZED_AVAILABILITY_BASIS
+
+src/apex/admissibility.py:52: Refused
+=========================== short test summary info ============================
+FAILED tests/test_research.py::test_simulated_receipt_delay_flows_through_actual_tournament
+1 failed, 549 passed in 650.77s (0:10:50)

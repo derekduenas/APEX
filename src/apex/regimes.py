@@ -83,7 +83,7 @@ def _premarket(bars: list[dict], *, now: float, today: str) -> tuple[dict, list[
     return out, pre + ([closing] if closing else []) + ([opening] if opening else [])
 
 
-def classify_regime(observations: list[dict], *, now: float, symbol: str) -> dict:
+def classify_regime(observations: list[dict], *, now: float, symbol: str, now_ns: int | None = None) -> dict:
     """Read normalized observations AS OF now and emit auditable setup eligibility.
 
     Historical baselines use prior-session windows ending at the *same Eastern
@@ -94,7 +94,7 @@ def classify_regime(observations: list[dict], *, now: float, symbol: str) -> dic
     if not finite(now) or not isinstance(symbol, str) or not symbol:
         raise Refused("INVALID_REGIME_REQUEST")
     today = session(now)
-    all_bars, conflicts = visible(observations, now=now, symbol=symbol, kind="bar")
+    all_bars, conflicts = visible(observations, now=now, symbol=symbol, kind="bar", now_ns=now_ns)
     bars = [b for b in all_bars if b["event_epoch"] + 60 <= now]
     regular_bars = [b for b in bars if regular(b["event_epoch"])]
     current = [b for b in regular_bars if session(b["event_epoch"]) == today]
@@ -154,7 +154,7 @@ def classify_regime(observations: list[dict], *, now: float, symbol: str) -> dic
                      if relative_volume >= POLICY["high_relative_volume"] else "LOW_PARTICIPATION"
                      if relative_volume <= POLICY["low_relative_volume"] else "NORMAL_PARTICIPATION")
 
-    quotes, quote_conflicts = visible(observations, now=now, symbol=symbol, kind="quote")
+    quotes, quote_conflicts = visible(observations, now=now, symbol=symbol, kind="quote", now_ns=now_ns)
     quote = quotes[-1] if quotes else None
     quote_age = now - quote["event_epoch"] if quote else None
     usable_quote = quote is not None and 0 <= quote_age <= POLICY["maximum_quote_age_seconds"]

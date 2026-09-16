@@ -123,7 +123,7 @@ def capture_alpaca(out: Path, *, history_start: str, config: Config, feed: str, 
             raise Refused("HISTORY_WINDOW_MUST_PRECEDE_CAPTURE_AND_BE_AT_MOST_TEN_DAYS")
         synthetic = transport is not http_transport or clock_ns is not time.time_ns
         availability_basis = "SYNTHETIC_CLOCK" if synthetic else "MEASURED_RECEIPT"
-        opening = {"schema": "APEX_CAPTURE_V1", "config": config.record(), "feed": feed, "history_start": history_start,
+        opening = {"schema": "APEX_CAPTURE_V1", "reader_clock_basis": "EXACT_RECEIPT_NS_V1", "config": config.record(), "feed": feed, "history_start": history_start,
                    "opened_ns": opened_ns, "round_lot_shares": round_lot_shares, "max_pages": max_pages, "timeout": timeout,
                    "code": code_manifest(), "mode": "READ_ONLY_SHADOW", "availability_basis": availability_basis,
                    "capture_class": "SYNTHETIC_ACCEPTANCE" if synthetic else "HOST_CAPTURE_ATTEMPT",
@@ -163,7 +163,7 @@ def capture_alpaca(out: Path, *, history_start: str, config: Config, feed: str, 
                     packet["error"] = "DECODE_REFUSED:" + str(exc)
             _write(out / f"request-{packet['seq']:04d}.json", packet)
             packets.append(packet)
-            result = observe(observations, received_ns / 1e9, config)
+            result = observe(observations, received_ns / 1e9, config, now_ns=received_ns)
             shadow = {"request_seq": packet["seq"], "as_of_ns": received_ns, "calculation_finished_ns": clock_ns(), "result": result}
             _write(out / f"shadow-{packet['seq']:04d}.json", shadow)
             shadows.append(shadow)
@@ -261,7 +261,8 @@ def replay_capture(root: Path):
     for packet, shadow in zip(packets, shadows):
         if shadow["request_seq"] != packet["seq"] or shadow["as_of_ns"] != packet["received_ns"] or shadow["calculation_finished_ns"] < shadow["as_of_ns"]:
             raise Refused("SHADOW_TIME_DISAGREES")
-        result = observe(decoded_all, shadow["as_of_ns"] / 1e9, Config(**opening["config"]))
+        result = observe(decoded_all, shadow["as_of_ns"] / 1e9, Config(**opening["config"]),
+                         now_ns=shadow["as_of_ns"] if opening.get("reader_clock_basis") == "EXACT_RECEIPT_NS_V1" else None)
         if result != shadow["result"]:
             raise Refused("CAPTURE_REPLAY_BEHAVIOR_DISAGREES")
         observed += result["status"] == "OBSERVED"

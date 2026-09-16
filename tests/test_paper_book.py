@@ -1,5 +1,6 @@
 """Actual SQLite account/fill path, fault recovery, causal execution and reader."""
 from copy import deepcopy
+from decimal import Decimal
 from dataclasses import replace
 import json
 import multiprocessing
@@ -19,7 +20,11 @@ EVIDENCE = {'decision': 'EXPERIMENTAL_LONG', 'source': 'SYNTHETIC_CONTROL_NOT_MA
 
 def quote(event=101, *, available=None, bid=99.98, ask=100.0, size=100, symbol='SPY', measured=False):
     available = event + .1 if available is None else available
-    q = {'kind': 'quote', 'symbol': symbol, 'event_epoch': event, 'available_epoch': available,
+    # These are declared synthetic fixture times, not recovered provider stamps.
+    event_ns = int(Decimal(str(event)) * 10**9)
+    available_ns = int(Decimal(str(available)) * 10**9)
+    event, available = event_ns / 1e9, available_ns / 1e9
+    q = {'event_ns': event_ns, 'available_ns': available_ns, 'kind': 'quote' , 'symbol': symbol, 'event_epoch': event, 'available_epoch': available,
          'availability_basis': 'MEASURED_RECEIPT' if measured else 'SYNTHETIC_CLOCK',
          'bid': bid, 'ask': ask, 'bid_size': size, 'ask_size': size}
     if measured:

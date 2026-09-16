@@ -5,7 +5,7 @@ import csv
 import io
 import math
 import re
-from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
+from decimal import Decimal, ROUND_FLOOR
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -27,25 +27,51 @@ def epoch_ns(epoch):
     return int((Decimal(str(epoch)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
 
 
+def decision_cutoff_ns(now, now_ns=None):
+    """Keep an original integer cutoff authoritative; seconds are its display only.
+
+    Without an integer, interpret the caller's declared seconds clock as before.
+    Never reconstruct a measured receipt from its rounded float representation.
+    """
+    if now_ns is None:
+        return epoch_ns(now)
+    if type(now_ns) is not int or now_ns < 0 or now != now_ns / 1e9:
+        raise Refused("DECISION_CLOCK_SECONDS_DISAGREE_WITH_NANOSECONDS")
+    return now_ns
+
+
 def duration_ns(seconds):
     """Floor a declared duration to nanoseconds; never extend an age allowance."""
     return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
 
 
+def exact_ns(seconds, field: str) -> int:
+    """Nanoseconds from declared seconds, or a refusal. NEVER a reconstruction.
+
+    Recovering a provider's nanoseconds from a float cannot be done soundly, and two successive attempts here
+    were wrong in ways that took measurement to see. The second attempt failed for a reason worth recording: a
+    float produced as `n / 1e9` is NOT the nearest float to n/10**9, because n exceeds 2**53 and the int-to-float
+    conversion rounds before the division ever happens. So any bound depends on HOW the float was made, and this
+    function is not told that. Provenance is the missing information, not precision.
+
+    An integer-VALUED float is accepted here because a whole-second clock is a legitimate declaration, but that
+    is a statement about the DECLARATION, not a proof that nothing was lost: a true stamp of ...200_000000123
+    nanoseconds also rounds to exactly 1787578200.0. Anything whose nanoseconds actually matter must carry them,
+    and the measured publisher path requires the original integers outright rather than relying on this.
+    """
+    if isinstance(seconds, bool):
+        raise Refused("INVALID_TIME")
+    if isinstance(seconds, int) or (isinstance(seconds, float) and seconds.is_integer()):
+        return int(seconds) * 1_000_000_000
+    raise Refused("FRACTIONAL_SECONDS_REQUIRE_NANOSECOND_STAMPS:" + field)
+
+
 def event_ns(row):
-    return row["event_ns"] if "event_ns" in row else epoch_ns(row["event_epoch"])
+    return row["event_ns"] if "event_ns" in row else exact_ns(row["event_epoch"], "event_epoch")
 
 
 def available_ns(row):
-    if "available_ns" in row:
-        return row["available_ns"]
-    seconds = row["available_epoch"]
-    # Fractional float seconds cannot recover their original provider nanoseconds.
-    # Use the next representable float as a conservative upper bound, then ceil.
-    # Exact integer clocks retain their declared meaning. Adapters must retain ns.
-    if isinstance(seconds, float) and not seconds.is_integer():
-        seconds = math.nextafter(seconds, math.inf)
-    return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_CEILING))
+    return row["available_ns"] if "available_ns" in row else exact_ns(row["available_epoch"], "available_epoch")
 
 
 def decision_only(document):
@@ -103,6 +129,9 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
                 raise Refused("INVALID_TIME")
             if row["available_epoch"] < row["event_epoch"]:
                 raise Refused("AVAILABLE_BEFORE_EVENT")
+            for field in ("event_epoch", "available_epoch"):
+                if field.replace("_epoch", "_ns") not in row:
+                    exact_ns(row[field], field)
             if "event_ns" in row or "available_ns" in row:
                 if not all(type(row.get(k)) is int for k in ("event_ns", "available_ns")):
                     raise Refused("QUOTE_LATENCY_ASSUMPTION_REQUIRES_NANOSECOND_STAMPS" if row["availability_basis"] == "QUOTE_LATENCY_ASSUMPTION_V1" else "INVALID_NANOSECOND_STAMPS")
@@ -161,9 +190,9 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
     return sorted(distinct.values(), key=lambda r: (r["available_epoch"], r["event_epoch"], r["observation_id"])), rejected
 
 
-def visible(rows: list[dict], *, now: float, symbol: str, kind: str) -> tuple[list[dict], list[dict]]:
+def visible(rows: list[dict], *, now: float, symbol: str, kind: str, now_ns: int | None = None) -> tuple[list[dict], list[dict]]:
     groups: dict[int, list] = {}
-    cutoff_ns = epoch_ns(now)
+    cutoff_ns = decision_cutoff_ns(now, now_ns)
     for row in rows:
         if row["symbol"] == symbol and row["kind"] == kind and available_ns(row) <= cutoff_ns:
             groups.setdefault(event_ns(row), []).append(row)
@@ -175,12 +204,12 @@ def visible(rows: list[dict], *, now: float, symbol: str, kind: str) -> tuple[li
         else:
             # Market values agree: preserve earliest knowable evidence, with all
             # raw provenance retained in the captured input document.
-            out.append(min(group, key=lambda r: (r["available_epoch"], r["observation_id"])))
+            out.append(min(group, key=lambda r: (available_ns(r), r["observation_id"])))
     return out, conflicts
 
 
-def twin(rows: list[dict], now: float, symbol: str) -> tuple[dict, list[dict]]:
-    bars, conflicts = visible(rows, now=now, symbol=symbol, kind="bar")
+def twin(rows: list[dict], now: float, symbol: str, *, now_ns: int | None = None) -> tuple[dict, list[dict]]:
+    bars, conflicts = visible(rows, now=now, symbol=symbol, kind="bar", now_ns=now_ns)
     bars = [b for b in bars if regular(b["event_epoch"])]
     today = [b for b in bars if session(b["event_epoch"]) == session(now)]
     if not today or now - (today[-1]["event_epoch"] + 60) > 120:
@@ -299,3 +328,4 @@ def merged_document(documents: list, *, retrieved_utc: str) -> dict:
             "source_authenticity": "COMPONENT_RESPONSES_NOT_INDEPENDENTLY_ATTESTED",
             "limitation": "Each component's limitations apply unchanged to its own observations.",
             "components": components, "observations": observations}
+
