@@ -126,7 +126,12 @@ def test_unavailable_quotes_do_not_become_invented_fills(research_flight, tmp_pa
     bars_only = {**doc, "observations": [r for r in doc["observations"] if r["kind"] == "bar"]}
     result = run_research(canonical(bars_only).encode(), tmp_path/"bars", plan=plan, config=Config(variance="ewma", paths=100))
     assert result["forecast_count"] == 88
-    assert result["candidate_observations"] == {"long": 0, "wait": 264}
+    observed = result["candidate_observations"]
+    assert (observed["long"], observed["wait"]) == (0, 264)
+    # Every WAIT here is the absence of a quote, not a judgement about the market. That is exactly the shape of
+    # answer a bars-only input forces, and the histogram is what makes the difference legible.
+    assert observed["wait_reasons"] == {"QUOTE_UNAVAILABLE_OR_CONFLICTING": 264}
+    assert "NOT trades" in observed["meaning"]
     records = read_verified(tmp_path/"bars"/"ledger.jsonl")
     assert not any(r["kind"] in ("ENTRY", "EXIT") for r in records)
 

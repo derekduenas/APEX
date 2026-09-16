@@ -14,7 +14,7 @@
    "OFFLINE_RESEARCH": true,
    "REAL_MONEY": false,
    "SHADOW_OBSERVATION": false,
-   "SYNTHETIC_CONTROL": true
+   "SYNTHETIC_CONTROL": false
   },
   "note": "A ceiling states what the data cannot disqualify. It grants no execution authority."
  },

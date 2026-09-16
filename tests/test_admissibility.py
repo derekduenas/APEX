@@ -122,3 +122,25 @@ def test_a_decision_quote_document_carries_no_post_decision_sequence_and_says_so
     assert all(r["available_epoch"] <= 1787578205.0 for r in rows)
     assert "establish no fill, exit, stop ordering or realized" in __import__("inspect").getsource(DQ)
     assert admissibility(document, rows)["highest_admissible_mode"] == "OFFLINE_RESEARCH"
+
+
+def test_a_recorded_document_is_not_admissible_as_a_synthetic_control():
+    """Admission is a SET, not a prefix of an ordered ladder. Treating it as a ladder let a recorded input pass
+    as a negative control, which is precisely the substitution a control exists to rule out."""
+    document, rows, v = verdict("ALPACA_HISTORICAL_QUOTES_AS_OF_DECISION_INSTANTS",
+                                from_alpaca_quotes(QUOTE, "SPY", "r"))
+    assert v["modes"] == {"SYNTHETIC_CONTROL": False, "OFFLINE_RESEARCH": True,
+                          "SHADOW_OBSERVATION": False, "LIVE_PAPER": False, "REAL_MONEY": False}
+    with pytest.raises(Refused, match="INPUT_NOT_ADMISSIBLE_FOR_SYNTHETIC_CONTROL"):
+        require_mode(document, rows, "SYNTHETIC_CONTROL")
+
+
+def test_a_synthetic_control_is_not_admissible_as_offline_research_either():
+    document, rows, v = verdict("SYNTHETIC_PERSISTENT", [SYNTHETIC])
+    assert v["modes"]["SYNTHETIC_CONTROL"] and not v["modes"]["OFFLINE_RESEARCH"]
+
+
+def test_measured_receipts_are_admissible_for_research_as_well_as_shadow():
+    _, _, v = verdict("ALPACA_CAPTURE", [MEASURED])
+    assert v["modes"]["OFFLINE_RESEARCH"] and v["modes"]["SHADOW_OBSERVATION"]
+    assert not v["modes"]["SYNTHETIC_CONTROL"]

@@ -13,6 +13,7 @@ from __future__ import annotations
 from .core import Refused
 
 # Increasing order of what the input is allowed to be used for.
+# Ordered only so that "highest" has a meaning in the report. Admission is a SET, not a prefix of this tuple.
 MODES = ("REFUSED", "SYNTHETIC_CONTROL", "OFFLINE_RESEARCH", "SHADOW_OBSERVATION", "LIVE_PAPER", "REAL_MONEY")
 ASSUMED_BASES = {"BAR_COMPLETION_ASSUMPTION_V1", "QUOTE_LATENCY_ASSUMPTION_V1"}
 
@@ -23,19 +24,23 @@ def admissibility(document: dict, observations: list) -> dict:
     input_class = input_class_of(document, observations)
     bases = sorted({r["availability_basis"] for r in observations})
     assumed = sorted(set(bases) & ASSUMED_BASES)
+    # Not a single ladder. SYNTHETIC_CONTROL is a KIND, not a rung: admitting a recorded document as a control
+    # would let real market data stand in for a negative control, which is the mistake a control exists to catch.
     if input_class == "MIXED_SYNTHETIC_AND_RECORDED_INPUT":
-        ceiling, reason = "REFUSED", "MIXED_SYNTHETIC_AND_RECORDED_INPUT_IS_NEITHER_CONTROL_NOR_EVIDENCE"
+        admitted, reason = set(), "MIXED_SYNTHETIC_AND_RECORDED_INPUT_IS_NEITHER_CONTROL_NOR_EVIDENCE"
     elif input_class == "SYNTHETIC_RESEARCH_CONTROL" or "SYNTHETIC_CLOCK" in bases:
-        ceiling, reason = "SYNTHETIC_CONTROL", "SYNTHETIC_CLOCK_OBSERVATIONS_ARE_A_CONTROL_NOT_MARKET_EVIDENCE"
+        admitted, reason = {"SYNTHETIC_CONTROL"}, "SYNTHETIC_CLOCK_OBSERVATIONS_ARE_A_CONTROL_NOT_MARKET_EVIDENCE"
     elif assumed:
-        ceiling, reason = "OFFLINE_RESEARCH", "AVAILABILITY_ASSUMED_NOT_MEASURED:" + ",".join(assumed)
+        admitted, reason = {"OFFLINE_RESEARCH"}, "AVAILABILITY_ASSUMED_NOT_MEASURED:" + ",".join(assumed)
     elif bases == ["MEASURED_RECEIPT"]:
-        ceiling, reason = "SHADOW_OBSERVATION", "MEASURED_RECEIPTS_PRESENT_BUT_EXECUTION_IS_SEPARATELY_COMMISSIONED"
+        admitted, reason = ({"OFFLINE_RESEARCH", "SHADOW_OBSERVATION"},
+                            "MEASURED_RECEIPTS_PRESENT_BUT_EXECUTION_IS_SEPARATELY_COMMISSIONED")
     else:
-        ceiling, reason = "REFUSED", "NO_OBSERVATIONS_OR_UNRECOGNIZED_AVAILABILITY_BASIS"
+        admitted, reason = set(), "NO_OBSERVATIONS_OR_UNRECOGNIZED_AVAILABILITY_BASIS"
+    ceiling = max(admitted, key=MODES.index) if admitted else "REFUSED"
     return {"input_class": input_class, "availability_bases": bases, "assumed_availability_bases": assumed,
             "highest_admissible_mode": ceiling, "ceiling_reason": reason,
-            "modes": {m: (MODES.index(m) <= MODES.index(ceiling)) for m in MODES[1:]},
+            "modes": {m: (m in admitted) for m in MODES[1:]},
             "note": "A ceiling states what the data cannot disqualify. It grants no execution authority."}
 
 
