@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 import scipy
 
+from .admissibility import admissibility
 from .core import Config, Refused, canonical, code_manifest, digest, fee, money
 from .data import normalize, regular, session, twin, visible
 from .decision import evaluate, quote_at
@@ -37,7 +38,8 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
                     "config": config.record(), "code": code_manifest(),
                     "runtime": {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__},
                     "authority": "NO_BROKER_OR_PRODUCTION_CAPITAL_AUTHORITY", "rejected": rejected,
-                    "availability_bases": sorted({r["availability_basis"] for r in observations})}
+                    "availability_bases": sorted({r["availability_basis"] for r in observations}),
+                    "admissibility": admissibility(document, observations)}
         (out / "manifest.json").write_text(canonical(manifest))
         ledger = Ledger(out / "ledger.jsonl")
         ledger.append("RUN_OPEN", start, {"config": config.record(), "manifest_digest": digest(manifest)})

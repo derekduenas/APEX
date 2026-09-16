@@ -70,10 +70,36 @@ def main():
     research_demo.add_argument("--out", type=Path, required=True)
     research_demo.add_argument("--world", choices=("persistent", "null", "reversal"), default="persistent")
     research_demo.add_argument("--variance", choices=("garch", "ewma"), default="ewma")
+    quotes_parser = subs.add_parser("fetch-decision-quotes",
+                                    help="One read-only request per decision instant of a frozen plan; research input only")
+    quotes_parser.add_argument("--plan", type=Path, required=True)
+    quotes_parser.add_argument("--out", type=Path, required=True)
+    quotes_parser.add_argument("--symbol", default="SPY")
+    quotes_parser.add_argument("--feed", choices=("sip", "iex"), required=True)
+    quotes_parser.add_argument("--round-lot-shares", type=int, required=True)
+    quotes_parser.add_argument("--timeout", type=float, default=10)
+    merge_parser = subs.add_parser("merge-inputs", help="Combine research input documents, keeping each one's provenance")
+    merge_parser.add_argument("--input", type=Path, required=True, action="append", dest="inputs")
+    merge_parser.add_argument("--out", type=Path, required=True)
+    merge_parser.add_argument("--retrieved-utc", required=True)
     research_verify = subs.add_parser("verify-research", help="Reconstruct research inputs, causal labels, model comparisons and scores")
     research_verify.add_argument("--run", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "research":
+    if args.command == "fetch-decision-quotes":
+        from .decision_quotes import fetch_decision_quotes
+        from .research import ResearchPlan
+        result = fetch_decision_quotes(args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())),
+                                       config=Config(symbol=args.symbol), feed=args.feed,
+                                       round_lot_shares=args.round_lot_shares, timeout=args.timeout)
+    elif args.command == "merge-inputs":
+        epoch(args.retrieved_utc)
+        from .data import merged_document
+        document = merged_document([json.loads(p.read_text()) for p in args.inputs], retrieved_utc=args.retrieved_utc)
+        with args.out.open("x") as handle:
+            handle.write(canonical(document))
+        result = {"components": len(document["components"]), "observations": len(document["observations"]),
+                  "output": str(args.out)}
+    elif args.command == "research":
         from .research import ResearchPlan, run_research
         result = run_research(args.input, args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())),
                               config=Config(symbol=args.symbol, variance=args.variance))

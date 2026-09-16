@@ -66,7 +66,7 @@ def test_capture_real_readers_then_replay_agree(tmp_path):
     assert all(r["available_epoch"] >= f.start for r in doc["observations"])
     assert all(r["availability_basis"] == "SYNTHETIC_CLOCK" for r in doc["observations"])
     q = next(r for r in doc["observations"] if r["kind"] == "quote")
-    assert q["ask_size"] == 100 and q["provider_ask_lots"] == 1
+    assert q["ask_size"] == 100 and q["provider_ask_size"] == 1
     shadow = json.loads((tmp_path / "capture" / "shadow-0003.json").read_text())["result"]
     assert shadow["candidate"]["decision"] == "EXPERIMENTAL_LONG"
     assert shadow["candidate"]["authority"] == "NONE_SHADOW_ONLY"
@@ -210,3 +210,44 @@ def test_cli_missing_credentials_leaves_reviewable_capture(tmp_path):
     assert result.returncode == 3
     assert json.loads(result.stdout)["status"] == "BLOCKED_NO_MARKET_DATA"
     assert replay_capture(tmp_path / "capture")["status"] == "REFUSAL_PARITY_ONLY"
+
+
+# ---------------------------------------------------------------- transport failure classification
+
+
+def test_transport_failures_are_classified_from_a_fixed_vocabulary_without_exception_text():
+    """A misconfigured local trust store used to report the same TRANSPORT_ERROR as an outage, which cost real
+    diagnosis time. The class is reported; the exception text is not, because it carries hosts, paths and
+    server strings. TLS verification is never weakened to make a request succeed."""
+    import socket
+    import ssl
+    from urllib.error import URLError
+    from apex.http_worker import TRANSPORT_ERRORS, transport_error_class
+    secret = "SENTINEL-host.example.internal-/private/path"
+    cases = [(URLError(ssl.SSLCertVerificationError(secret)), "TLS_CERTIFICATE_ERROR"),
+             (URLError(socket.gaierror(8, secret)), "DNS_RESOLUTION_ERROR"),
+             (URLError(ConnectionRefusedError(61, secret)), "CONNECTION_REFUSED"),
+             (TimeoutError(secret), "TRANSPORT_TIMEOUT"),
+             (URLError(socket.timeout(secret)), "TRANSPORT_TIMEOUT"),
+             (OSError(secret), "TRANSPORT_ERROR"),
+             (URLError(secret), "TRANSPORT_ERROR")]
+    for exc, expected in cases:
+        name = transport_error_class(exc)
+        assert name == expected, (exc, name)
+        assert name in TRANSPORT_ERRORS
+        assert "SENTINEL" not in name and secret not in name
+
+
+def test_the_worker_never_disables_certificate_verification():
+    import pathlib
+    source = pathlib.Path("src/apex/http_worker.py").read_text()
+    for forbidden in ("_create_unverified_context", "CERT_NONE", "check_hostname = False", "verify=False"):
+        assert forbidden not in source
+
+
+def test_a_classification_loop_cannot_hang_on_a_self_referential_cause():
+    from urllib.error import URLError
+    from apex.http_worker import transport_error_class
+    exc = URLError("outer")
+    exc.reason = exc
+    assert transport_error_class(exc) == "TRANSPORT_ERROR"

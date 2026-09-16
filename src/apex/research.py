@@ -6,6 +6,7 @@ retrain or select it. No result authorizes trading or claims a calibrated edge.
 """
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import asdict, dataclass
 import hashlib
 import json
@@ -14,6 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
+from .admissibility import require_mode
 from .core import Config, Refused, canonical, code_manifest, digest, finite, money
 from .data import normalize, regular, session, twin, visible
 from .decision import evaluate, quote_at
@@ -25,6 +27,18 @@ MODELS = ("ZERO_DRIFT", "SHRUNK_MEAN", "RIDGE_STATE")
 
 
 def input_class_of(document, observations):
+    """A merged document must not be able to launder a synthetic control into a recorded study.
+
+    The union of a synthetic half and a recorded half is neither: it fails as a control because part of it is
+    real, and it fails as evidence because part of it is invented. So it gets its own name, and a component's
+    synthetic label survives the merge instead of being averaged away by the top-level `source` string.
+    """
+    components = document.get("components", [])
+    synthetic = [str(c.get("source", "")).startswith("SYNTHETIC_") for c in components]
+    if any(synthetic) and not all(synthetic):
+        return "MIXED_SYNTHETIC_AND_RECORDED_INPUT"
+    if components and all(synthetic):
+        return "SYNTHETIC_RESEARCH_CONTROL"
     if str(document.get("source", "")).startswith("SYNTHETIC_") or (observations and all(r["availability_basis"] == "SYNTHETIC_CLOCK" for r in observations)):
         return "SYNTHETIC_RESEARCH_CONTROL"
     return "RECORDED_RESEARCH_WITH_DECLARED_AVAILABILITY_LIMITS"
@@ -150,7 +164,13 @@ def summarize(rows, plan):
             "holdout_session_crps_delta_vs_zero": session_deltas,
             "mean_holdout_session_crps_delta_vs_zero": float(np.mean(list(session_deltas.values()))) if session_deltas else None,
             "candidate_observations": {"long": sum(c["decision"] == "EXPERIMENTAL_LONG" for c in candidates),
-                                       "wait": sum(c["decision"] == "WAIT" for c in candidates)},
+                                       "wait": sum(c["decision"] == "WAIT" for c in candidates),
+                                       "wait_reasons": dict(sorted(Counter(c["reason"] for c in candidates
+                                                                           if c["decision"] == "WAIT").items())),
+                                       "meaning": ("Hypothetical independent opportunities evaluated at the decision "
+                                                   "instant. NOT trades: no fill, exit, stop ordering or realized "
+                                                   "P&L is established here, and none can be without the "
+                                                   "post-decision quote sequence, which this input does not carry.")},
             "variance_models": sorted({f["base_forecast"]["variance"]["model_id"] for f in forecasts}),
             "research_hypotheses": list(MODELS), "hypothesis_count_this_run": len(MODELS),
             "selection_rule": "Lowest development CRPS on identical matured samples; tie favors zero drift; holdout never selects",
@@ -161,6 +181,18 @@ def summarize(rows, plan):
                             "Scenario frequencies are uncalibrated; fitted innovation law differs from bounded simulation law",
                             "Candidate observations are hypothetical independent opportunities, not trades or portfolio P&L",
                             "Historical availability/revision limitations remain those of the captured input"]}
+
+
+def decision_instants(plan: ResearchPlan) -> list:
+    """The scan grid: the instants at which this plan actually forms a candidate and reads a quote.
+
+    The run also stops at the holdout boundary and at the end to mature labels, but those stops take no decision
+    and read no quote, so they are not decision instants. One definition, so anything preparing inputs for a plan
+    (a quote fetch, say) asks at the same instants the run will rather than at a second grid that can drift.
+    """
+    return sorted(float(t + plan.decision_delay_seconds)
+                  for t in np.arange(plan.start, plan.end, plan.scan_minutes * 60)
+                  if t + plan.decision_delay_seconds < plan.end)
 
 
 def run_research(input_path: Path | bytes, out: Path, *, plan: ResearchPlan, config: Config) -> dict:
@@ -174,9 +206,14 @@ def run_research(input_path: Path | bytes, out: Path, *, plan: ResearchPlan, con
         document = json.loads(raw)
         observations, rejected = normalize(document)
         input_class = input_class_of(document, observations)
+        # The ceiling is enforced, not merely reported: a mixed input reaches no mode at all, and a synthetic
+        # control is admitted only through the synthetic research path that declares itself as one.
+        admitted = require_mode(document, observations,
+                                "SYNTHETIC_CONTROL" if input_class == "SYNTHETIC_RESEARCH_CONTROL" else "OFFLINE_RESEARCH")
         manifest = {"schema": "APEX_RESEARCH_MANIFEST_V1", "plan": asdict(plan), "config": config.record(),
                     "input_sha256": hashlib.sha256(raw).hexdigest(), "input_class": input_class,
                     "code": code_manifest(), "models": list(MODELS), "rejected": rejected,
+                    "admissibility": admitted,
                     "availability_bases": sorted({r["availability_basis"] for r in observations}),
                     "holdout_contract": "Ridge training labels and model selection frozen before holdout. Unlabelled variance inputs update causally.",
                     "authorization": "RESEARCH_ONLY_NO_BROKER"}
@@ -185,10 +222,8 @@ def run_research(input_path: Path | bytes, out: Path, *, plan: ResearchPlan, con
         ledger.append("RUN_OPEN", plan.start, {"manifest_digest": digest(manifest), "config": config.record(), "input_class": input_class})
         pending, matured, scores = {}, [], []
         selected = False
-        decision_times = {float(t + plan.decision_delay_seconds) for t in np.arange(plan.start, plan.end, plan.scan_minutes * 60)
-                          if t + plan.decision_delay_seconds < plan.end}
-        times = decision_times | {plan.holdout_start, plan.end}
-        for now in sorted(times):
+        decision_times = set(decision_instants(plan))
+        for now in sorted(decision_times | {plan.holdout_start, plan.end}):
             bars, _ = visible(observations, now=now, symbol=config.symbol, kind="bar")
             by_close = {b["event_epoch"] + 60: b for b in bars if regular(b["event_epoch"])}
             for sample_id, item in list(pending.items()):

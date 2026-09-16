@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import numpy as np
 
-from .core import Config, fee, money
+from .core import Config, fee, finite, money
 from .data import visible
 
 
@@ -31,7 +31,15 @@ def evaluate(prediction, paths, quote, quote_problem, *, cash, position_open, co
         qty = int(budget / Decimal(str(quote["ask"])))
         while qty and money(Decimal(str(quote["ask"])) * qty) + fee(qty, config) > budget:
             qty -= 1
-        qty = min(qty, int(quote["ask_size"]))
+        # THE SIZE-UNIT FLOOR. `ask_size` is the adapter's CONVERTED size, and the conversion rests on a
+        # caller-supplied multiplier. An overstated multiplier would inflate permitted quantity, which is the one
+        # direction of error that can hurt. The provider's own raw number is therefore an independent ceiling:
+        # whatever the unit turns out to be, one provider unit is never fewer than one share, so a multiplier
+        # that is wrong can only fail to expand size here -- it can never expand it past what was displayed.
+        displayed = int(quote["ask_size"])
+        if finite(quote.get("provider_ask_size")):
+            displayed = min(displayed, int(quote["provider_ask_size"]))
+        qty = min(qty, displayed)
         if qty <= 0:
             reason = "WHOLE_SHARE_OR_DISPLAYED_SIZE_UNAFFORDABLE"
         else:

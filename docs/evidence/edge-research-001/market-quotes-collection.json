@@ -1,0 +1,81 @@
+{
+ "admissibility": {
+  "assumed_availability_bases": [
+   "QUOTE_LATENCY_ASSUMPTION_V1"
+  ],
+  "availability_bases": [
+   "QUOTE_LATENCY_ASSUMPTION_V1"
+  ],
+  "ceiling_reason": "AVAILABILITY_ASSUMED_NOT_MEASURED:QUOTE_LATENCY_ASSUMPTION_V1",
+  "highest_admissible_mode": "OFFLINE_RESEARCH",
+  "input_class": "RECORDED_RESEARCH_WITH_DECLARED_AVAILABILITY_LIMITS",
+  "modes": {
+   "LIVE_PAPER": false,
+   "OFFLINE_RESEARCH": true,
+   "REAL_MONEY": false,
+   "SHADOW_OBSERVATION": false,
+   "SYNTHETIC_CONTROL": true
+  },
+  "note": "A ceiling states what the data cannot disqualify. It grants no execution authority."
+ },
+ "collected_utc": "2026-09-16T03:40:27.714281Z",
+ "collection": "APEX decision-instant quotes for edge-research-001 market plan",
+ "feed": "sip",
+ "final_event_time_groups_with_more_than_one_record": 1,
+ "largest_final_event_time_group": 2,
+ "not_established": [
+  "Any fill, exit, stop ordering or realized P&L",
+  "That the declared 1s latency matches real historical latency, which is not knowable retrospectively",
+  "Anything about symbols, feeds or periods other than SPY/SIP/2026-08-24..2026-09-11",
+  "Any edge, calibration or trading authority"
+ ],
+ "observations_accepted": 183,
+ "observations_rejected": 0,
+ "quotes_document_sha256": "c77d9b9f97a6f22d7327c44188a27a29c5ace0bbe65a32a27e1cc0794b6e659d",
+ "raw_response_bodies": {
+  "count": 195,
+  "per_request_sha256": "recorded in each request-NNNN.json",
+  "retained": "outside Git, under the collection directory"
+ },
+ "reconciliation": {
+  "accounted": 195,
+  "all_records_rejected": 0,
+  "answered": 182,
+  "empty_no_quotes_in_window": 13,
+  "empty_seqs": [
+   131,
+   132,
+   133,
+   134,
+   135,
+   136,
+   137,
+   138,
+   139,
+   140,
+   141,
+   142,
+   143
+  ],
+  "failed": 0,
+  "failed_seqs": [],
+  "final_group_possibly_truncated_seqs": [],
+  "issued": 195,
+  "out_of_session_instants_not_requested": 682,
+  "plan_decision_instants": 877,
+  "planned_in_session_requests": 195,
+  "status": "COMPLETE"
+ },
+ "refusal_notes": {
+  "LATEST_QUOTE_CONFLICT": "1 instant whose final event-time group holds two records with the same nanosecond stamp and different market values. Under the earlier single-record design this instant would have been handed a quote the reader rejects, which is the defect the complete-group design exists to prevent.",
+  "QUOTE_STALE": "13 instants on 2026-09-07, a Monday the exchange was closed for Labor Day. The scan grid checks weekday and clock only and has no exchange calendar, so it asked 13 questions on a closed market. The provider answered 200 with an empty list. The reason code says STALE because the nearest quote belongs to the prior session; it cannot say the market was closed."
+ },
+ "refusals_at_decision": {
+  "LATEST_QUOTE_CONFLICT": 1,
+  "QUOTE_STALE": 13
+ },
+ "round_lot_shares": 1,
+ "sessions_with_quotes": 14,
+ "symbol": "SPY",
+ "usable_at_own_decision_instant": 181
+}
