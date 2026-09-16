@@ -1,0 +1,20 @@
+{
+  "full_run": "549 passed, 1 failed in 650.77s",
+  "failure": "Seconds-only synthetic quarter-second receipt fixture rejected under the new ns contract",
+  "correction": "Fixture declares event_ns and available_ns; no assertions changed",
+  "corrected_test": "1 passed in 27.68s",
+  "application_source_unchanged": true,
+  "only_test_changed_after_full_run_started": [
+    "tests/test_research.py"
+  ],
+  "focused_publisher_service": "48 passed in 1.04s",
+  "paper_book": "22 passed in 0.29s",
+  "actual_demo_verify": "VALID",
+  "actual_paper_verify": "VALID",
+  "unit_parser": "passed with only ExecStart substituted by /usr/bin/true",
+  "shell_syntax": "passed",
+  "no_auth_publisher": "FAILED with CALENDAR_REQUEST_FAILED:BLOCKED_EXTERNAL_CREDENTIAL; exit 1; no generation",
+  "host_ssh": "Network is unreachable",
+  "live_commissioning": false,
+  "clean_full_suite_after_final_fixture_edit": "Not rerun locally; installer enforces complete suite before installation"
+}

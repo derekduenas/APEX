@@ -78,3 +78,4 @@ given; capture already emits `event_ns`, `available_ns`, `raw_response_sha256`, 
 
 No orders, fills or P&L. No activation. A published generation means the data is admissible to the paper
 service's gate — not that the account, its recovery behaviour or its arithmetic have been commissioned on a host.
+

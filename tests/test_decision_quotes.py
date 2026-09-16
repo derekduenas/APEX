@@ -264,3 +264,4 @@ def test_a_quote_claiming_the_assumed_basis_without_nanosecond_stamps_is_refused
     assert float(whole["event_epoch"]).is_integer() and float(whole["available_epoch"]).is_integer()
     _, rejected = normalize({"schema": "APEX_DATA_V1", "observations": [whole]})
     assert rejected == [{"input_index": 0, "reason": "QUOTE_LATENCY_ASSUMPTION_REQUIRES_NANOSECOND_STAMPS"}]
+

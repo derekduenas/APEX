@@ -385,7 +385,7 @@ def test_a_swap_between_the_two_reads_cannot_split_a_generation(tmp_path):
     b, b_session, second_id = pair(tmp_path, "second")
     assert first_id != second_id
 
-    real_read_bytes = Path.read_bytes
+    real_read_bytes = paper_feed.read_json
     swapped = {"done": False}
 
     def swap_after_the_first_half(self, *args, **kwargs):
@@ -394,12 +394,12 @@ def test_a_swap_between_the_two_reads_cannot_split_a_generation(tmp_path):
             swapped["done"] = True                      # a publication lands between the two opens
             publish_generation(tmp_path, tmp_path / "generations" / "g2", b, b_session)
         return data
-    original = paper_feed.Path.read_bytes
+    original = paper_feed.read_json
     try:
-        paper_feed.Path.read_bytes = swap_after_the_first_half
+        paper_feed.read_json = swap_after_the_first_half
         generation, document, session_document = paper_feed.read_generation(tmp_path)
     finally:
-        paper_feed.Path.read_bytes = original
+        paper_feed.read_json = original
     assert swapped["done"], "the test must actually have swapped mid-read"
     assert verify_generation(document, session_document) == first_id
     assert generation.name == "g1", "the pinned directory is the one that was resolved, not the newest"
@@ -509,3 +509,4 @@ def test_order_expiry_still_runs_while_the_publisher_is_failing(tmp_path):
     later = once(root, blocked, start + 900, calendar, config)
     assert later["account"]["fills"] == 0
     assert runtime.report(root, now=start + 900)["verification"]["status"] == "VALID"
+

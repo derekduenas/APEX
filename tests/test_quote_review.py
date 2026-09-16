@@ -61,3 +61,4 @@ def test_exact_admission_set_and_execution_refusal(row, source, allowed):
     for mode in ('LIVE_PAPER', 'REAL_MONEY'):
         with pytest.raises(Refused, match='INPUT_NOT_ADMISSIBLE_FOR_' + mode):
             require_mode(doc, rows, mode)
+

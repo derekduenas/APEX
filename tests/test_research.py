@@ -145,7 +145,10 @@ def test_simulated_receipt_delay_flows_through_actual_tournament(research_flight
     _, original, plan, _ = research_flight
     doc = copy.deepcopy(original)
     for row in doc["observations"]:
-        row["available_epoch"] += .25
+        # The fixture declares the quarter-second delay exactly, with no provider reconstruction.
+        row["event_ns"] = int(row["event_epoch"]) * 10**9
+        row["available_ns"] = int(row["available_epoch"]) * 10**9 + 250_000_000
+        row["available_epoch"] = row["available_ns"] / 1e9
         row["availability_basis"] = "SYNTHETIC_CLOCK"
     root = tmp_path/"measured"
     result = run_research(canonical(doc).encode(), root, plan=plan, config=Config(variance="ewma", paths=100))

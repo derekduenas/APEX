@@ -7,9 +7,10 @@ After=network-online.target
 Type=oneshot
 User=apex-paper-feed
 Group=apex-paper-feed
-WorkingDirectory=__RELEASE__
+SupplementaryGroups=apex-paper
+WorkingDirectory=@@RELEASE@@
 # Publishing is the ONLY component that opens a market-data connection. The paper service reads files.
-ExecStart=__RELEASE__/venv/bin/apex publish-paper-feed --root /var/lib/apex-paper-feed --settings /etc/apex-paper/feed-settings.json
+ExecStart=@@RELEASE@@/venv/bin/apex publish-paper-feed --root /var/lib/apex-paper-feed --settings /etc/apex-paper/feed-settings.json
 LoadCredential=alpaca_key:/etc/apex-shadow/credentials/alpaca_key
 LoadCredential=alpaca_secret:/etc/apex-shadow/credentials/alpaca_secret
 StateDirectory=apex-paper-feed
@@ -28,3 +29,4 @@ PrivateDevices=yes
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 StandardOutput=journal
 StandardError=journal
+

@@ -32,10 +32,6 @@ def duration_ns(seconds):
     return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_FLOOR))
 
 
-def event_ns(row):
-    return row["event_ns"] if "event_ns" in row else ns_lower_bound(row["event_epoch"])
-
-
 def exact_ns(seconds, field: str) -> int:
     """Nanoseconds from declared seconds, or a refusal. NEVER a reconstruction.
 
@@ -319,3 +315,4 @@ def merged_document(documents: list, *, retrieved_utc: str) -> dict:
             "source_authenticity": "COMPONENT_RESPONSES_NOT_INDEPENDENTLY_ATTESTED",
             "limitation": "Each component's limitations apply unchanged to its own observations.",
             "components": components, "observations": observations}
+

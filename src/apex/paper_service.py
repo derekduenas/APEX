@@ -60,7 +60,7 @@ def tick_files(root, *, input_path=None, session_path=None, settings_path, gener
             if feed.get("session") is None:
                 raise Refused("FEED_SESSION_UNAVAILABLE:" + str(feed.get("problem")))
             calendar = PaperSession(**feed["session"]["session"])
-            document = feed["input"] if feed.get("input") is not None else {
+            document = feed["input"] if feed.get("input") is not None and feed.get("problem") is None else {
                 "schema": "APEX_DATA_V1", "source": "UNAVAILABLE_LIVE_FILE_FEED",
                 "status": "BLOCKED_NO_MARKET_DATA", "observations": []}
             result = tick(root, document, session=calendar, config=config,
@@ -110,3 +110,4 @@ def report_text(report):
         rows.append(position["symbol"] + " | shares " + str(position["quantity"]) +
                     " | net unrealized " + amount(position["unrealized_net"]) + " | " + position["mark_status"])
     return "\n".join(rows)
+
