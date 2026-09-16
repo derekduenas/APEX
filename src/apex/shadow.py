@@ -40,9 +40,9 @@ def _strategy_preview(intelligence, state, forecast, paths, *, now, config):
     return compact
 
 
-def observe(observations, now, config: Config):
-    bars, bar_conflicts = visible(observations, now=now, symbol=config.symbol, kind="bar")
-    quotes, quote_conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote")
+def observe(observations, now, config: Config, *, now_ns: int | None = None):
+    bars, bar_conflicts = visible(observations, now=now, symbol=config.symbol, kind="bar", now_ns=now_ns)
+    quotes, quote_conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote", now_ns=now_ns)
     session_bars = [b for b in bars if regular(b["event_epoch"])]
     gaps = [{"after_event": left["event_epoch"], "before_event": right["event_epoch"],
              "missing_minutes": int((right["event_epoch"] - left["event_epoch"]) / 60) - 1}

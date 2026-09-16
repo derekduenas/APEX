@@ -509,3 +509,80 @@ def test_order_expiry_still_runs_while_the_publisher_is_failing(tmp_path):
     later = once(root, blocked, start + 900, calendar, config)
     assert later["account"]["fills"] == 0
     assert runtime.report(root, now=start + 900)["verification"]["status"] == "VALID"
+
+
+def test_the_service_itself_cannot_be_handed_a_split_generation(tmp_path, monkeypatch):
+    """Point 2 at the level that matters: the swap happens during a real `tick_files` invocation.
+
+    The service reads the pair through the pinned generation, so a publication landing between its two file
+    opens cannot give it one half of each. The tick's own recorded feed block names the generation it used.
+    """
+    from apex import paper_feed
+    from apex.paper_service import tick_files
+
+    settings = tmp_path / "settings.json"
+    settings.write_text(json.dumps(json.loads(Path("deploy/paper-settings.example.json").read_bytes())))
+
+    feed_root = tmp_path / "feed"
+    a, a_session, first_id = pair(feed_root, "first")
+    a["provenance"] = {"retrieved_epoch": NOW}
+    publish_generation(feed_root, feed_root / "generations" / "g1", a, a_session, extra={"status": "PUBLISHED"})
+    b, b_session, second_id = pair(feed_root, "second")
+    b["provenance"] = {"retrieved_epoch": NOW + 30}
+
+    real_read_bytes = Path.read_bytes
+    swapped = {"done": False}
+
+    def swap_after_the_first_half(self, *args, **kwargs):
+        data = real_read_bytes(self, *args, **kwargs)
+        if self.name == "input.json" and not swapped["done"]:
+            swapped["done"] = True
+            publish_generation(feed_root, feed_root / "generations" / "g2", b, b_session,
+                               extra={"status": "PUBLISHED"})
+        return data
+    monkeypatch.setattr(paper_feed.Path, "read_bytes", swap_after_the_first_half)
+    result = tick_files(tmp_path / "account", settings_path=settings, generation_root=feed_root)
+    monkeypatch.undo()
+
+    assert swapped["done"], "the test must actually have swapped mid-read"
+    assert result["feed"]["generation_id"] == first_id, "the service used one whole generation"
+    assert result["feed"]["generation_id"] != second_id
+    assert result["feed"]["publisher_status"] == "PUBLISHED"
+    assert result["feed"]["generation_age_s"] is not None
+    assert json.loads((tmp_path / "account" / "service-health.json").read_bytes())["feed"]["generation_id"] == first_id
+
+
+def test_a_measured_quote_is_visible_at_its_own_receipt_instant(tmp_path):
+    """Found on the entitled host, not in a test: a live tick reported visible_quotes 0 with a quote in its own
+    capture, and reached QUOTE_UNAVAILABLE_OR_CONFLICTING.
+
+    The row keeps an exact integer receipt while the cutoff was rebuilt from float seconds and floored, landing
+    up to ~341ns early, so the quote lost to its own round trip about half the time. Threading the integer the
+    caller already had removes the asymmetry instead of trading one rounding rule for another.
+    """
+    import random
+    from apex.core import Config
+    from apex.data import epoch_ns, visible
+    from apex.decision import quote_at
+
+    def measured_quote(receipt_ns):
+        event_ns = receipt_ns - 1_000_000_000
+        return {"symbol": "SPY", "kind": "quote", "availability_basis": "MEASURED_RECEIPT",
+                "available_ns": receipt_ns, "available_epoch": receipt_ns / 1e9,
+                "event_ns": event_ns, "event_epoch": event_ns / 1e9,
+                "bid": 640.10, "ask": 640.12, "bid_size": 200, "ask_size": 200,
+                "observation_id": "q" + str(receipt_ns)}
+
+    random.seed(3)
+    receipts = [random.randrange(1_789_560_000_000_000_000, 1_789_570_000_000_000_000) for _ in range(2000)]
+    lost_to_the_round_trip = sum(
+        not visible([measured_quote(n)], now=n / 1e9, symbol="SPY", kind="quote")[0] for n in receipts)
+    assert lost_to_the_round_trip > 0, "the float cutoff really does drop measured quotes"
+    still_lost = sum(
+        not visible([measured_quote(n)], now=n / 1e9, symbol="SPY", kind="quote", now_ns=n)[0] for n in receipts)
+    assert still_lost == 0, "with the integer clock, a measured quote is never invisible at its own receipt"
+
+    # And the decision reader reaches the quote rather than refusing for want of one.
+    receipt = receipts[0]
+    quote, problem = quote_at([measured_quote(receipt)], receipt / 1e9, Config(symbol="SPY"), now_ns=receipt)
+    assert problem is None and quote["ask"] == 640.12

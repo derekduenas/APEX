@@ -23,9 +23,12 @@ def quote(event=101, *, available=None, bid=99.98, ask=100.0, size=100, symbol='
          'availability_basis': 'MEASURED_RECEIPT' if measured else 'SYNTHETIC_CLOCK',
          'bid': bid, 'ask': ask, 'bid_size': size, 'ask_size': size}
     if measured:
+        # Real capture emits the nanoseconds under BOTH spellings; this fixture carried only one pair, which
+        # made it an incomplete picture of a measured row rather than a claim that measured rows lack stamps.
         q.update(feed='iex', receipt_basis='PARENT_PROCESS_RECEIPT_UPPER_BOUND',
                  raw_response_sha256='a'*64, available_epoch_ns=round(available*1e9),
-                 provider_timestamp_ns=round(event*1e9), market_coverage='IEX_ONLY_NOT_NBBO')
+                 provider_timestamp_ns=round(event*1e9), market_coverage='IEX_ONLY_NOT_NBBO',
+                 event_ns=round(event*1e9), available_ns=round(available*1e9))
     return q
 
 

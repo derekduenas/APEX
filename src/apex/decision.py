@@ -7,14 +7,15 @@ from .core import Config, fee, finite, money
 from .data import visible, event_ns, epoch_ns, duration_ns
 
 
-def quote_at(observations, now, config: Config):
-    quotes, conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote")
+def quote_at(observations, now, config: Config, *, now_ns: int | None = None):
+    quotes, conflicts = visible(observations, now=now, symbol=config.symbol, kind="quote", now_ns=now_ns)
+    clock_ns = epoch_ns(now) if now_ns is None else int(now_ns)
     if not quotes:
         return None, "QUOTE_UNAVAILABLE_OR_CONFLICTING"
     quote = quotes[-1]
     if any(c.get("event_ns", epoch_ns(c["event_epoch"])) >= event_ns(quote) for c in conflicts):
         return None, "LATEST_QUOTE_CONFLICT"
-    if epoch_ns(now) - event_ns(quote) > duration_ns(config.max_quote_age):
+    if clock_ns - event_ns(quote) > duration_ns(config.max_quote_age):
         return None, "QUOTE_STALE"
     return quote, None
 

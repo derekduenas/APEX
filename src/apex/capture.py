@@ -163,7 +163,7 @@ def capture_alpaca(out: Path, *, history_start: str, config: Config, feed: str, 
                     packet["error"] = "DECODE_REFUSED:" + str(exc)
             _write(out / f"request-{packet['seq']:04d}.json", packet)
             packets.append(packet)
-            result = observe(observations, received_ns / 1e9, config)
+            result = observe(observations, received_ns / 1e9, config, now_ns=received_ns)
             shadow = {"request_seq": packet["seq"], "as_of_ns": received_ns, "calculation_finished_ns": clock_ns(), "result": result}
             _write(out / f"shadow-{packet['seq']:04d}.json", shadow)
             shadows.append(shadow)
@@ -261,7 +261,7 @@ def replay_capture(root: Path):
     for packet, shadow in zip(packets, shadows):
         if shadow["request_seq"] != packet["seq"] or shadow["as_of_ns"] != packet["received_ns"] or shadow["calculation_finished_ns"] < shadow["as_of_ns"]:
             raise Refused("SHADOW_TIME_DISAGREES")
-        result = observe(decoded_all, shadow["as_of_ns"] / 1e9, Config(**opening["config"]))
+        result = observe(decoded_all, shadow["as_of_ns"] / 1e9, Config(**opening["config"]), now_ns=shadow["as_of_ns"])
         if result != shadow["result"]:
             raise Refused("CAPTURE_REPLAY_BEHAVIOR_DISAGREES")
         observed += result["status"] == "OBSERVED"

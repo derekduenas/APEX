@@ -6,6 +6,7 @@ import io
 import math
 import re
 from decimal import Decimal, ROUND_FLOOR
+from fractions import Fraction
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -18,6 +19,8 @@ EASTERN = ZoneInfo("America/New_York")
 QUOTE_LATENCY_NS = 1_000_000_000
 QUOTE_LATENCY_SECONDS = QUOTE_LATENCY_NS / 1e9
 BASES = {"SYNTHETIC_CLOCK", "MEASURED_RECEIPT", "BAR_COMPLETION_ASSUMPTION_V1", "QUOTE_LATENCY_ASSUMPTION_V1"}
+# Bases whose seconds are derived from a provider's own integer timestamp, and so must carry it.
+PROVIDER_DERIVED_BASES = {"MEASURED_RECEIPT", "QUOTE_LATENCY_ASSUMPTION_V1"}
 
 
 def epoch_ns(epoch):
@@ -57,12 +60,33 @@ def exact_ns(seconds, field: str) -> int:
     raise Refused("FRACTIONAL_SECONDS_REQUIRE_NANOSECOND_STAMPS:" + field)
 
 
+def declared_ns(seconds) -> int:
+    """Nanoseconds for a clock whose float IS the value, not an image of a provider's integer.
+
+    Nothing is being recovered here. A SYNTHETIC_CLOCK fixture that says 101.1 means 101.1, so this represents
+    that exact binary value in nanoseconds deterministically. Fraction is used rather than str() because the
+    shortest repr is not the float's exact value, and floor rather than round so ordering is stable.
+    """
+    if isinstance(seconds, int) or (isinstance(seconds, float) and seconds.is_integer()):
+        return int(seconds) * 1_000_000_000
+    return math.floor(Fraction(seconds) * 1_000_000_000)
+
+
+def _row_ns(row, field: str) -> int:
+    key = field.replace("_epoch", "_ns")
+    if key in row:
+        return row[key]
+    if row.get("availability_basis") in PROVIDER_DERIVED_BASES:
+        return exact_ns(row[field], field)
+    return declared_ns(row[field])
+
+
 def event_ns(row):
-    return row["event_ns"] if "event_ns" in row else exact_ns(row["event_epoch"], "event_epoch")
+    return _row_ns(row, "event_epoch")
 
 
 def available_ns(row):
-    return row["available_ns"] if "available_ns" in row else exact_ns(row["available_epoch"], "available_epoch")
+    return _row_ns(row, "available_epoch")
 
 
 def decision_only(document):
@@ -120,9 +144,14 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
                 raise Refused("INVALID_TIME")
             if row["available_epoch"] < row["event_epoch"]:
                 raise Refused("AVAILABLE_BEFORE_EVENT")
-            for field in ("event_epoch", "available_epoch"):
-                if field.replace("_epoch", "_ns") not in row:
-                    exact_ns(row[field], field)
+            # The refusal applies where seconds are an IMAGE of a provider's integer stamp, not where they are
+            # the declaration itself. A SYNTHETIC_CLOCK fixture that says 101.1 has lost nothing: there was no
+            # provider and no nanosecond to recover. A measured receipt or a provider event time is the opposite,
+            # and is refused rather than reconstructed.
+            if row["availability_basis"] in PROVIDER_DERIVED_BASES:
+                for field in ("event_epoch", "available_epoch"):
+                    if field.replace("_epoch", "_ns") not in row:
+                        exact_ns(row[field], field)
             if "event_ns" in row or "available_ns" in row:
                 if not all(type(row.get(k)) is int for k in ("event_ns", "available_ns")):
                     raise Refused("QUOTE_LATENCY_ASSUMPTION_REQUIRES_NANOSECOND_STAMPS" if row["availability_basis"] == "QUOTE_LATENCY_ASSUMPTION_V1" else "INVALID_NANOSECOND_STAMPS")
@@ -181,9 +210,16 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
     return sorted(distinct.values(), key=lambda r: (r["available_epoch"], r["event_epoch"], r["observation_id"])), rejected
 
 
-def visible(rows: list[dict], *, now: float, symbol: str, kind: str) -> tuple[list[dict], list[dict]]:
+def visible(rows: list[dict], *, now: float, symbol: str, kind: str, now_ns: int | None = None) -> tuple[list[dict], list[dict]]:
+    """`now_ns` is the decision clock as the integer it already was, when the caller has it.
+
+    Without it the cutoff is rebuilt from float seconds, and a measured receipt loses to its own round trip: the
+    row keeps an exact integer nanosecond while the cutoff is a double-rounded float floored back to an integer,
+    landing up to ~341ns early. A quote was then invisible AT ITS OWN RECEIPT INSTANT about half the time, which
+    is how a live shadow tick reached QUOTE_UNAVAILABLE_OR_CONFLICTING with a quote sitting in its own capture.
+    """
     groups: dict[int, list] = {}
-    cutoff_ns = epoch_ns(now)
+    cutoff_ns = epoch_ns(now) if now_ns is None else int(now_ns)
     for row in rows:
         if row["symbol"] == symbol and row["kind"] == kind and available_ns(row) <= cutoff_ns:
             groups.setdefault(event_ns(row), []).append(row)
