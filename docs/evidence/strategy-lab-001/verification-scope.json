@@ -10,8 +10,13 @@
     "passed": 326,
     "scope": "Full suite before addition of positive control"
   },
-  "new_market_evaluation": "RUNNING_NOT_REPORTED_AS_PASSED",
+  "new_market_evaluation": "RETAINED_R1_VERIFIED_NO_EDGE",
   "new_market_input_sha256": "e45b9db0e6809d61853f2a6d9dad7ab8ed868acca4164540ec64b20fabfcb91a",
   "orders": 0,
-  "profitability": "NOT_ESTABLISHED"
+  "profitability": "NOT_ESTABLISHED",
+  "completion_repair_review": "Independent reviewer reproduced and reviewed fix for accounting-prefix route; 10 targeted tests pass",
+  "recovered_full_suite": {
+    "passed": 336,
+    "scope": "Before final accounting-head regression; complete final release suite will include new director work"
+  }
 }

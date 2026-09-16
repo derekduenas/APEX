@@ -1,0 +1,84 @@
+RETAINED-LEDGER-COMPLETION REPRODUCTION
+
+Before: c96147c421be3a86fcafb6d32b304eb8a79751b5, isolated detached worktree.
+After: working-tree repair based on that commit; exact source hashes below.
+Data: four synthetic sessions, real run_research path, EWMA variance, 100 paths.
+Fault: after RUN_CLOSE append returns, replace retained content with its valid RUN_OPEN prefix.
+Only the Ledger persistence boundary is instrumented; market/model computations remain real.
+The same test uses only APIs available in both versions. No missing-method failure is involved.
+No original market run or market input was edited.
+
+BEFORE OBSERVATION
+OBSERVED {"complete_exists": true, "complete_names_prefix": true, "failed_exists": false, "last_kind": "RUN_OPEN", "producer_returned": true, "real_model_path_arrays": 72, "retained_rows": 1, "summary_exists": true}
+Failed: DID NOT RAISE Refused
+1 failed in 1.03s
+
+AFTER OBSERVATION
+OBSERVED {"complete_exists": false, "complete_names_prefix": false, "failed_exists": true, "last_kind": "RUN_OPEN", "producer_returned": false, "real_model_path_arrays": 72, "retained_rows": 1, "summary_exists": false}
+1 passed in 0.99s
+
+REPAIR CONTRACT SUITE
+pytest -q tests/test_retained_ledger_completion.py --junitxml=/tmp/apex-retained-ledger-completion.xml
+9 passed in 3.96s.
+Covers pathname replacement, same-inode truncation, same-size rehashed final-head disagreement,
+correct completion, forged prefix marker, real research/lab completion refusals,
+and downstream rejection of a damaged source after the nested producer returned.
+
+SOURCE SHA256
+src/apex/ledger.py 0855ac0e9773805760c5dbd7c0f41898cc678301be0e28f009dcee67a7ee7165
+src/apex/research.py 3e79a81f8030bfbd29e0cf86a48fee7199e3bbb1882775730e56c656260261fd
+src/apex/strategy_lab.py e9d4e72fe0d183aeb10ad6ae9e85cd49d47284ffd695ec82126c7edc1d291e78
+tests/test_retained_ledger_completion.py f6b5364607f645df5cb505d6c32e332e6a4262659cf49b91655624580ce938e0
+
+SCOPE / LIMITATIONS
+This reproduces the acceptance defect. It does not identify who or what changed the original market ledger.
+Open-file/path identity plus byte length catches replacement or size changes before and after writes.
+Final read checks the required close, writer sequence count, and writer head before success publication.
+The filesystem is not immutable: a later rewrite remains possible and must be detected by independent verification.
+This is internal retained-artifact integrity, not source authentication, hostile-process protection, or profit evidence.
+
+IDENTICAL PUBLIC-API REPRODUCER
+"""Public-API fault injection, valid against both parent and repair."""
+from dataclasses import replace
+import json
+import pytest
+from apex.core import Config, Refused, canonical
+from apex.data import session
+from apex.fixtures import research_demo_document
+from apex.ledger import Ledger, read_verified
+from apex.research import run_research
+
+def test_real_research_rejects_retained_prefix(tmp_path, monkeypatch):
+    doc, plan = research_demo_document()
+    days = sorted({session(r["event_epoch"]) for r in doc["observations"]})[:4]
+    doc["observations"] = [r for r in doc["observations"] if session(r["event_epoch"]) in days]
+    starts = [min(r["event_epoch"] for r in doc["observations"] if session(r["event_epoch"]) == day) for day in days]
+    plan = replace(plan, start=starts[0], development_start=starts[1], holdout_start=starts[2],
+                   end=starts[3] + 390 * 60, scan_minutes=60, minimum_training_labels=2,
+                   training_window=20, minimum_comparison_sessions=1)
+    class LoseClose(Ledger):
+        def __init__(self, path):
+            super().__init__(path)
+            self.injected_path = path
+        def append(self, kind, epoch, payload):
+            row = super().append(kind, epoch, payload)
+            if kind == "RUN_CLOSE":
+                p = self.injected_path
+                p.write_bytes(p.read_bytes().splitlines(keepends=True)[0])
+            return row
+    monkeypatch.setattr("apex.research.Ledger", LoseClose)
+    out, returned = tmp_path / "research", None
+    try:
+        with pytest.raises(Refused):
+            returned = run_research(canonical(doc).encode(), out, plan=plan,
+                                    config=Config(variance="ewma", paths=100))
+    finally:
+        rows = read_verified(out / "ledger.jsonl")
+        complete = out / "COMPLETE"
+        print("OBSERVED " + json.dumps({"producer_returned": returned is not None,
+              "summary_exists": (out / "summary.json").exists(),
+              "complete_exists": complete.exists(), "failed_exists": (out / "FAILED.json").exists(),
+              "retained_rows": len(rows), "last_kind": rows[-1]["kind"],
+              "complete_names_prefix": complete.exists() and complete.read_text() == rows[-1]["hash"],
+              "real_model_path_arrays": len(list(out.glob("*.npy")))}, sort_keys=True))
+

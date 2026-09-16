@@ -88,3 +88,51 @@ Repeated backtest searches create false discoveries; all hypotheses and dataset 
 ## Next intelligence that must earn its place
 
 The next high-value inputs are cross-sectional relative strength, catalyst reaction and executable microstructure, followed by an ablation showing whether each adds out-of-sample after-cost value. News summarization, TradingView imagery and more complex models should enter as testable inputs or challengers, rather than receiving authority from impressive language or visual patterns.
+
+## Completion failure found on the longer market evaluation
+
+The first June–July SPY run at `c96147c` returned successfully and wrote a
+`COMPLETE` marker, but its retained forecast ledger contained only 685 records,
+ending at a June 26 `RESEARCH_SAMPLE`. All 1,276 forecast array files existed.
+The separate verifier refused `RESEARCH_RUN_LIFECYCLE_INVALID`; this run is not
+an accepted backtest. Original bytes are preserved, with hashes and a separate
+assessment in `docs/evidence/strategy-lab-001/market-new-failed-assessment.json`.
+The actor or mechanism that interrupted retention is undetermined.
+
+The confirmed code defect was accepting a valid ledger prefix as a completed
+run. Completion now requires the declared terminal event at the declared end,
+and the retained head and record count must match the writer. Each append also
+checks that the retained pathname still identifies the writer's open file and
+that its size has not changed externally. The strategy lab verifies its nested
+forecast's terminal record and completion marker before consuming it. These
+checks detect loss/replacement; they do not authenticate storage or provide
+an atomic multi-file commit against an adversary. A corrected evaluation uses
+a new run directory with the same frozen input, plan and economic thresholds.
+
+## Recovered evaluation and completion review — September 16
+
+The corrected `strategy-v05-market-new-r1` evaluation is now verified: 2,337
+forecast-ledger records and 1,268 laboratory records reach their declared
+terminal events. The separate reader reconstructed 319 forecasts/tournaments
+and 473 outcomes. It reports `VALID`; the original failed run remains failed.
+
+All 319 research choices were WAIT: 304 lacked positive modeled growth and 15
+were outside analogue support. No eligible non-WAIT hypothesis had positive
+mean modeled log growth even in the unstressed selected-model world. The
+15-session holdout supplies no profitable-edge finding. Missing quotes remain
+an execution-evidence limitation; they did not directly cause these research
+WAIT decisions. There were no orders or fills.
+
+Independent review also reproduced an accounting-reader gap in the replay
+engine: it could verify a completed ledger, reread a truncated prefix, and
+write that prefix's head to COMPLETE. The engine now requires the accounting
+reader to agree with the retained writer head and writes that anchored head.
+An actual-entry regression injects the truncation before real accounting.
+Explicit LF writes keep byte-size checks independent of host newline translation.
+
+The corrected historical run predates those last two persistence changes;
+its source manifest is preserved and the verifier truthfully reports a current
+code mismatch. The research/model/scenario mathematics used for that run is
+unchanged by this completion repair. This is verification of the retained run,
+not a claim that the final release reran the entire market study. See the
+separate `market-new-r1-review.json` evidence for scope and source differences.

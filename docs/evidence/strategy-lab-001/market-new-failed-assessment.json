@@ -1,0 +1,61 @@
+{
+  "verdict": "FAILED_COMPLETION_CONTRACT_DO_NOT_USE_AS_BACKTEST",
+  "source_commit": "c96147c421be3a86fcafb6d32b304eb8a79751b5",
+  "observations": {
+    "forecast_arrays": 1276,
+    "retained_ledger_records": 685,
+    "last_kind": "RESEARCH_SAMPLE",
+    "last_epoch": 1782502205.0,
+    "terminal_record_count": 0,
+    "completion_matches_prefix_hash": true,
+    "retained_kinds": {
+      "RUN_OPEN": 1,
+      "RESEARCH_REFUSED": 51,
+      "RESEARCH_SAMPLE": 209,
+      "RESEARCH_LABEL": 208,
+      "RESEARCH_FORECAST": 54,
+      "RESEARCH_SCORE": 162
+    }
+  },
+  "cause": "Persisted-prefix acceptance confirmed; actor/mechanism that replaced or truncated the retained file is UNDETERMINED. Full array count demonstrates computation continued after the retained ledger prefix.",
+  "verification": {
+    "status": "MISMATCH",
+    "problems": [
+      "LAB_SOURCE_RESEARCH_REFUSED:RESEARCH_RUN_LIFECYCLE_INVALID"
+    ],
+    "code_manifest_matches_current": null,
+    "scope": "Persisted causal consistency: nested research verification then exact replay through current regime, analog, strategy, feedback, selection and evidence readers. Successful variance optimization is not independently refitted. Shared deterministic calculations are not a second independent mathematical implementation. Hashes do not authenticate provider history, executed source, or prior research registration; no calibration, profit, or trading authority is established."
+  },
+  "artifacts": [
+    {
+      "path": "runs/strategy-v05-market-new/forecast/ledger.jsonl",
+      "bytes": 68007627,
+      "sha256": "894b5cd8b385390c72dc2c48c4eac7bf4248f09f9bcbb0cd29a6f2e0f05417dc"
+    },
+    {
+      "path": "runs/strategy-v05-market-new/forecast/COMPLETE",
+      "bytes": 64,
+      "sha256": "281e23c40cfac6aafe77dfd1e9d470e4ef05525f1be4d152319e4ef938aa4ec2"
+    },
+    {
+      "path": "runs/strategy-v05-market-new/forecast/summary.json",
+      "bytes": 7870,
+      "sha256": "67a8b80f4e21b13f418ffc591f11f2fd5bddafacc01a91dbc929b2346d3da019"
+    },
+    {
+      "path": "runs/strategy-v05-market-new/ledger.jsonl",
+      "bytes": 32987946,
+      "sha256": "ae525a8d9864877f70ad8d5023ea1a1324c8bd1597885e301948c61200c14c4a"
+    },
+    {
+      "path": "runs/strategy-v05-market-new/COMPLETE",
+      "bytes": 64,
+      "sha256": "1969448c516d5554a837c85ad6c01305521035005a8baeaaf873cc47b53a4361"
+    },
+    {
+      "path": "runs/strategy-v05-market-new/summary.json",
+      "bytes": 8262,
+      "sha256": "4c1007ab1c42657152af197a52e12455e2edbc9d49f9e466813d121d0d6f5acf"
+    }
+  ]
+}

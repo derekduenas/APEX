@@ -20,7 +20,7 @@ from .analog_worlds import sample_analog_worlds
 from .core import Config, Refused, canonical, code_manifest, digest, finite
 from .data import normalize, regular, session, visible
 from .decision import quote_at
-from .ledger import Ledger, read_verified
+from .ledger import Ledger, read_complete, read_verified
 from .regimes import classify_regime
 from .research import ResearchPlan, _selection, run_research
 from .strategy_evidence import session_bootstrap
@@ -320,7 +320,14 @@ def run_lab(input_path, out: Path, *, plan: ResearchPlan, config: Config, policy
     ledger = None
     try:
         run_research(raw, out / 'forecast', plan=plan, config=config)
-        source_rows = read_verified(out / 'forecast' / 'ledger.jsonl')
+        # The nested producer returning is not evidence that its retained
+        # source ledger reaches the declared end. Require the terminal event
+        # and its completion marker before creating any downstream ledger.
+        if (out / 'forecast' / 'FAILED.json').exists():
+            raise Refused('LAB_SOURCE_RESEARCH_FAILED')
+        source_rows = read_complete(out / 'forecast' / 'ledger.jsonl',
+            expected_last_kind='RUN_CLOSE', expected_epoch=plan.end,
+            completion_path=out / 'forecast' / 'COMPLETE')
         observations, _ = normalize(json.loads(raw))
         ledger = Ledger(out / 'ledger.jsonl')
         ledger.append('RUN_OPEN', plan.start, {'manifest_digest': digest(manifest), 'forecast_head': source_rows[-1]['hash'],
@@ -328,9 +335,8 @@ def run_lab(input_path, out: Path, *, plan: ResearchPlan, config: Config, policy
         for kind, now, record, _ in lab_events(source_rows, observations, plan=plan, config=config, policy=policy, costs=costs,
                 load_paths=lambda filename: np.load(out / 'forecast' / filename, allow_pickle=False)):
             ledger.append(kind, now, record)
-        ledger.close()
+        rows = ledger.verified_close(expected_last_kind='LAB_CLOSE', expected_epoch=plan.end)
         ledger = None
-        rows = read_verified(out / 'ledger.jsonl')
         summary = summarize_lab(rows, policy=policy, config=config)
         (out / 'summary.json').write_text(canonical(summary))
         (out / 'COMPLETE').write_text(rows[-1]['hash'])

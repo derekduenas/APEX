@@ -1,0 +1,625 @@
+{
+  "status": "RETAINED_R1_VERIFIED",
+  "verification": {
+    "status": "VALID",
+    "problems": [],
+    "ledger_head": "c470cf3f2638caf94a566c77ad36e2c830d4704a7b655ca5666852b23dfdfdb6",
+    "verified_source_forecasts": 319,
+    "verified_intelligence": 473,
+    "verified_tournaments": 319,
+    "verified_outcomes": 473,
+    "verified_events": 1268,
+    "source_input_and_paths": "VERIFIED",
+    "event_order_and_completeness": "VERIFIED",
+    "summary_and_evidence": "RECOMPUTED_FROM_VERIFIED_EVENTS",
+    "code_manifest_matches_current": false,
+    "scope": "Persisted causal consistency: nested research verification then exact replay through current regime, analog, strategy, feedback, selection and evidence readers. Successful variance optimization is not independently refitted. Shared deterministic calculations are not a second independent mathematical implementation. Hashes do not authenticate provider history, executed source, or prior research registration; no calibration, profit, or trading authority is established."
+  },
+  "input_sha256": "e45b9db0e6809d61853f2a6d9dad7ab8ed868acca4164540ec64b20fabfcb91a",
+  "plan": {
+    "decision_delay_seconds": 5,
+    "development_start": 1782135000.0,
+    "embargo_minutes": 1,
+    "end": 1785528000.0,
+    "holdout_start": 1783949400.0,
+    "minimum_comparison_sessions": 3,
+    "minimum_training_labels": 40,
+    "ridge_alpha": 10.0,
+    "scan_minutes": 30,
+    "start": 1780320600.0,
+    "training_window": 260
+  },
+  "summary": {
+    "account_pnl": null,
+    "analog_refusals": {},
+    "completed_counterfactual_episodes": 473,
+    "empirical_strategy_evidence": {
+      "DEVELOPMENT": {
+        "benchmark": "WAIT",
+        "best_observed_strategy": "WAIT",
+        "bootstrap_samples_requested": 2000,
+        "bootstrap_samples_used": 2000,
+        "by_strategy": {
+          "HOLD_LONG": {
+            "mean_excess_return": -5.240958739609787e-05,
+            "mean_net_return": -5.240958739609787e-05,
+            "simultaneous_lower_mean_excess": -6.164005285713651e-05
+          },
+          "MOMENTUM_BREAKOUT_LONG": {
+            "mean_excess_return": 0.0,
+            "mean_net_return": 0.0,
+            "simultaneous_lower_mean_excess": -9.230465461038644e-06
+          },
+          "PULLBACK_LONG": {
+            "mean_excess_return": 0.0,
+            "mean_net_return": 0.0,
+            "simultaneous_lower_mean_excess": -9.230465461038644e-06
+          },
+          "VWAP_REVERSION_LONG": {
+            "mean_excess_return": -8.674533571424887e-07,
+            "mean_net_return": -8.674533571424887e-07,
+            "simultaneous_lower_mean_excess": -1.0097918818181133e-05
+          },
+          "WAIT": {
+            "mean_excess_return": 0.0,
+            "mean_net_return": 0.0,
+            "simultaneous_lower_mean_excess": 0.0
+          }
+        },
+        "centered_max_statistics_digest": "2e487b401cafc9798064ca69960b4fea0de7d9a60d4e843f8bd44897f67c12c0",
+        "confidence": 0.95,
+        "consumed_outcomes_digest": "b2969b26d1d4ce590ee57ae0907683446031d0f2f8ef5e82405ff1abe7c4e2f6",
+        "effective_sampling_unit": "SESSION_NOT_SIMULATED_PATH_OR_TRADE",
+        "estimand": "EQUAL_SESSION_MEAN_OF_OPPORTUNITY_NET_RETURNS",
+        "evidence_hash": "69ce01492e946f96e3bf3ea4dc2d94cf3b5a378dad698da0a7ed821574a5f3d0",
+        "family_p_value": 1.0,
+        "fixed_family_count_including_benchmark": 5,
+        "limitations": [
+          "INDEPENDENT_STATIONARY_SESSIONS_ASSUMED_NOT_ESTABLISHED",
+          "WITHIN_SESSION_DEPENDENCE_PRESERVED_BETWEEN_SESSION_DEPENDENCE_NOT_MODELLED",
+          "FIXED_SUPPLIED_FAMILY_ONLY_REGISTRATION_TIMING_NOT_VERIFIED_HERE",
+          "REPEATED_LOOKS_AND_PRIOR_EXPERIMENTS_NOT_CONTROLLED",
+          "MATURITY_NONOVERLAP_AND_OPPORTUNITY_COVERAGE_REQUIRE_CALLER_EVIDENCE",
+          "RETURNS_AND_COST_ASSUMPTIONS_SUPPLIED_NOT_INDEPENDENTLY_VERIFIED_HERE",
+          "NOT_CALIBRATED_PROFIT_PROBABILITY_OR_EXECUTION_AUTHORIZATION",
+          "FINITE_SAMPLE_BOOTSTRAP_APPROXIMATION_NOT_A_COVERAGE_GUARANTEE"
+        ],
+        "lower_bound_definition": "OBSERVED_MEAN_EXCESS_MINUS_COMMON_MAX_CENTERED_ERROR_QUANTILE",
+        "method": "SESSION_IID_CENTERED_MAX_MEAN_EXCESS_V1",
+        "minimum_sessions": 10,
+        "null_hypothesis": "NO_REGISTERED_STRATEGY_HAS_POSITIVE_EXPECTED_SESSION_MEAN_EXCESS",
+        "observed_max_mean_excess": 0.0,
+        "observed_max_statistic": 0.0,
+        "opportunity_count": 154,
+        "opportunity_coverage_complete": true,
+        "promotion": "NOT_AUTHORIZED",
+        "rng": "NUMPY_PCG64",
+        "schema": "APEX_STRATEGY_EVIDENCE_V1",
+        "seed": 41,
+        "session_count": 14,
+        "session_means": [
+          {
+            "net_returns": {
+              "HOLD_LONG": -6.554444381817098e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 2.5790118181837647e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-22"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -6.579837545453675e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -7.097981818180249e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-23"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -9.7716666272721e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -2.8153000000016123e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-24"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -9.206998609090636e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -5.81805454545371e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-25"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -4.868380709090781e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -2.685909090907692e-07,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-26"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -1.9953810909086397e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-29"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -2.5001227363628172e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-06-30"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -4.858942699998827e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-01"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -6.256328054545189e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 2.6354045454561193e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-02"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -3.615839609090327e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-06"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -6.0597909636361565e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-07"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -3.800530736362941e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -1.358836090908384e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-08"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -2.498436818181062e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-09"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -4.806721772726777e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-10"
+          }
+        ],
+        "simultaneous_error_quantile": 9.230465461038644e-06,
+        "statistic_definition": "SQRT_SESSION_COUNT_TIMES_MAX_MEAN_EXCESS_INCLUDING_BENCHMARK_ZERO",
+        "status": "DESCRIPTIVE_BOOTSTRAP_ONLY",
+        "strategy_ids": [
+          "HOLD_LONG",
+          "MOMENTUM_BREAKOUT_LONG",
+          "PULLBACK_LONG",
+          "VWAP_REVERSION_LONG",
+          "WAIT"
+        ]
+      },
+      "HOLDOUT": {
+        "benchmark": "WAIT",
+        "best_observed_strategy": "WAIT",
+        "bootstrap_samples_requested": 2000,
+        "bootstrap_samples_used": 2000,
+        "by_strategy": {
+          "HOLD_LONG": {
+            "mean_excess_return": -6.656657903029581e-05,
+            "mean_net_return": -6.656657903029581e-05,
+            "simultaneous_lower_mean_excess": -7.840513290908415e-05
+          },
+          "MOMENTUM_BREAKOUT_LONG": {
+            "mean_excess_return": 0.0,
+            "mean_net_return": 0.0,
+            "simultaneous_lower_mean_excess": -1.1838553878788338e-05
+          },
+          "PULLBACK_LONG": {
+            "mean_excess_return": 0.0,
+            "mean_net_return": 0.0,
+            "simultaneous_lower_mean_excess": -1.1838553878788338e-05
+          },
+          "VWAP_REVERSION_LONG": {
+            "mean_excess_return": -2.0610527272726194e-06,
+            "mean_net_return": -2.0610527272726194e-06,
+            "simultaneous_lower_mean_excess": -1.3899606606060957e-05
+          },
+          "WAIT": {
+            "mean_excess_return": 0.0,
+            "mean_net_return": 0.0,
+            "simultaneous_lower_mean_excess": 0.0
+          }
+        },
+        "centered_max_statistics_digest": "8eb1934438f5ead7562b63c135701ebc8282a8b1cb42c292e1922cfe018b7b99",
+        "confidence": 0.95,
+        "consumed_outcomes_digest": "2fa3e1747266baf1b9c60666db800841044f5592b0f2deb5cfac43b218493f90",
+        "effective_sampling_unit": "SESSION_NOT_SIMULATED_PATH_OR_TRADE",
+        "estimand": "EQUAL_SESSION_MEAN_OF_OPPORTUNITY_NET_RETURNS",
+        "evidence_hash": "a55f619ef708e7596815c0818c6ca2380007611120c12d15e6cc121969dfd84e",
+        "family_p_value": 1.0,
+        "fixed_family_count_including_benchmark": 5,
+        "limitations": [
+          "INDEPENDENT_STATIONARY_SESSIONS_ASSUMED_NOT_ESTABLISHED",
+          "WITHIN_SESSION_DEPENDENCE_PRESERVED_BETWEEN_SESSION_DEPENDENCE_NOT_MODELLED",
+          "FIXED_SUPPLIED_FAMILY_ONLY_REGISTRATION_TIMING_NOT_VERIFIED_HERE",
+          "REPEATED_LOOKS_AND_PRIOR_EXPERIMENTS_NOT_CONTROLLED",
+          "MATURITY_NONOVERLAP_AND_OPPORTUNITY_COVERAGE_REQUIRE_CALLER_EVIDENCE",
+          "RETURNS_AND_COST_ASSUMPTIONS_SUPPLIED_NOT_INDEPENDENTLY_VERIFIED_HERE",
+          "NOT_CALIBRATED_PROFIT_PROBABILITY_OR_EXECUTION_AUTHORIZATION",
+          "FINITE_SAMPLE_BOOTSTRAP_APPROXIMATION_NOT_A_COVERAGE_GUARANTEE"
+        ],
+        "lower_bound_definition": "OBSERVED_MEAN_EXCESS_MINUS_COMMON_MAX_CENTERED_ERROR_QUANTILE",
+        "method": "SESSION_IID_CENTERED_MAX_MEAN_EXCESS_V1",
+        "minimum_sessions": 10,
+        "null_hypothesis": "NO_REGISTERED_STRATEGY_HAS_POSITIVE_EXPECTED_SESSION_MEAN_EXCESS",
+        "observed_max_mean_excess": 0.0,
+        "observed_max_statistic": 0.0,
+        "opportunity_count": 165,
+        "opportunity_coverage_complete": true,
+        "promotion": "NOT_AUTHORIZED",
+        "rng": "NUMPY_PCG64",
+        "schema": "APEX_STRATEGY_EVIDENCE_V1",
+        "seed": 41,
+        "session_count": 15,
+        "session_means": [
+          {
+            "net_returns": {
+              "HOLD_LONG": -5.212329199999059e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-13"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -3.9734260909085606e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-14"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -6.63713451818136e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-15"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -9.712775809090523e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-16"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -9.174447454545006e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-17"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -8.873610063635003e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -6.154027272726705e-06,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-20"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -4.352345372726735e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-21"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -6.583969418180995e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-22"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -9.081221763635665e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-23"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -8.41550909090839e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-24"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -7.600513609089913e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -1.1933863636362605e-05,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-27"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -5.441079627272322e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-28"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -0.000111719341909084,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": -1.282789999999998e-05,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-29"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -2.2630603636353256e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-30"
+          },
+          {
+            "net_returns": {
+              "HOLD_LONG": -1.35651197272647e-05,
+              "MOMENTUM_BREAKOUT_LONG": 0.0,
+              "PULLBACK_LONG": 0.0,
+              "VWAP_REVERSION_LONG": 0.0,
+              "WAIT": 0.0
+            },
+            "opportunities": 11,
+            "session": "2026-07-31"
+          }
+        ],
+        "simultaneous_error_quantile": 1.1838553878788338e-05,
+        "statistic_definition": "SQRT_SESSION_COUNT_TIMES_MAX_MEAN_EXCESS_INCLUDING_BENCHMARK_ZERO",
+        "status": "DESCRIPTIVE_BOOTSTRAP_ONLY",
+        "strategy_ids": [
+          "HOLD_LONG",
+          "MOMENTUM_BREAKOUT_LONG",
+          "PULLBACK_LONG",
+          "VWAP_REVERSION_LONG",
+          "WAIT"
+        ]
+      }
+    },
+    "feedback_alerts": 0,
+    "fills": 0,
+    "heldout_selected_policy_mean_return_on_fixed_research_capital": 0.0,
+    "hypothesis_count": 5,
+    "hypothesis_registry": {
+      "barrier_basis": "ONE_MINUTE_GRID_ONLY_FIRST_OBSERVED_PRICE_NOT_THRESHOLD",
+      "entry_window": "FIRST_ALLOWED_GRID_OR_LATER_TRIGGER_STRICTLY_BEFORE_HORIZON",
+      "parameter_basis": "FIXED_RESEARCH_HYPOTHESES_NOT_OPTIMIZED_ON_EVALUATION_PATHS",
+      "position": "FUNDED_LONG_WHOLE_SHARES_ONLY_ONE_ENTRY_PER_SCENARIO",
+      "schema": "STRATEGY_REGISTRY_V1",
+      "strategies": [
+        {
+          "entry_offset_bps": null,
+          "entry_rule": "NEVER",
+          "stop_bps": null,
+          "strategy_id": "WAIT",
+          "target_bps": null,
+          "target_rule": "NONE"
+        },
+        {
+          "entry_offset_bps": 0.0,
+          "entry_rule": "FIRST_ALLOWED_GRID",
+          "stop_bps": null,
+          "strategy_id": "HOLD_LONG",
+          "target_bps": null,
+          "target_rule": "HORIZON_ONLY"
+        },
+        {
+          "entry_offset_bps": 20.0,
+          "entry_rule": "FIRST_GRID_AT_OR_ABOVE",
+          "stop_bps": 40.0,
+          "strategy_id": "MOMENTUM_BREAKOUT_LONG",
+          "target_bps": 80.0,
+          "target_rule": "ENTRY_RELATIVE"
+        },
+        {
+          "entry_offset_bps": -25.0,
+          "entry_rule": "FIRST_GRID_AT_OR_BELOW",
+          "stop_bps": 45.0,
+          "strategy_id": "PULLBACK_LONG",
+          "target_bps": 90.0,
+          "target_rule": "ENTRY_RELATIVE"
+        },
+        {
+          "entry_offset_bps": 10.0,
+          "entry_rule": "FIRST_GRID_AT_OR_ABOVE",
+          "stop_bps": 40.0,
+          "strategy_id": "VWAP_REVERSION_LONG",
+          "target_bps": null,
+          "target_rule": "CURRENT_OBSERVED_VWAP"
+        }
+      ]
+    },
+    "intelligence_snapshots": 473,
+    "limitations": [
+      "Selection metrics are model-conditioned, not calibrated success probabilities",
+      "Historical paths and bar-close executions omit intraminute order, queue, spreads and executable fills",
+      "All reported strategy returns use fixed illustrative capital and costs, not an account equity curve",
+      "Repeated dataset use is not an untouched holdout; finite-family diagnostics do not cover earlier experiments",
+      "No options, shorting, LLM news generation or cross-symbol allocation in this release",
+      "No exchange holiday/early-close calendar; observed weekday-session coverage only"
+    ],
+    "orders": 0,
+    "pending_samples": [],
+    "readiness": "RESEARCH_ONLY_NO_STRATEGY_PROMOTION_OR_BROKER_AUTHORITY",
+    "regimes": {
+      "DOWN_TREND|HIGH_VOL|HIGH_PARTICIPATION": 1,
+      "DOWN_TREND|HIGH_VOL|NORMAL_PARTICIPATION": 3,
+      "DOWN_TREND|LOW_VOL|NORMAL_PARTICIPATION": 1,
+      "DOWN_TREND|NORMAL_VOL|HIGH_PARTICIPATION": 2,
+      "DOWN_TREND|NORMAL_VOL|LOW_PARTICIPATION": 1,
+      "DOWN_TREND|NORMAL_VOL|NORMAL_PARTICIPATION": 15,
+      "RANGE|HIGH_VOL|HIGH_PARTICIPATION": 5,
+      "RANGE|HIGH_VOL|LOW_PARTICIPATION": 1,
+      "RANGE|HIGH_VOL|NORMAL_PARTICIPATION": 29,
+      "RANGE|LOW_VOL|HIGH_PARTICIPATION": 2,
+      "RANGE|LOW_VOL|LOW_PARTICIPATION": 17,
+      "RANGE|LOW_VOL|NORMAL_PARTICIPATION": 50,
+      "RANGE|NORMAL_VOL|HIGH_PARTICIPATION": 19,
+      "RANGE|NORMAL_VOL|LOW_PARTICIPATION": 30,
+      "RANGE|NORMAL_VOL|NORMAL_PARTICIPATION": 120,
+      "UP_TREND|HIGH_VOL|HIGH_PARTICIPATION": 1,
+      "UP_TREND|HIGH_VOL|NORMAL_PARTICIPATION": 2,
+      "UP_TREND|LOW_VOL|HIGH_PARTICIPATION": 2,
+      "UP_TREND|LOW_VOL|NORMAL_PARTICIPATION": 5,
+      "UP_TREND|NORMAL_VOL|HIGH_PARTICIPATION": 2,
+      "UP_TREND|NORMAL_VOL|LOW_PARTICIPATION": 2,
+      "UP_TREND|NORMAL_VOL|NORMAL_PARTICIPATION": 9
+    },
+    "research_opportunities": 0,
+    "schema": "APEX_STRATEGY_LAB_RESULT_V1",
+    "selected_policy_evidence_scope": "Descriptive opportunity mean, not covered by the five fixed-strategy family test and not a compounded portfolio return",
+    "selected_strategy_counts": {
+      "WAIT": 319
+    },
+    "status": "RESEARCH_COMPLETE",
+    "strategy_scenario_evaluations": 14355000,
+    "tournaments": 319
+  },
+  "source_scope": "R1 used retained completion repair before final replay accounting-head binding and explicit LF writes. No model or economic thresholds changed. Current source has additional new development modules. This is retained-run verification, not a full rerun on final release.",
+  "completion_repair_differences": {
+    "engine.py": {
+      "r1": "5e6a1ca165fec1f73fe44d3b159b6ecac44d13dc9be16a395ca60e2d5800f3ea",
+      "repaired": "121982b5e93b4b342aaa181093ae4cbd1edb5c51b4d3bb69273ae556588a0fa6"
+    },
+    "ledger.py": {
+      "r1": "0855ac0e9773805760c5dbd7c0f41898cc678301be0e28f009dcee67a7ee7165",
+      "repaired": "f6de943442f7032369341c7e232cad6c2ca4020bc9d7e0707cb34c67225c7f8a"
+    }
+  },
+  "wait_diagnosis": {
+    "NO_POSITIVE_GROWTH_ACROSS_REQUIRED_WORLDS": 304,
+    "CURRENT_STATE_OUTSIDE_ANALOG_SUPPORT": 15,
+    "positive_nonwait_unstressed_selected_model": 0
+  },
+  "authority": "NONE_RESEARCH_ONLY"
+}

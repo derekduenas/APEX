@@ -143,11 +143,14 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
                 counts["entries"] += 1
         ledger.append("RUN_CLOSE", end, {"status": "CLOSED_WITH_OUTSTANDING_OBLIGATIONS" if position else "CLOSED",
                                         "pending_forecast_ids": sorted(pending), "counts": counts})
-        ledger.close()
+        retained_rows = ledger.verified_close(expected_last_kind="RUN_CLOSE", expected_epoch=end)
+        retained_head = retained_rows[-1]["hash"]
         ledger = None
         accounting = reconstruct(out / "ledger.jsonl")
         if accounting["status"] != "VALID":
             raise Refused("ACCOUNTING_RECONSTRUCTION_FAILED")
+        if accounting["head"] != retained_head:
+            raise Refused("ACCOUNTING_RETAINED_HEAD_DISAGREES_WITH_WRITER")
         summary = {"mode": "OFFLINE_EXPERIMENTAL_REPLAY", "counts": counts, "variance_models": variances, "decisions": decisions,
                    "accounting": accounting, "forecast_feedback": {"count": len(scores),
                    "mean_brier": float(np.mean([s["brier"] for s in scores])) if scores else None,
@@ -155,7 +158,7 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
                    "status": "DESCRIPTIVE_SCORES_NOT_CALIBRATION_OR_PROMOTION"},
                    "readiness": "REPLAY_PROTOTYPE; NOT_LIVE_PAPER_OR_REAL_MONEY_READY"}
         (out / "summary.json").write_text(canonical(summary))
-        (out / "COMPLETE").write_text(accounting["head"])
+        (out / "COMPLETE").write_text(retained_head)
         return summary
     except BaseException as exc:
         (out / "FAILED.json").write_text(canonical({"type": type(exc).__name__, "reason": str(exc)}))
