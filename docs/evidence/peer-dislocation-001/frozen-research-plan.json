@@ -1,0 +1,13 @@
+{
+  "start": 1785763800.0,
+  "development_start": 1786368600.0,
+  "holdout_start": 1786973400.0,
+  "end": 1787342400.0,
+  "scan_minutes": 60,
+  "embargo_minutes": 1,
+  "minimum_training_labels": 40,
+  "training_window": 260,
+  "minimum_comparison_sessions": 3,
+  "ridge_alpha": 10.0,
+  "decision_delay_seconds": 5.0
+}

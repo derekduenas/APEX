@@ -1,0 +1,8 @@
+{
+  "schema": "APEX_RESEARCH_PROPOSAL_V1",
+  "action": "RUN_PEER_DISLOCATION_STUDY",
+  "target_symbol": "AAPL",
+  "market_symbol": "SPY",
+  "sector_symbol": "XLK",
+  "rationale": "Codex-authored research proposal in the September 16 build: test whether a stock lagging a positive shared market/sector move subsequently catches up. Compare peer-augmented and matched own-stock ridge on identical causal rows and shocks; preserve zero-drift, shrunk-mean and WAIT baselines, costs and negative controls. This fixed August 3-21 study is descriptive integration evidence, not trading admission. The earlier SPY study did not establish edge. No economic thresholds may be weakened and no real-money action is authorized by this proposal."
+}

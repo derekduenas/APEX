@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "apex-research"
-version = "0.5.0"
+version = "0.6.0"
 description = "Causal market replay, conditional forecasts, and auditable experimental execution"
 requires-python = ">=3.11"
 dependencies = ["numpy>=1.26,<3", "scipy>=1.11,<2"]

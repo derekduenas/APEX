@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from .core import Config, canonical
+from .core import Config, Refused, canonical
 from .capture import capture_alpaca, replay_capture
 from .data import from_massive_csv
 from .engine import run
@@ -17,6 +17,17 @@ def epoch(text):
     if dt.tzinfo is None:
         raise argparse.ArgumentTypeError("Timestamp requires an explicit timezone")
     return dt.timestamp()
+
+
+def _director_proposal(path):
+    from .ai_planner import MAX_PROPOSAL_BYTES, strict_json
+    if not path.is_file() or path.is_symlink():
+        raise Refused("DIRECTOR_PROPOSAL_FILE_INVALID")
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_PROPOSAL_BYTES + 1)
+    if len(raw) > MAX_PROPOSAL_BYTES:
+        raise Refused("DIRECTOR_PROPOSAL_BYTES_EXCEEDED")
+    return strict_json(raw)
 
 
 def main():
@@ -84,8 +95,65 @@ def main():
     strategy_demo.add_argument("--variance", choices=("garch", "ewma"), default="ewma")
     strategy_verify = subs.add_parser("verify-strategy-lab", help="Reconstruct intelligence, scenarios, strategy comparisons and feedback")
     strategy_verify.add_argument("--run", type=Path, required=True)
+    director = subs.add_parser("director", help="AI-directed bounded research cycle; no broker or capital authority")
+    director.add_argument("--input", type=Path, required=True)
+    director.add_argument("--plan", type=Path, required=True)
+    director.add_argument("--out", type=Path, required=True)
+    director.add_argument("--symbol", required=True)
+    director.add_argument("--market-symbol", required=True)
+    director.add_argument("--sector-symbol", required=True)
+    director.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    planner = director.add_mutually_exclusive_group(required=True)
+    planner.add_argument("--proposal", type=Path, help="Retained external human/AI proposal; authorship not authenticated")
+    planner.add_argument("--model", help="Explicit OpenAI model for runtime planning; OPENAI_API_KEY required")
+    director_demo = subs.add_parser("director-demo", help="Synthetic control with a fixed scripted proposal; no LLM invocation")
+    director_demo.add_argument("--out", type=Path, required=True)
+    director_demo.add_argument("--world", choices=("catchup", "null", "continuation"), default="catchup")
+    director_demo.add_argument("--variance", choices=("garch", "ewma"), default="ewma")
+    director_verify = subs.add_parser("verify-director", help="Reconstruct director authority and both research children")
+    director_verify.add_argument("--run", type=Path, required=True)
+    peer = subs.add_parser("peer-experiment", help="Compare a peer-information challenger on a verified strategy lab")
+    peer.add_argument("--source-run", type=Path, required=True)
+    peer.add_argument("--out", type=Path, required=True)
+    peer.add_argument("--market-symbol", required=True)
+    peer.add_argument("--sector-symbol", required=True)
+    peer_verify = subs.add_parser("verify-peer-experiment")
+    peer_verify.add_argument("--run", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "strategy-lab":
+    if args.command == "director":
+        from .director import run_director
+        from .research import ResearchPlan
+        result = run_director(args.input, args.out,
+            plan=ResearchPlan(**json.loads(args.plan.read_text())),
+            config=Config(symbol=args.symbol, variance=args.variance),
+            market_symbol=args.market_symbol, sector_symbol=args.sector_symbol,
+            proposal=_director_proposal(args.proposal) if args.proposal else None,
+            model=args.model)
+    elif args.command == "director-demo":
+        import tempfile
+        from .director import run_director
+        from .peer_fixtures import peer_demo_document
+        document, plan = peer_demo_document(world=args.world)
+        proposal = {"schema": "APEX_RESEARCH_PROPOSAL_V1", "action": "RUN_PEER_DISLOCATION_STUDY",
+            "target_symbol": "AAPL", "market_symbol": "SPY", "sector_symbol": "XLK",
+            "rationale": "FIXED_SYNTHETIC_CONTROL: exercise connected readers; no runtime LLM or market-edge claim."}
+        with tempfile.TemporaryDirectory(prefix="apex-peer-demo-") as tmp:
+            input_path = Path(tmp) / "input.json"
+            input_path.write_text(canonical(document))
+            result = run_director(input_path, args.out, plan=plan,
+                config=Config(symbol="AAPL", variance=args.variance),
+                market_symbol="SPY", sector_symbol="XLK", proposal=proposal)
+    elif args.command == "verify-director":
+        from .director import verify_director
+        result = verify_director(args.run)
+    elif args.command == "peer-experiment":
+        from .peer_experiment import run_peer_experiment
+        result = run_peer_experiment(args.source_run, args.out,
+            market_symbol=args.market_symbol, sector_symbol=args.sector_symbol)
+    elif args.command == "verify-peer-experiment":
+        from .peer_experiment import verify_peer_experiment
+        result = verify_peer_experiment(args.run)
+    elif args.command == "strategy-lab":
         from .strategy_lab import run_lab
         from .research import ResearchPlan
         result = run_lab(args.input, args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())),

@@ -1,0 +1,88 @@
+{
+  "schema": "PEER_CAPTURE_MANIFEST_V1",
+  "source": "Massive plugin call_api and query_data exports",
+  "requested_range": [
+    "2026-08-03",
+    "2026-08-21"
+  ],
+  "sources": [
+    {
+      "symbol": "AAPL",
+      "rows": 13173,
+      "csv_sha256": "57839faf448bcfd8c1e8e120c01d45468710d9344ecdd80c558e4e88df0c3425",
+      "regular_clock_rows": 5850,
+      "observed_regular_dates": [
+        "2026-08-03",
+        "2026-08-04",
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-10",
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-17",
+        "2026-08-18",
+        "2026-08-19",
+        "2026-08-20",
+        "2026-08-21"
+      ]
+    },
+    {
+      "symbol": "SPY",
+      "rows": 13126,
+      "csv_sha256": "c21baf5d18e089a5e399117fe076055f382c2a9895290980a5474ffe16776c16",
+      "regular_clock_rows": 5850,
+      "observed_regular_dates": [
+        "2026-08-03",
+        "2026-08-04",
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-10",
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-17",
+        "2026-08-18",
+        "2026-08-19",
+        "2026-08-20",
+        "2026-08-21"
+      ]
+    },
+    {
+      "symbol": "XLK",
+      "rows": 7239,
+      "csv_sha256": "dc987a129e83806ba4438be86f6fcb3aa84346f2a769c5cbf6cb7d6fd120d4d5",
+      "regular_clock_rows": 5850,
+      "observed_regular_dates": [
+        "2026-08-03",
+        "2026-08-04",
+        "2026-08-05",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-10",
+        "2026-08-11",
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-17",
+        "2026-08-18",
+        "2026-08-19",
+        "2026-08-20",
+        "2026-08-21"
+      ]
+    }
+  ],
+  "accepted_rows": 33538,
+  "normalization_rejects": [],
+  "input_sha256": "1ca9e8f07f09b171e6b709c8606ab549f1ca84aa904562e30de08f0631abcaf7",
+  "plan_sha256": "7303a0a042b7171ca4bdbb119d7ea961621b95430c614567164bcf95f70d8fa1",
+  "persistence_utc": "2026-09-16T00:40:41.887780+00:00",
+  "model_outputs_examined": false,
+  "publication_receipts": "NOT_MEASURED",
+  "coverage": "Returned rows only; no inferred no-trade bars",
+  "quotes": 0
+}

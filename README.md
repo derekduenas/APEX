@@ -2,7 +2,7 @@
 
 An integrated market-research system that asks: **what could happen next, what expression survives costs, and did the forecast actually help?**
 
-Version 0.5 adds a regime-aware strategy laboratory: causal premarket context, historical analogue worlds, five trading hypotheses, nine stress worlds, and an outcome-feedback loop. It extends the chronological forecast tournament and Linux shadow runtime. The first retained v0.4 SPY study exercised 99 GARCH-backed forecasts over 14 sessions; v0.5 evaluates what strategies would do along entire paths. DigitalOcean remains the deployment target. This release has not been commissioned on the host and does not establish profitable edge or broker authority.
+Version 0.6 adds a bounded AI research director and a market–sector–stock catch-up hypothesis. The director runs the existing regime-aware strategy laboratory, then tests whether peer information improves a matched stock-only forecast using the same causal samples and conditional paths. The retained v0.5 SPY study now verifies completely: all 319 tournaments chose WAIT, with no profitable-edge finding. DigitalOcean remains the deployment target. This release has not been commissioned on the host and does not establish profitable edge or broker authority.
 
 ## Run it
 
@@ -129,3 +129,39 @@ APEX now connects factual premarket/regime context, causal forecast selection, w
 apex strategy-demo --world persistent --out runs/strategy-demo
 apex verify-strategy-lab --run runs/strategy-demo
 ```
+
+## AI research director and peer dislocation study
+
+The new director connects proposal, original laboratory, peer experiment,
+verification and an operator report in one preserved run. The first hypothesis
+tests whether a stock lagging a positive market/sector move catches up after its
+residual begins to recover. Own-stock and peer-augmented ridge models use the
+same matured rows, regularization and shocks; a separate reader reconstructs
+all decisions and outcomes. See [the design and authority contract](docs/AI_DIRECTOR_001.md).
+
+```sh
+apex director-demo --world catchup --out runs/director-catchup
+apex verify-director --run runs/director-catchup
+```
+
+The demo has a fixed scripted proposal and synthetic data. For captured inputs,
+`apex director` accepts a retained external AI/human `--proposal` or an explicit
+`--model` using OpenAI Responses with separately configured `OPENAI_API_KEY`.
+Missing runtime AI configuration refuses; it does not silently simulate an AI
+call. The director runs one reviewed study or defers. It cannot change cost/risk
+policy, deploy models, create broker orders or grant capital authority.
+
+The runtime API-model path was not exercised in the build workspace because no
+key/model was configured. The actual Codex-authored proposal is retained under
+`docs/evidence/peer-dislocation-001`; its origin remains explicitly unauthenticated
+at the program boundary. The multi-symbol historical capture is a research input,
+with assumed bar-completion availability and no contemporaneous quote evidence.
+
+The completed AAPL/SPY/XLK study did not support the peer hypothesis: 20 matched
+held-out forecasts across five sessions showed slightly worse CRPS and no
+economic improvement versus the matched own-stock model. All 392 tests passed;
+the recorded-data director independently reconstructed as VALID. See
+[the retained evidence](docs/evidence/peer-dislocation-001/verification-scope.md)
+and [the active-search development directive](docs/ACTIVE_HUNTING_DIRECTIVE.md).
+Three [additional edge research proposals](docs/EDGE_RESEARCH_002.md) describe the
+next experiments; they are design-only and require new observations and readers.

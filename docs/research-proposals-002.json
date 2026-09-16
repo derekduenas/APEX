@@ -1,0 +1,149 @@
+{
+  "schema": "APEX_RESEARCH_IDEA_INVENTORY_V1",
+  "authored_date": "2026-09-16",
+  "status": "DESIGN_ONLY_NOT_COMPLETED_PREREGISTRATION",
+  "runtime_consumer": null,
+  "supported_by_current_director": false,
+  "novelty_claim": "Project-specific synthesis; no claim of global novelty or profitable edge",
+  "prior_separate_hypothesis": {
+    "id": "POSITIVE_PEER_SHOCK_DELAYED_REPRICING_V1",
+    "recorded_study_assessment": "HYPOTHESIS_NOT_SUPPORTED",
+    "evidence": "evidence/peer-dislocation-001/market-director-report.json"
+  },
+  "proposals": [
+    {
+      "id": "SELL_PRESSURE_RESPONSE_CHANGE_V1",
+      "name": "Selling loses its effect",
+      "priority": 1,
+      "primary_horizon_seconds": 300,
+      "secondary_horizons_seconds": [
+        900
+      ],
+      "mechanism": "Temporary selling concession followed by declining marginal price impact, recovering liquidity and pressure decay.",
+      "required_observations": [
+        "sequenced_trades",
+        "bid_ask_quotes",
+        "depth_updates",
+        "event_and_receipt_timestamps"
+      ],
+      "incremental_feature": "Change in conditional price response and liquidity recovery after comparable selling bursts.",
+      "baselines": [
+        "WAIT",
+        "own_price_reversal",
+        "order_flow_imbalance_plus_spread_depth_volatility",
+        "regularized_linear_response_model"
+      ],
+      "kill_conditions": [
+        "No incremental heldout information or executable economics",
+        "Effect lost under measured delay and costs",
+        "Price bounce or simple imbalance explains effect"
+      ],
+      "status": "DESIGN_ONLY_UNTESTED",
+      "implemented": false,
+      "director_action_supported": false,
+      "data_ready": false,
+      "policy": "FUNDED_LONG_OR_WAIT_RESEARCH_ONLY",
+      "capital_authority": "NONE",
+      "training_dates": null,
+      "development_dates": null,
+      "holdout_dates": null,
+      "universe_contract": null,
+      "event_thresholds": null,
+      "tuning_budget": null,
+      "results": null
+    },
+    {
+      "id": "FORWARD_NEWS_RECONCILIATION_V1",
+      "name": "The second reading of a release",
+      "priority": 2,
+      "primary_horizon_seconds": 1800,
+      "secondary_horizons_seconds": [],
+      "mechanism": "Potential delayed repricing of verified forward economic changes beyond headline surprise and initial reaction.",
+      "required_observations": [
+        "first_seen_source_versions",
+        "archived_prior_guidance",
+        "point_in_time_expectations_when_used",
+        "bid_ask_quotes",
+        "source_receipt_and_inference_completion_timestamps"
+      ],
+      "incremental_feature": "Source-linked, comparable-period and accounting-basis reconciliation of forward economics.",
+      "baselines": [
+        "WAIT",
+        "initial_price_reaction",
+        "headline_surprise_and_simple_guidance_revision",
+        "simple_sentiment",
+        "same_model_with_manually_validated_extraction"
+      ],
+      "kill_conditions": [
+        "Unreliable extraction or unsupported numerical adjustments",
+        "No improvement over guidance surprise and initial reaction",
+        "Prospective effect lost after inference and execution delay"
+      ],
+      "special_requirement": "Prospective unseen releases with pinned model/prompt; historical LLM memory is a contamination risk.",
+      "status": "DESIGN_ONLY_UNTESTED",
+      "implemented": false,
+      "director_action_supported": false,
+      "data_ready": false,
+      "policy": "FUNDED_LONG_OR_WAIT_RESEARCH_ONLY",
+      "capital_authority": "NONE",
+      "training_dates": null,
+      "development_dates": null,
+      "holdout_dates": null,
+      "universe_contract": null,
+      "event_thresholds": null,
+      "tuning_budget": null,
+      "results": null
+    },
+    {
+      "id": "CLOSING_DEMAND_REPLENISHMENT_V1",
+      "name": "Closing demand that is not being absorbed",
+      "priority": 3,
+      "primary_horizon_seconds": 180,
+      "secondary_horizons_seconds": [],
+      "decision_clock": "Scheduled regular close minus 300 seconds, after receipt of required messages",
+      "exit_clock": "Scheduled regular close minus 120 seconds; continuous-market exit; no assumed auction fill",
+      "mechanism": "Deadline-sensitive demand potentially outlasts arriving opposing liquidity.",
+      "required_observations": [
+        "licensed_auction_imbalance_message_history",
+        "indicative_prices",
+        "matched_shares",
+        "bid_ask_quotes",
+        "event_and_receipt_timestamps",
+        "versioned_feed_rules_and_calendar"
+      ],
+      "incremental_feature": "Demand persistence and acceleration relative to matching interest and liquidity response.",
+      "baselines": [
+        "WAIT",
+        "latest_imbalance",
+        "indicative_price_gap",
+        "same_current_features_without_history"
+      ],
+      "kill_conditions": [
+        "Latest imbalance or indicative gap explains gains",
+        "Pressure reverses before realistic execution",
+        "Gains require auction print despite preclose exit",
+        "Delay and costs eliminate incremental economics"
+      ],
+      "status": "DESIGN_ONLY_UNTESTED",
+      "implemented": false,
+      "director_action_supported": false,
+      "data_ready": false,
+      "policy": "FUNDED_LONG_OR_WAIT_RESEARCH_ONLY",
+      "capital_authority": "NONE",
+      "training_dates": null,
+      "development_dates": null,
+      "holdout_dates": null,
+      "universe_contract": null,
+      "event_thresholds": null,
+      "tuning_budget": null,
+      "results": null
+    }
+  ],
+  "before_evaluation": [
+    "Freeze exact universe, dates, event thresholds, primary comparison, costs and tuning budget",
+    "Acquire and validate required timestamped observations",
+    "Implement and verify a separate reviewed study through the actual entrypoint",
+    "Record every research attempt; account for selection and dependent samples"
+  ],
+  "automatic_promotion": false
+}

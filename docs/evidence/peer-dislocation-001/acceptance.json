@@ -1,0 +1,22 @@
+{
+  "tests": 392,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "schema": "APEX_V06_ACCEPTANCE_V1",
+  "command": "PYTHONPATH=src python -m pytest -q --junitxml=<scratch>/apex-v06-full-tests.xml",
+  "elapsed_seconds": 522.907,
+  "junit_sha256": "bc66c3a8b4015241d66dbcf63f9884265022a3df2d429b5f4abd02dbd8bdeddc",
+  "lifecycle_cli": "apex demo and apex verify: PASS / VALID",
+  "market_director_cli": "apex director and apex verify-director: RESEARCH_COMPLETE / VALID; all six stages; source matches current",
+  "synthetic_director_cli": [
+    "catchup: RESEARCH_COMPLETE",
+    "continuation: RESEARCH_COMPLETE"
+  ],
+  "unexecuted": [
+    "Live OpenAI inference: no runtime key/model configured",
+    "GitHub Actions: changes not uploaded",
+    "Live data commissioning and paper broker execution",
+    "TradingView webhook or chart connection"
+  ]
+}
