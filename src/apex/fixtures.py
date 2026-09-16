@@ -7,6 +7,31 @@ import numpy as np
 from .reused.vol_models import simulate_garch
 
 
+def strategy_demo_document(*, world="persistent", seed=731):
+    """Existing control worlds plus a factual, unmistakably synthetic premarket.
+
+    The synthetic morning ends at the already generated cash-open price; it
+    adds prior context, not an additional planted intraday edge or fitted seed.
+    """
+    from .data import session
+    doc, plan = research_demo_document(world=world, seed=seed)
+    starts = {}
+    for row in doc["observations"]:
+        if row["kind"] == "bar":
+            starts.setdefault(session(row["event_epoch"]), row)
+    for bar in starts.values():
+        price = bar["open"]
+        for minute in range(60):
+            event = bar["event_epoch"] - 3600 + minute * 60
+            left = price * (1 - .003 * (60 - minute) / 60)
+            right = price * (1 - .003 * (59 - minute) / 60)
+            doc["observations"].append({"kind": "bar", "symbol": "SPY", "event_epoch": event,
+                "available_epoch": event + 60, "availability_basis": "SYNTHETIC_CLOCK", "open": left,
+                "high": right + .005, "low": left - .005, "close": right, "volume": 200})
+    doc["source"] = "SYNTHETIC_STRATEGY_LAB_" + world.upper() + "_NOT_MARKET_EDGE"
+    return doc, plan
+
+
 def research_demo_document(*, world="persistent", seed=731):
     """Twelve artificial sessions: four warmup, four development, four holdout.
 
@@ -15,7 +40,7 @@ def research_demo_document(*, world="persistent", seed=731):
     """
     from datetime import timedelta
     from .research import ResearchPlan
-    if world not in ("persistent", "null", "reversal"):
+    if world not in ("persistent", "null", "reversal", "positive"):
         raise ValueError("Unknown synthetic research world")
     rng = np.random.default_rng(seed)
     day = datetime(2026, 8, 31, 13, 30, tzinfo=timezone.utc)
@@ -27,11 +52,13 @@ def research_demo_document(*, world="persistent", seed=731):
     price, observations = 100., []
     for day_index, start in enumerate(starts):
         previous = 0.
-        coefficient = 0. if world == "null" else -.65 if world == "reversal" and day_index >= 8 else .75
+        coefficient = 0. if world in ("null", "positive") else -.65 if world == "reversal" and day_index >= 8 else .75
         for minute in range(390):
             event = start + minute * 60
             old = price
-            previous = coefficient * previous + float(rng.normal(0, .00035))
+            # Deliberately obvious positive control: a fixed known drift and
+            # independent noise. It proves the selector can act, not market edge.
+            previous = (.0003 if world == "positive" else 0.) + coefficient * previous + float(rng.normal(0, .00015 if world == "positive" else .00035))
             price *= float(np.exp(previous))
             observations.append({"kind": "bar", "symbol": "SPY", "event_epoch": event, "available_epoch": event + 60,
                                  "availability_basis": "SYNTHETIC_CLOCK", "open": old, "high": max(old, price) + .01,

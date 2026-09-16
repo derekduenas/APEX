@@ -2,7 +2,7 @@
 
 An integrated market-research system that asks: **what could happen next, what expression survives costs, and did the forecast actually help?**
 
-Version 0.4 adds chronological challenger learning, development/holdout evaluation and stronger reconstruction to the Linux shadow runtime. Its first retained SPY study exercised 99 GARCH-backed forecast points over 14 market sessions. DigitalOcean remains the deployment target; this release has not been commissioned on the host. It reuses APEXAI's variance models with new orchestration. It is not a live trading service or a demonstrated source of edge. A successful simulation never becomes a calibrated probability or capital permission by changing a label.
+Version 0.5 adds a regime-aware strategy laboratory: causal premarket context, historical analogue worlds, five trading hypotheses, nine stress worlds, and an outcome-feedback loop. It extends the chronological forecast tournament and Linux shadow runtime. The first retained v0.4 SPY study exercised 99 GARCH-backed forecasts over 14 sessions; v0.5 evaluates what strategies would do along entire paths. DigitalOcean remains the deployment target. This release has not been commissioned on the host and does not establish profitable edge or broker authority.
 
 ## Run it
 
@@ -50,7 +50,7 @@ apex verify --run runs/spy-history
 
 Create `data/` first. Historical bar availability is **explicitly assumed at bar start + 60 seconds**. This does not recover original delivery latency, publication lag or later revisions. The supplied retrieval timestamp is capture metadata, not a measured historical receipt. Request-range completeness is not inferred from returned rows.
 
-Bars alone exercise the forecast path; they do **not** supply executable quotes. Such a run produces WAIT with `QUOTE_UNAVAILABLE_OR_CONFLICTING`. There is no substitution of bar closes or invented spreads for observed quotes.
+In `apex replay`, bars alone exercise the forecast path; they do **not** supply executable quotes. Such a run produces WAIT with `QUOTE_UNAVAILABLE_OR_CONFLICTING`. There is no substitution of bar closes or invented spreads for observed quotes.
 
 The `capture-alpaca` command and its scheduled `shadow-tick` wrapper make provider requests through a subprocess restricted to three read-only market-data endpoints. The demo capture uses an injected clock and transport and labels every result `SYNTHETIC_ACCEPTANCE`.
 
@@ -98,7 +98,7 @@ See also [data contract](docs/DATA.md), [initial commissioning evidence](docs/CO
 
 ## What is next
 
-**v0.4 adds a working chronological research tournament.** Six causal features train a ridge challenger from matured labels; zero drift and the existing shrunk-mean model share the same variance paths. Selection uses development data and is frozen before a separate holdout. CRPS, Brier, quantile loss, interval coverage, reliability bins and paired session differences are reconstructed from retained artifacts. These are research diagnostics, not trading authorization.
+**v0.4 introduced the chronological forecast tournament, retained in v0.5.** Six causal features train a ridge challenger from matured labels; zero drift and the existing shrunk-mean model share the same variance paths. Selection uses development data and is frozen before a separate holdout. CRPS, Brier, quantile loss, interval coverage, reliability bins and paired session differences are reconstructed from retained artifacts. These are research diagnostics, not trading authorization.
 
 ```bash
 apex research-demo --world persistent --variance garch --out runs/research-control-unique
@@ -115,8 +115,17 @@ apex verify-research --run runs/research-unique
 The command makes no network requests or orders. See [the research contract and review](docs/EDGE_RESEARCH_001.md) for the plan fields, causal rules, repairs, evidence and remaining gaps. The ridge challenger runs in this offline research path; it is not silently promoted into the deployed shadow service.
 
 1. Commission the new capture adapter against healthy stock-data access during market hours; confirm completed bars and measured quote receipts, then replay them and prove equivalent decisions.
-2. Add the timestamped premarket/catalyst packet and setup readers, proving actual downstream consumption. LLM research output remains separate from capital authority.
+2. Extend the implemented factual premarket/setup reader with timestamped catalysts and cross-sectional context, and measure incremental value. LLM research output remains separate from capital authority.
 3. Run the frozen tournament on multi-session market data, then establish calibration and realistic execution sensitivity before commissioning live paper execution.
 4. Add a restart-safe paper service and operator dashboard; then broader expression comparison and controlled challenger learning.
 
 TradingView vision, Kelly sizing, options/spreads, learned fusion, multi-asset portfolio allocation and autonomous research agents are not implemented in this release. They are additions to earn through comparative evidence, not boxes to mark green.
+
+## Regime-aware strategy laboratory
+
+APEX now connects factual premarket/regime context, causal forecast selection, whole-path historical analogues, five strategy hypotheses and nine stress worlds. It reconstructs counterfactual outcomes, monitors matured forecast coverage and reports selection-aware empirical diagnostics. The shadow observer exposes current intelligence and a single-model strategy preview. These are research capabilities, not calibrated profit probabilities or broker execution. See [the complete flow and assumptions](docs/STRATEGY_LAB_001.md).
+
+```sh
+apex strategy-demo --world persistent --out runs/strategy-demo
+apex verify-strategy-lab --run runs/strategy-demo
+```

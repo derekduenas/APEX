@@ -9,16 +9,16 @@ The first implementation prioritizes one comprehensible flow. It proves wiring a
 | Historical market ingestion | Massive CSV import exercised | Full requested-range coverage and revision/latency accounting |
 | Live market capture | v0.2 bounded REST capture built; synthetic acceptance passed; real access blocked | Successful provider capture during market hours, quote-unit verification, then streaming |
 | DigitalOcean shadow runtime | v0.3 Linux tick, process lock/recovery, systemd credentials, daily report and deployment package | Actual droplet installation, real data capture and scheduling/reboot evidence |
-| Premarket AI research | Not integrated | Port selected APEXAI producer; sealed factual packet; actual setup-reader use |
+| Premarket context | Causal gap/range/volume/source-age reader integrated into strategy setup eligibility | News/filings integration and an actual LLM brief remain absent |
 | TradingView chart vision | Not connected or consumed | Verified tool/runtime route and a blinded contribution experiment |
 | Market-state features | Minimal subset implemented | Independent checks for each added feature and intended reader |
 | Direction forecast | Shrunk mean and zero drift; six-feature ridge in offline chronological tournament | Real-market holdout evidence, costs, calibration and robust uncertainty |
 | GARCH and conditional paths | Exercised on synthetic and returned historical bars | Holdout diagnostics and model comparison, including bad regimes |
-| Regime, jumps, fusion | Not implemented in the path | Defined output contract and incremental forecasting value |
+| Regime and strategy laboratory | Descriptive regime changes analogue matching and setup eligibility; shared-path strategy and stress tournament implemented | Fresh independent market validation, richer causal inputs, and calibrated admission |
 | Cross-instrument expression | Funded long stock versus WAIT only | Stocks/ETFs universe, options quotes, permissions and lifecycle-aware risk |
 | Sizing | Fixed purchase-cost ceiling | Account constraints and uncertainty-aware allocation; Kelly remains absent |
 | Trade lifecycle | Offline quote-based experimental fills | Measured latency, liquidity assumptions, restart recovery and paper adapter |
-| Feedback | Matured-label training, frozen development selection and separate holdout scoring implemented | Independent repeated experiments and controlled promotion, not self-approval |
+| Feedback | Matured-label training, frozen holdout, per-strategy counterfactual outcomes, coverage alarm and fixed-family session diagnostics | Independent repeated experiments and controlled promotion, not self-approval |
 | Operator dashboard | Deferred | Read the actual ledger and health artifacts, not parallel summaries |
 
 ## Capture and replay agreement: implementation landed in v0.2

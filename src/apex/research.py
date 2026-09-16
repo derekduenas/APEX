@@ -278,9 +278,11 @@ def run_research(input_path: Path | bytes, out: Path, *, plan: ResearchPlan, con
             except Refused as exc:
                 ledger.append("RESEARCH_REFUSED", now, {"phase": phase, "reason": str(exc)})
         ledger.append("RUN_CLOSE", plan.end, {"pending_sample_ids": sorted(pending)})
-        ledger.close()
+        # A verified prefix is not a completed run. Bind the retained file to
+        # the writer's final head/count and the expected terminal event before
+        # writing either a successful summary or a completion marker.
+        rows = ledger.verified_close(expected_last_kind="RUN_CLOSE", expected_epoch=plan.end)
         ledger = None
-        rows = read_verified(out / "ledger.jsonl")
         summary = summarize(rows, plan)
         (out / "summary.json").write_text(canonical(summary))
         (out / "COMPLETE").write_text(rows[-1]["hash"])

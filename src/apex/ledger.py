@@ -15,20 +15,62 @@ from .core import Config, Refused, canonical, digest, finite
 
 class Ledger:
     def __init__(self, path: Path):
-        self.handle = path.open("x", encoding="utf-8")
+        self.path = path
+        self.handle = path.open("x", encoding="utf-8", newline="\n")
         self.head, self.seq = "GENESIS", 0
+        self.size = 0
+
+    def _check_retained_file(self):
+        """An open descriptor may keep writing after its pathname was replaced."""
+        try:
+            opened, retained = os.fstat(self.handle.fileno()), self.path.stat()
+        except OSError as exc:
+            raise Refused("LEDGER_RETAINED_FILE_UNAVAILABLE") from exc
+        if (opened.st_dev, opened.st_ino) != (retained.st_dev, retained.st_ino):
+            raise Refused("LEDGER_RETAINED_FILE_REPLACED")
+        if opened.st_size != self.size:
+            raise Refused("LEDGER_RETAINED_SIZE_CHANGED")
 
     def append(self, kind: str, epoch: float, payload: dict) -> dict:
+        self._check_retained_file()
         row = {"seq": self.seq + 1, "prev_hash": self.head, "kind": kind, "epoch": epoch, "payload": payload}
         row["hash"] = digest(row)
-        self.handle.write(canonical(row) + "\n")
+        encoded = canonical(row) + "\n"
+        self.handle.write(encoded)
         self.handle.flush()
         os.fsync(self.handle.fileno())
+        self.size += len(encoded.encode("utf-8"))
+        self._check_retained_file()
         self.head, self.seq = row["hash"], row["seq"]
         return row
 
     def close(self):
         self.handle.close()
+
+    def verified_close(self, *, expected_last_kind: str, expected_epoch: float) -> list[dict]:
+        self._check_retained_file()
+        self.close()
+        rows = read_complete(self.path, expected_last_kind=expected_last_kind, expected_epoch=expected_epoch)
+        if len(rows) != self.seq or rows[-1]["hash"] != self.head:
+            raise Refused("LEDGER_RETAINED_HEAD_DISAGREES_WITH_WRITER")
+        return rows
+
+
+def read_complete(path: Path, *, expected_last_kind: str, expected_epoch: float,
+                  completion_path: Path | None = None) -> list[dict]:
+    """A valid prefix is not a completed run, even if a marker names its hash."""
+    rows = read_verified(path)
+    if (rows[-1]["kind"] != expected_last_kind or rows[-1]["epoch"] != expected_epoch
+            or sum(r["kind"] == expected_last_kind for r in rows) != 1):
+        raise Refused("LEDGER_REQUIRED_CLOSE_MISSING_OR_INVALID")
+    if completion_path is not None:
+        try:
+            head = completion_path.read_text()
+        except OSError as exc:
+            raise Refused("LEDGER_COMPLETION_MARKER_UNAVAILABLE") from exc
+        if head != rows[-1]["hash"]:
+            raise Refused("LEDGER_COMPLETION_MARKER_DISAGREES")
+    return rows
 
 
 def read_verified(path: Path) -> list[dict]:
