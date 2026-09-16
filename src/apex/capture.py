@@ -17,22 +17,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .core import Config, Refused, canonical, code_manifest, digest
-from .data import normalize
+from .data import normalize, timestamp_ns
 from .shadow import observe
 
 ENDPOINTS = {"history": "/v2/stocks/bars", "bar": "/v2/stocks/bars/latest", "quote": "/v2/stocks/quotes/latest"}
-STAMP = re.compile(r"(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)(?:\.(\d{1,9}))?(Z|[+-]\d\d:\d\d)")
-
-
-def timestamp_ns(text):
-    match = STAMP.fullmatch(text) if isinstance(text, str) else None
-    if not match:
-        raise Refused("TIMESTAMP_NOT_RFC3339")
-    base, fraction, offset = match.groups()
-    stamp = datetime.fromisoformat(base + offset.replace("Z", "+00:00"))
-    return int(stamp.timestamp()) * 1_000_000_000 + int((fraction or "").ljust(9, "0"))
-
-
 def http_transport(path, params, timeout):
     """Timeout kills and reaps the whole worker, including DNS/slow response reads."""
     try:
@@ -81,6 +69,7 @@ def decode(body: bytes, *, kind: str, symbol: str, feed: str, received_ns: int, 
                 raise Refused("PROVIDER_BAR_NOT_COMPLETE")
             row = {"kind": "quote" if kind == "quote" else "bar", "symbol": symbol,
                    "event_epoch": event_ns / 1e9, "available_epoch": received_ns / 1e9,
+                   "event_ns": event_ns, "available_ns": received_ns,
                    "availability_basis": availability_basis, "available_epoch_ns": received_ns,
                    "provider_timestamp": raw["t"], "provider_timestamp_ns": event_ns,
                    "receipt_basis": "PARENT_PROCESS_RECEIPT_UPPER_BOUND" if availability_basis == "MEASURED_RECEIPT" else "SYNTHETIC_RECEIPT_FIXTURE", "feed": feed,
@@ -90,7 +79,7 @@ def decode(body: bytes, *, kind: str, symbol: str, feed: str, received_ns: int, 
                 if any(type(raw.get(k)) is not int or raw[k] < 0 for k in ("as", "bs")):
                     raise Refused("QUOTE_SIZE_NOT_NONNEGATIVE_INTEGER_LOTS")
                 row.update(bid=raw["bp"], ask=raw["ap"], bid_size=raw["bs"] * round_lot_shares,
-                           ask_size=raw["as"] * round_lot_shares, provider_bid_lots=raw["bs"], provider_ask_lots=raw["as"],
+                           ask_size=raw["as"] * round_lot_shares, provider_bid_size=raw["bs"], provider_ask_size=raw["as"],
                            round_lot_shares=round_lot_shares, size_conversion_basis="OPERATOR_DECLARED_LOT_SIZE_NOT_INDEPENDENTLY_VERIFIED")
             else:
                 row.update({long: raw[short] for short, long in (("o", "open"), ("h", "high"), ("l", "low"), ("c", "close"), ("v", "volume"))})

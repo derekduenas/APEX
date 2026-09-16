@@ -72,7 +72,7 @@ def test_fresh_receipt_with_old_quote_cannot_close_position(tmp_path):
     doc["observations"] = [r for r in doc["observations"] if r["kind"] != "quote" or r["event_epoch"] <= start]
     due = start + 900
     doc["observations"].append({"kind": "quote", "symbol": "SPY", "event_epoch": due - 40, "available_epoch": due,
-                                "availability_basis": "MEASURED_RECEIPT", "bid": 120, "ask": 121, "bid_size": 100, "ask_size": 100})
+                                "availability_basis": "SYNTHETIC_CLOCK", "bid": 120, "ask": 121, "bid_size": 100, "ask_size": 100})
     root, result = flight(tmp_path, doc)
     assert result["counts"]["entries"] == 1 and result["counts"]["exits"] == 0
     assert verify_run(root)["total_net_pnl"] is None

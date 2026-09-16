@@ -1,0 +1,12 @@
+{
+  "source_commit": "004732b7cc8401e022c1ee768a18387ec4a96f0d",
+  "document_sha256": "c77d9b9f97a6f22d7327c44188a27a29c5ace0bbe65a32a27e1cc0794b6e659d",
+  "accepted": 183,
+  "rejected": [],
+  "decision_results": {
+    "USABLE": 181,
+    "LATEST_QUOTE_CONFLICT": 1,
+    "QUOTE_STALE": 13
+  },
+  "scope": "Recovered upstream normalized document through current normalize and quote_at; not raw-transport reconstruction or a fresh provider fetch. Original size verification labels retained as upstream claims, not independently certified."
+}

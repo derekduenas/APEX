@@ -14,8 +14,9 @@ from pathlib import Path
 import numpy as np
 import scipy
 
+from .admissibility import admissibility, require_mode
 from .core import Config, Refused, canonical, code_manifest, digest, fee, money
-from .data import normalize, regular, session, twin, visible
+from .data import decision_only, normalize, regular, session, twin, visible
 from .decision import evaluate, quote_at
 from .forecast import predict
 from .ledger import Ledger, reconstruct
@@ -32,12 +33,17 @@ def run(input_bytes: bytes | Path, out: Path, *, start: float, end: float, confi
         (out / "input.json").write_bytes(input_bytes)
         document = json.loads(input_bytes)
         observations, rejected = normalize(document)
+        if decision_only(document):
+            raise Refused("DECISION_SNAPSHOTS_NOT_EXECUTION_EVIDENCE")
+        verdict = admissibility(document, observations)
+        require_mode(document, observations, "SYNTHETIC_CONTROL" if verdict["input_class"] == "SYNTHETIC_RESEARCH_CONTROL" else "OFFLINE_RESEARCH")
         manifest = {"schema": "APEX_RUN_V1", "mode": "OFFLINE_EXPERIMENTAL_REPLAY", "start": start, "end": end,
                     "input_sha256": hashlib.sha256(input_bytes).hexdigest(), "source": document.get("source"),
                     "config": config.record(), "code": code_manifest(),
                     "runtime": {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__},
                     "authority": "NO_BROKER_OR_PRODUCTION_CAPITAL_AUTHORITY", "rejected": rejected,
-                    "availability_bases": sorted({r["availability_basis"] for r in observations})}
+                    "availability_bases": sorted({r["availability_basis"] for r in observations}),
+                    "admissibility": admissibility(document, observations)}
         (out / "manifest.json").write_text(canonical(manifest))
         ledger = Ledger(out / "ledger.jsonl")
         ledger.append("RUN_OPEN", start, {"config": config.record(), "manifest_digest": digest(manifest)})

@@ -1,0 +1,21 @@
+{
+  "full_suite": "506 passed in 580.51s",
+  "full_suite_exit_code": 0,
+  "tested_source_manifest_unchanged": true,
+  "actual_cli_demo": "runs/quote-integrity-demo-003",
+  "actual_cli_verification": "VALID",
+  "actual_paper_control": "runs/quote-integrity-paper-003",
+  "paper_verification": "VALID",
+  "no_auth_control": {
+    "run": "runs/quote-integrity-no-auth-003",
+    "issued": 195,
+    "accounted": 195,
+    "failed": 195,
+    "status": "INCOMPLETE",
+    "exit_code": 3,
+    "scope": "Deliberately nonexistent credential directory; no successful market acquisition"
+  },
+  "market_capture_reconstructed": false,
+  "live_commissioning_performed": false,
+  "upstream": "b3ec2d7f0f73de8e27345c18e36c53361570dab4"
+}

@@ -195,3 +195,5 @@ mechanisms or a validated universal predictor.
 The fixed opening-to-closing continuation pilot is implemented through `apex continuation-experiment` and `apex verify-continuation`. Its first 102-session historical result was negative before costs; it is not a promoted trading policy. See [CONTINUATION_001.md](docs/CONTINUATION_001.md) and the frozen [plan](plans/continuation-001.json).
 
 Options are a separate proposed research track. Contract metadata was accessible, but the historical options-quote probe returned NOT_ENTITLED. See [OPTIONS_RESEARCH_001.md](docs/OPTIONS_RESEARCH_001.md). No options execution is implemented.
+
+Historical decision quotes now have integer-nanosecond cutoff/grouping, incomplete-collection refusal and enforced evidence categories, integrated with the existing paper runtime. Decision snapshots cannot support execution or account P&L. See [QUOTE_INTEGRITY_001.md](docs/QUOTE_INTEGRITY_001.md).

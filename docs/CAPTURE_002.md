@@ -20,7 +20,7 @@ The parent measures request and receipt in wall-clock nanoseconds. Receipt is wh
 
 Provider RFC3339 timestamps are retained in full and parsed to nanoseconds. Future events and incomplete bars refuse before conversion into the existing floating-second replay schema. Downstream epoch comparisons still use that schema; this release does not claim nanosecond event ordering throughout the engine.
 
-Alpaca documents quote sizes in round lots. The caller must supply `--round-lot-shares`; conversion retains raw lot sizes and is labeled `OPERATOR_DECLARED_LOT_SIZE_NOT_INDEPENDENTLY_VERIFIED`. The synthetic control uses 100 shares per lot. This is not a blanket verification that every live instrument uses 100. SIP and IEX coverage are named separately. [Provider quote schema](https://docs.alpaca.markets/us/docs/real-time-stock-pricing-data), [latest-quote endpoint and feeds](https://docs.alpaca.markets/us/reference/stocklatestquotes-1).
+The original release used a caller-declared multiplier and a synthetic fixture with 100 shares per provider unit. That fixture exercises conversion arithmetic; it is not evidence of provider units. Current raw fields use neutral size names and conversion is labeled unverified. The recovered SPY/SIP historical REST study supports using multiplier 1 for that study, but quote/trade magnitude comparisons do not independently prove units or generalize to streaming. See [the retained dated study](evidence/quote-integrity-001/upstream/quote-size-units.json) and [review reconciliation](QUOTE_REVIEW_002.md). Candidate sizing retains the conservative raw-size ceiling.
 
 ## Request and failure contracts
 
@@ -60,3 +60,7 @@ The actual standalone CLI also ran. `APCA_API_KEY_ID` and `APCA_API_SECRET_KEY` 
 The operator later reported a healthy live Alpaca SIP fabric and Keychain credentials. Source inspection established a macOS launcher exists, but did not verify the collector's current host or liveness. The earlier standalone failure was a property of the build workspace, not a verdict on the operator host. `ops/apex_shadow_capture.sh` retrieves the existing `ALPACA_API_KEY_ID` and `ALPACA_API_SECRET_KEY` entries under the `apex` account and launches only this module's bounded read-only REST capture. It does not log the values and it does not reuse Robinhood credentials or broker routes.
 
 This bridge was prepared for commissioning the new APEX capture → Twin → forecast → candidate → replay path; it was not run on the credentialed host. DigitalOcean is now the explicit operating target; see [Linux deployment](DIGITALOCEAN.md). The REST capture is not a continuous feed.
+
+## Subsequent quote integration correction
+
+The earlier text records that release's provider-documentation assumptions. The historical quote integration does not establish provider units from quote/trade magnitude comparisons. Raw size fields now use neutral names; conversion remains unverified and candidate quantities are conservatively capped by the raw size. The actual v0.7 paper runtime already has a measured-receipt live gate. See [QUOTE_INTEGRITY_001.md](QUOTE_INTEGRITY_001.md) for the integrated source and its acceptance boundaries.

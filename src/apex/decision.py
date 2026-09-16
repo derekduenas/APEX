@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import numpy as np
 
-from .core import Config, fee, money
-from .data import visible
+from .core import Config, fee, finite, money
+from .data import visible, event_ns, epoch_ns, duration_ns
 
 
 def quote_at(observations, now, config: Config):
@@ -12,9 +12,9 @@ def quote_at(observations, now, config: Config):
     if not quotes:
         return None, "QUOTE_UNAVAILABLE_OR_CONFLICTING"
     quote = quotes[-1]
-    if any(c["event_epoch"] >= quote["event_epoch"] for c in conflicts):
+    if any(c.get("event_ns", epoch_ns(c["event_epoch"])) >= event_ns(quote) for c in conflicts):
         return None, "LATEST_QUOTE_CONFLICT"
-    if now - quote["event_epoch"] > config.max_quote_age:
+    if epoch_ns(now) - event_ns(quote) > duration_ns(config.max_quote_age):
         return None, "QUOTE_STALE"
     return quote, None
 
@@ -31,7 +31,16 @@ def evaluate(prediction, paths, quote, quote_problem, *, cash, position_open, co
         qty = int(budget / Decimal(str(quote["ask"])))
         while qty and money(Decimal(str(quote["ask"])) * qty) + fee(qty, config) > budget:
             qty -= 1
-        qty = min(qty, int(quote["ask_size"]))
+        # CONSERVATIVE RAW-SIZE CEILING. `ask_size` is the adapter's CONVERTED size, and the conversion rests on a
+        # caller-supplied multiplier. An overstated multiplier would inflate permitted quantity, which is the one
+        # direction of error that can hurt. The provider's own raw number is therefore an independent ceiling:
+        # whatever the unit turns out to be, one provider unit is never fewer than one share, so a multiplier
+        # that is wrong can only fail to expand size here -- it can never expand it past what was displayed.
+        displayed = int(quote["ask_size"])
+        raw_size = quote.get("provider_ask_size", quote.get("provider_ask_lots"))
+        if finite(raw_size):
+            displayed = min(displayed, int(raw_size))
+        qty = min(qty, displayed)
         if qty <= 0:
             reason = "WHOLE_SHARE_OR_DISPLAYED_SIZE_UNAFFORDABLE"
         else:
