@@ -9,9 +9,21 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-PATHS = {"/v2/stocks/bars", "/v2/stocks/bars/latest", "/v2/stocks/quotes", "/v2/stocks/quotes/latest",
-         "/v2/stocks/trades"}
-PARAMETERS = {"symbols", "feed", "timeframe", "start", "end", "limit", "sort", "adjustment", "page_token"}
+MARKET = {"symbols", "feed", "timeframe", "start", "end", "limit", "sort", "adjustment", "page_token"}
+# Every reachable endpoint is named with ITS OWN host and ITS OWN parameter set. The calendar and clock live on
+# the trading host, which also serves orders and positions; listing endpoints individually rather than allowing a
+# host means no order path is reachable with these credentials even by mistake.
+ENDPOINTS = {
+    "/v2/stocks/bars": ("data.alpaca.markets", MARKET),
+    "/v2/stocks/bars/latest": ("data.alpaca.markets", MARKET),
+    "/v2/stocks/quotes": ("data.alpaca.markets", MARKET),
+    "/v2/stocks/quotes/latest": ("data.alpaca.markets", MARKET),
+    "/v2/stocks/trades": ("data.alpaca.markets", MARKET),
+    "/v2/calendar": ("api.alpaca.markets", {"start", "end"}),
+    "/v2/clock": ("api.alpaca.markets", set()),
+}
+PATHS = frozenset(ENDPOINTS)
+PARAMETERS = MARKET
 MAX_BYTES = 2_000_000
 
 
@@ -43,13 +55,14 @@ class NoRedirect(HTTPRedirectHandler):
 
 def main():
     request = json.load(sys.stdin)
-    if request.get("path") not in PATHS or set(request.get("params", {})) - PARAMETERS:
+    endpoint = ENDPOINTS.get(request.get("path"))
+    if endpoint is None or set(request.get("params", {})) - endpoint[1]:
         raise ValueError("READ_ONLY_ENDPOINT_NOT_ALLOWED")
     key, secret = alpaca_credentials()
     if not key or not secret:
         print(json.dumps({"status": 0, "error": "BLOCKED_EXTERNAL_CREDENTIAL"}))
         return
-    url = "https://data.alpaca.markets" + request["path"] + "?" + urlencode(request["params"])
+    url = "https://" + endpoint[0] + request["path"] + "?" + urlencode(request["params"])
     req = Request(url, headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret, "Accept": "application/json"}, method="GET")
     try:
         with build_opener(NoRedirect()).open(req, timeout=request["timeout"]) as response:
@@ -63,7 +76,10 @@ def main():
                 else:
                     result = {"status": response.status, "body_base64": base64.b64encode(body).decode()}
     except HTTPError as exc:
-        result = {"status": exc.code, "error": "HTTP_ERROR"}  # no headers or server error text
+        # NoRedirect turns any 3xx into this path, so a redirect is reported as a refusal by name rather than
+        # being followed to a host that was never allowlisted.
+        error = "REDIRECT_REFUSED" if 300 <= exc.code < 400 else "HTTP_ERROR"
+        result = {"status": exc.code, "error": error}  # no headers or server error text
     except (URLError, TimeoutError, OSError) as exc:
         # A misconfigured local trust store used to be indistinguishable from an outage, which cost real
         # diagnosis time. The CLASS of failure is reported from a fixed vocabulary; the exception text is not,

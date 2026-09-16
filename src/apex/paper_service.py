@@ -42,13 +42,32 @@ def load_service_settings(path):
     return model, account
 
 
-def tick_files(root, *, input_path, session_path, settings_path):
-    """One service invocation; host scheduler owns recurrence and process timeout."""
+def tick_files(root, *, input_path=None, session_path=None, settings_path, generation_root=None):
+    """One service invocation; host scheduler owns recurrence and process timeout.
+
+    With `generation_root` the published pair is resolved ONCE and both halves are read from that pinned
+    immutable directory, so a publication landing mid-read cannot hand back one half of each generation.
+    """
     from .paper_runtime import PaperSession, tick
     root = Path(root)
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    feed = {}
     try:
         config, account = load_service_settings(settings_path)
+        if generation_root is not None:
+            from .paper_feed import feed_state
+            feed = feed_state(generation_root)
+            if feed.get("session") is None:
+                raise Refused("FEED_SESSION_UNAVAILABLE:" + str(feed.get("problem")))
+            calendar = PaperSession(**feed["session"]["session"])
+            document = feed["input"] if feed.get("input") is not None else {
+                "schema": "APEX_DATA_V1", "source": "UNAVAILABLE_LIVE_FILE_FEED",
+                "status": "BLOCKED_NO_MARKET_DATA", "observations": []}
+            result = tick(root, document, session=calendar, config=config,
+                          account_config=account, mode="LIVE_PAPER")
+            result["feed"] = {k: v for k, v in feed.items() if k not in ("input", "session")}
+            _replace(root / "service-health.json", result)
+            return result
         calendar = PaperSession(**read_json(session_path, limit=16384))
         try:
             document = read_json(input_path)

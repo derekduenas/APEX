@@ -5,7 +5,7 @@ import csv
 import io
 import math
 import re
-from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
+from decimal import Decimal, ROUND_FLOOR
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -33,19 +33,36 @@ def duration_ns(seconds):
 
 
 def event_ns(row):
-    return row["event_ns"] if "event_ns" in row else epoch_ns(row["event_epoch"])
+    return row["event_ns"] if "event_ns" in row else ns_lower_bound(row["event_epoch"])
+
+
+def exact_ns(seconds, field: str) -> int:
+    """Nanoseconds from declared seconds, or a refusal. NEVER a reconstruction.
+
+    Recovering a provider's nanoseconds from a float cannot be done soundly, and two successive attempts here
+    were wrong in ways that took measurement to see. The second attempt failed for a reason worth recording: a
+    float produced as `n / 1e9` is NOT the nearest float to n/10**9, because n exceeds 2**53 and the int-to-float
+    conversion rounds before the division ever happens. So any bound depends on HOW the float was made, and this
+    function is not told that. Provenance is the missing information, not precision.
+
+    An integer-VALUED float is accepted here because a whole-second clock is a legitimate declaration, but that
+    is a statement about the DECLARATION, not a proof that nothing was lost: a true stamp of ...200_000000123
+    nanoseconds also rounds to exactly 1787578200.0. Anything whose nanoseconds actually matter must carry them,
+    and the measured publisher path requires the original integers outright rather than relying on this.
+    """
+    if isinstance(seconds, bool):
+        raise Refused("INVALID_TIME")
+    if isinstance(seconds, int) or (isinstance(seconds, float) and seconds.is_integer()):
+        return int(seconds) * 1_000_000_000
+    raise Refused("FRACTIONAL_SECONDS_REQUIRE_NANOSECOND_STAMPS:" + field)
+
+
+def event_ns(row):
+    return row["event_ns"] if "event_ns" in row else exact_ns(row["event_epoch"], "event_epoch")
 
 
 def available_ns(row):
-    if "available_ns" in row:
-        return row["available_ns"]
-    seconds = row["available_epoch"]
-    # Fractional float seconds cannot recover their original provider nanoseconds.
-    # Use the next representable float as a conservative upper bound, then ceil.
-    # Exact integer clocks retain their declared meaning. Adapters must retain ns.
-    if isinstance(seconds, float) and not seconds.is_integer():
-        seconds = math.nextafter(seconds, math.inf)
-    return int((Decimal(str(seconds)) * 1_000_000_000).to_integral_value(rounding=ROUND_CEILING))
+    return row["available_ns"] if "available_ns" in row else exact_ns(row["available_epoch"], "available_epoch")
 
 
 def decision_only(document):
@@ -103,6 +120,9 @@ def normalize(document: dict) -> tuple[list[dict], list[dict]]:
                 raise Refused("INVALID_TIME")
             if row["available_epoch"] < row["event_epoch"]:
                 raise Refused("AVAILABLE_BEFORE_EVENT")
+            for field in ("event_epoch", "available_epoch"):
+                if field.replace("_epoch", "_ns") not in row:
+                    exact_ns(row[field], field)
             if "event_ns" in row or "available_ns" in row:
                 if not all(type(row.get(k)) is int for k in ("event_ns", "available_ns")):
                     raise Refused("QUOTE_LATENCY_ASSUMPTION_REQUIRES_NANOSECOND_STAMPS" if row["availability_basis"] == "QUOTE_LATENCY_ASSUMPTION_V1" else "INVALID_NANOSECOND_STAMPS")

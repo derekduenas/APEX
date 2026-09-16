@@ -135,9 +135,15 @@ def main():
     paper_replay.add_argument("--variance", choices=("garch", "ewma"), default="garch")
     paper_tick = subs.add_parser("paper-service-tick", help="Service the persistent paper account from a measured file feed; no broker")
     paper_tick.add_argument("--root", type=Path, required=True)
-    paper_tick.add_argument("--input", type=Path, required=True)
-    paper_tick.add_argument("--session", type=Path, required=True)
+    paper_tick.add_argument("--input", type=Path)
+    paper_tick.add_argument("--session", type=Path)
+    paper_tick.add_argument("--generation", type=Path,
+                            help="Feed root; resolves one published generation and reads both halves from it")
     paper_tick.add_argument("--settings", type=Path, required=True)
+    feed_parser = subs.add_parser("publish-paper-feed",
+                                  help="Publish one measured capture and its fetched exchange session as one generation")
+    feed_parser.add_argument("--root", type=Path, required=True)
+    feed_parser.add_argument("--settings", type=Path, required=True)
     paper_report = subs.add_parser("paper-report", help="Reconstruct orders, positions and net paper P&L")
     paper_report.add_argument("--root", type=Path, required=True)
     paper_report.add_argument("--format", choices=("json", "text"), default="json")
@@ -162,7 +168,11 @@ def main():
     merge_parser.add_argument("--out", type=Path, required=True)
     merge_parser.add_argument("--retrieved-utc", required=True)
     args = parser.parse_args()
-    if args.command == "fetch-decision-quotes":
+    if args.command == "publish-paper-feed":
+        from .paper_feed import publish
+        from .runtime import load_settings
+        result = publish(args.root, settings=load_settings(args.settings))
+    elif args.command == "fetch-decision-quotes":
         from .decision_quotes import fetch_decision_quotes
         from .research import ResearchPlan
         result = fetch_decision_quotes(args.out, plan=ResearchPlan(**json.loads(args.plan.read_text())), config=Config(symbol=args.symbol), feed=args.feed, round_lot_shares=args.round_lot_shares, timeout=args.timeout)
@@ -202,7 +212,8 @@ def main():
                         config=Config(symbol=args.symbol, variance=args.variance))
     elif args.command == "paper-service-tick":
         from .paper_service import tick_files
-        result = tick_files(args.root, input_path=args.input, session_path=args.session, settings_path=args.settings)
+        result = tick_files(args.root, input_path=args.input, session_path=args.session,
+                            settings_path=args.settings, generation_root=args.generation)
     elif args.command == "paper-report":
         from .paper_runtime import report
         result = report(args.root)

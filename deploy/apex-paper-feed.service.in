@@ -1,0 +1,30 @@
+[Unit]
+Description=APEX measured market feed publisher (one consistent generation per run)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=apex-paper-feed
+Group=apex-paper-feed
+WorkingDirectory=__RELEASE__
+# Publishing is the ONLY component that opens a market-data connection. The paper service reads files.
+ExecStart=__RELEASE__/venv/bin/apex publish-paper-feed --root /var/lib/apex-paper-feed --settings /etc/apex-paper/feed-settings.json
+LoadCredential=alpaca_key:/etc/apex-shadow/credentials/alpaca_key
+LoadCredential=alpaca_secret:/etc/apex-shadow/credentials/alpaca_secret
+StateDirectory=apex-paper-feed
+StateDirectoryMode=0750
+UMask=0027
+TimeoutStartSec=120
+MemoryMax=1G
+TasksMax=64
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=OMP_NUM_THREADS=1
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StandardOutput=journal
+StandardError=journal

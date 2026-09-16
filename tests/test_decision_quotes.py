@@ -242,9 +242,25 @@ def test_seconds_that_disagree_with_the_nanosecond_stamps_are_refused(tmp_path):
 
 
 def test_a_quote_claiming_the_assumed_basis_without_nanosecond_stamps_is_refused(tmp_path):
+    """Two separate refusals guard this, and both stay reachable.
+
+    A row whose seconds are FRACTIONAL is refused before the basis is even considered, because recovering the
+    provider's nanoseconds from such a float is not something this system will attempt. A row whose seconds are
+    INTEGER carries no lost digits, so it reaches the basis rule and is refused there for claiming an exact
+    one-second assumption it cannot demonstrate.
+    """
     from apex.data import from_alpaca_quotes, normalize
-    row = from_alpaca_quotes([{"t": "2026-08-24T13:30:03.996061335Z", "bp": 640.11, "ap": 640.13,
-                               "bs": 40, "as": 240}], "SPY", "r")[0]
-    row.pop("event_ns")
-    _, rejected = normalize({"schema": "APEX_DATA_V1", "observations": [row]})
+    fractional = from_alpaca_quotes([{"t": "2026-08-24T13:30:03.996061335Z", "bp": 640.11, "ap": 640.13,
+                                      "bs": 40, "as": 240}], "SPY", "r")[0]
+    fractional.pop("event_ns")
+    fractional.pop("available_ns")
+    _, rejected = normalize({"schema": "APEX_DATA_V1", "observations": [fractional]})
+    assert rejected == [{"input_index": 0, "reason": "FRACTIONAL_SECONDS_REQUIRE_NANOSECOND_STAMPS:event_epoch"}]
+
+    whole = from_alpaca_quotes([{"t": "2026-08-24T13:30:03Z", "bp": 640.11, "ap": 640.13,
+                                 "bs": 40, "as": 240}], "SPY", "r")[0]
+    whole.pop("event_ns")
+    whole.pop("available_ns")
+    assert float(whole["event_epoch"]).is_integer() and float(whole["available_epoch"]).is_integer()
+    _, rejected = normalize({"schema": "APEX_DATA_V1", "observations": [whole]})
     assert rejected == [{"input_index": 0, "reason": "QUOTE_LATENCY_ASSUMPTION_REQUIRES_NANOSECOND_STAMPS"}]

@@ -1,0 +1,11 @@
+[Unit]
+Description=Recurring APEX measured feed publication
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=30s
+AccuracySec=1s
+Unit=apex-paper-feed.service
+
+[Install]
+WantedBy=timers.target
