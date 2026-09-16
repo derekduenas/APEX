@@ -1,0 +1,82 @@
+{
+  "schema": "APEX_CODEX_BRAIN_ACCESS_EVIDENCE_V1",
+  "assessment_date": "2026-09-16",
+  "status": "CODEX_CHATGPT_AUTH_AVAILABLE_ISOLATION_UNVERIFIED",
+  "authentication": {
+    "method": "CHATGPT",
+    "verification_method": "Supported codex login status command returned success and identified ChatGPT authentication",
+    "credential_contents_read_or_copied_by_apex": false,
+    "raw_authentication_output_disclosed": false,
+    "new_login_flow_started": false
+  },
+  "cli": {
+    "package": "@openai/codex",
+    "version": "0.154.0",
+    "version_verified_through_cli": true,
+    "operator_executable_environment_variable": "APEX_CODEX_EXECUTABLE"
+  },
+  "model_catalog": {
+    "verification_method": "Supported codex debug models command with bounded output capture",
+    "verified_available_model": "gpt-6-astra",
+    "visibility": "list",
+    "scope": "Model appeared in the authenticated CLI catalog; successful inference was not established"
+  },
+  "isolation": {
+    "status": "UNVERIFIED",
+    "required_boundary": "Generated noncredential canary verifies outside-workspace reads denied, workspace writes denied, and sandbox network access denied before model inference",
+    "probes": [
+      {
+        "probe": "CLI wrapper canary under restricted named permissions",
+        "result": "TIMEOUT",
+        "timeout_seconds": 15
+      },
+      {
+        "probe": "Adapter canary with frozen disabled-feature configuration",
+        "result": "TIMEOUT",
+        "timeout_seconds": 15
+      },
+      {
+        "probe": "CLI wrapper minimal true command under the same restricted permissions",
+        "result": "TIMEOUT",
+        "timeout_seconds": 25
+      },
+      {
+        "probe": "Official native executable minimal true command under the same restricted permissions",
+        "result": "TIMEOUT",
+        "timeout_seconds": 42,
+        "timeout_basis": "Two-second diagnostic observation followed by a forty-second completion wait"
+      }
+    ],
+    "duration_basis": "Configured timeout bounds are retained; precise individual elapsed durations were not recorded",
+    "host_limitation": "This host did not complete the supported restricted Codex sandbox probes within the retained bounds; cause not established",
+    "permission_controls_weakened": false,
+    "additional_probes_planned_in_this_session": false
+  },
+  "runtime": {
+    "runtime_llm_call_completed": false,
+    "model_inference_attempted": false,
+    "brain_active": false,
+    "api_billing_fallback_enabled": false,
+    "direct_http_reuse_of_chatgpt_credentials": false,
+    "broker_authority": "NONE",
+    "next_requirement": "Commission the supported restricted Codex isolation boundary on the trusted execution host before enabling model inference"
+  },
+  "status_command": {
+    "calls": ["codex --version", "codex login status"],
+    "runs_isolation_probe": false,
+    "runs_model_inference": false,
+    "scope": "Availability and saved authentication only; never marks the brain active"
+  },
+  "targeted_tests": {
+    "command": "python -m pytest -q tests/test_codex_planner.py",
+    "passed": 16,
+    "reported_duration_seconds": 0.81,
+    "scope": "Local process, fake CLI transport, proposal validation and fail-closed controls; not live inference commissioning"
+  },
+  "official_documentation": [
+    "https://learn.chatgpt.com/docs/auth",
+    "https://learn.chatgpt.com/docs/non-interactive-mode",
+    "https://learn.chatgpt.com/docs/permissions",
+    "https://learn.chatgpt.com/docs/config-file/config-reference"
+  ]
+}

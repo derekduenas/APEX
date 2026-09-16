@@ -1,0 +1,53 @@
+{
+  "status": "DIAGNOSTIC_ONLY_NO_PROMOTION",
+  "input_rows": 3264,
+  "eligible_sessions": 102,
+  "excluded_weekdays": [
+    {
+      "day": "2026-01-01",
+      "reason": "MISSING_WINDOW_OR_CLOSED_SESSION"
+    },
+    {
+      "day": "2026-01-19",
+      "reason": "MISSING_WINDOW_OR_CLOSED_SESSION"
+    },
+    {
+      "day": "2026-02-16",
+      "reason": "MISSING_WINDOW_OR_CLOSED_SESSION"
+    },
+    {
+      "day": "2026-04-03",
+      "reason": "MISSING_WINDOW_OR_CLOSED_SESSION"
+    },
+    {
+      "day": "2026-05-25",
+      "reason": "MISSING_WINDOW_OR_CLOSED_SESSION"
+    }
+  ],
+  "mean_signed_target_bps": -1.5577706145761196,
+  "comparators_mean_bps": {
+    "always_long": 2.6719195028083678,
+    "always_short": -2.6719195028083678,
+    "always_flat": 0.0
+  },
+  "primary_difference_vs_long_bps": -4.229690117384487,
+  "primary_95pct_block_bootstrap_interval_bps": [
+    -8.88694021794982,
+    0.01889795631394317
+  ],
+  "directional_hit_rate_active": 0.47058823529411764,
+  "illustrative_cost_sensitivity_bps": {
+    "0": -1.5577706145761196,
+    "1": -2.55777061457612,
+    "2": -3.55777061457612,
+    "5": -6.5577706145761185,
+    "10": -11.55777061457612
+  },
+  "actual_trades": 0,
+  "account_pnl": null,
+  "scope": "Revised historical bar diagnostic; assumed availability, no quotes/fills/borrow; bootstrap is not calibrated future probability.",
+  "input_sha256": "0da2aba58f5e2153bdbdecf1b7e846abb380cfad430b335b67898449d4978f98",
+  "plan_sha256": "fb729f255e5f60f5e5dcaea23051e856fab75f9e5b45f600f5bd1e428ecff30f",
+  "evaluated_at": "2026-09-16T02:38:11.211959+00:00",
+  "implementation_sha256": "eb6646f808c15d8b6584729f152c0b4bd5a4129131dcc0e40008a6a06664fdd8"
+}

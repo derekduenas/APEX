@@ -130,6 +130,12 @@ def _planner_record(planned, context, symbols, model):
                  'DIRECTOR_AI_REQUEST_NOT_BOUND')
         _require(isinstance(planned['response_sha256'], str)
                  and re.fullmatch('[0-9a-f]{64}', planned['response_sha256']), 'DIRECTOR_AI_RESPONSE_DIGEST_INVALID')
+    elif provenance == 'CODEX_CHATGPT_CLI_NOT_INDEPENDENTLY_AUTHENTICATED':
+        from .codex_planner import make_codex_request
+        _require(planned['request_digest'] == digest(make_codex_request(context, symbols, model)),
+                 'DIRECTOR_CODEX_REQUEST_NOT_BOUND')
+        _require(isinstance(planned['response_sha256'], str)
+                 and re.fullmatch('[0-9a-f]{64}', planned['response_sha256']), 'DIRECTOR_AI_RESPONSE_DIGEST_INVALID')
     elif provenance == 'SYNTHETIC_PLANNER_TEST_ONLY':
         _require(context['input_class'] == 'SYNTHETIC_RESEARCH_CONTROL'
                  and planned['request_digest'] is None and planned['response_sha256'] is None,
@@ -189,7 +195,9 @@ def _summary(manifest, proposal, planner, lab=None, peer=None):
                       'NO_MATURED_PEER_FORECAST_EVIDENCE' if ran else 'PLANNER_DEFERRED_MISSING_DATA',
             'input_class': manifest['context']['input_class'],
             'planner_provenance': planner['provenance'], 'model': planner['model'],
-            'runtime_llm_call_completed': planner['provenance'] == 'OPENAI_RESPONSES_NOT_INDEPENDENTLY_AUTHENTICATED',
+            'runtime_llm_call_completed': planner['provenance'] in (
+                'OPENAI_RESPONSES_NOT_INDEPENDENTLY_AUTHENTICATED',
+                'CODEX_CHATGPT_CLI_NOT_INDEPENDENTLY_AUTHENTICATED'),
             'action': proposal['action'], 'symbols': manifest['symbols'],
             'proposal_digest': digest(proposal), 'research_attempts': int(ran),
             'research_attempt_budget': 1,
@@ -212,12 +220,16 @@ def _safe_reason(exc):
 
 def run_director(input_path: Path, out: Path, *, plan: ResearchPlan, config: Config,
                  market_symbol: str, sector_symbol: str, proposal: dict | None = None,
-                 model: str | None = None) -> dict:
+                 model: str | None = None, codex_model: str | None = None) -> dict:
     out = Path(out)
     out.mkdir(parents=True, exist_ok=False)
     ledger = None
     try:
-        _require(proposal is None or model is None, 'DIRECTOR_CHOOSE_EXTERNAL_PROPOSAL_OR_AI_MODEL')
+        _require(sum(x is not None for x in (proposal, model, codex_model)) <= 1,
+                 'DIRECTOR_CHOOSE_EXTERNAL_PROPOSAL_OR_AI_MODEL')
+        use_codex = codex_model is not None
+        if use_codex:
+            model = codex_model
         input_path = Path(input_path)
         _require(input_path.is_file() and not input_path.is_symlink(), 'DIRECTOR_INPUT_UNAVAILABLE')
         _require(input_path.stat().st_size <= MAX_INPUT_BYTES, 'DIRECTOR_INPUT_BYTES_EXCEEDED')
@@ -239,6 +251,9 @@ def run_director(input_path: Path, out: Path, *, plan: ResearchPlan, config: Con
         if proposal is not None:
             planned = {'proposal': proposal, 'provenance': 'EXTERNAL_PROPOSAL_NOT_AUTHENTICATED',
                        'model': None, 'request_digest': None, 'response_sha256': None}
+        elif use_codex:
+            from .codex_planner import request_codex_plan
+            planned = request_codex_plan(context, symbols, model)
         else:
             planned = request_plan(context, symbols, model)
         planned = _planner_record(planned, context, symbols, model)

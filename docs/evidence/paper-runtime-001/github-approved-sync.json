@@ -1,0 +1,61 @@
+{
+  "schema": "APEX_APPROVED_GITHUB_SYNC_V1",
+  "repository": "derekduenas/APEX",
+  "authorization": "Explicit user authorization reported by root for approved local commits 09cdad7 and b32a809",
+  "mechanism": "Authenticated GitHub connector create_tree/content + create_commit; exact source trees; metadata changes commit IDs",
+  "source_tree_equality": "VERIFIED_BY_REMOTE_GIT_COMMIT_TREE_SHA",
+  "mappings": [
+    {
+      "local_commit": "09cdad705aa5c5563ce17e1e35346e73ac4da10c",
+      "parent_sha": "c96147c421be3a86fcafb6d32b304eb8a79751b5",
+      "remote_commit": "5bea1744427a8cad1aef8219c7cc47cecada9e8b",
+      "tree_sha": "368cda3d3b7a5b11476859ef585ef63f3330d7a9",
+      "url": "https://github.com/derekduenas/APEX/commit/5bea1744427a8cad1aef8219c7cc47cecada9e8b"
+    },
+    {
+      "local_commit": "b32a8098771ac2331623f80745989f64e2ea2a9e",
+      "parent_sha": "5bea1744427a8cad1aef8219c7cc47cecada9e8b",
+      "remote_commit": "736a3c12a73a09e37912bc39b99c0b643b88ad25",
+      "tree_sha": "2169dadc682189d981165ecb86b63c0a902c232f",
+      "url": "https://github.com/derekduenas/APEX/commit/736a3c12a73a09e37912bc39b99c0b643b88ad25"
+    }
+  ],
+  "branches": [
+    {
+      "name": "codex/regime-strategy-lab-001",
+      "sha": "5bea1744427a8cad1aef8219c7cc47cecada9e8b",
+      "operation": "FAST_FORWARD_FORCE_FALSE"
+    },
+    {
+      "name": "codex/peer-edge-ai-director-001",
+      "sha": "736a3c12a73a09e37912bc39b99c0b643b88ad25",
+      "operation": "CREATE_NEW_BRANCH"
+    }
+  ],
+  "pull_requests": [
+    {
+      "number": 2,
+      "url": "https://github.com/derekduenas/APEX/pull/2",
+      "base": "main",
+      "head": "codex/regime-strategy-lab-001",
+      "draft": false
+    },
+    {
+      "number": 3,
+      "url": "https://github.com/derekduenas/APEX/pull/3",
+      "base": "codex/regime-strategy-lab-001",
+      "head": "codex/peer-edge-ai-director-001",
+      "draft": true
+    }
+  ],
+  "local_mutation": "NONE: approved objects read without editing working tree, branch, index or remote-tracking refs",
+  "raw_data_or_runs_uploaded": false,
+  "review_requests_or_person_directed_messages_sent": false,
+  "ci_status": "NOT_CHECKED",
+  "historical_acceptance": "392 local tests passed per approved acceptance.json; not a new test run",
+  "limitations": [
+    "Approved handoff files retain pre-upload statements; new PR description documents subsequent explicit authorization and completed upload",
+    "Commit IDs differ due connector-created metadata; exact trees verified",
+    "PR2 prior description still contains superseded evaluation-pending status; new repair evidence is in its latest commit"
+  ]
+}

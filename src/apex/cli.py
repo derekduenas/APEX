@@ -106,6 +106,8 @@ def main():
     planner = director.add_mutually_exclusive_group(required=True)
     planner.add_argument("--proposal", type=Path, help="Retained external human/AI proposal; authorship not authenticated")
     planner.add_argument("--model", help="Explicit OpenAI model for runtime planning; OPENAI_API_KEY required")
+    planner.add_argument("--codex-model", help="Explicit model through Codex CLI with saved ChatGPT sign-in; requires supported local permissions")
+    subs.add_parser("brain-status", help="Check subscription planner availability without requesting model inference")
     director_demo = subs.add_parser("director-demo", help="Synthetic control with a fixed scripted proposal; no LLM invocation")
     director_demo.add_argument("--out", type=Path, required=True)
     director_demo.add_argument("--world", choices=("catchup", "null", "continuation"), default="catchup")
@@ -119,8 +121,79 @@ def main():
     peer.add_argument("--sector-symbol", required=True)
     peer_verify = subs.add_parser("verify-peer-experiment")
     peer_verify.add_argument("--run", type=Path, required=True)
+    paper_demo = subs.add_parser("paper-demo", help="Synthetic paper account lifecycle, with observed-later fixture quotes")
+    paper_demo.add_argument("--out", type=Path, required=True)
+    paper_demo.add_argument("--world", choices=("positive", "adverse", "no-quotes"), default="positive")
+    paper_demo.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    paper_replay = subs.add_parser("paper-replay", help="Chronological recorded/synthetic experiment in a new persistent paper account")
+    paper_replay.add_argument("--input", type=Path, required=True)
+    paper_replay.add_argument("--out", type=Path, required=True)
+    paper_replay.add_argument("--session", type=Path, required=True)
+    paper_replay.add_argument("--start", type=epoch, required=True)
+    paper_replay.add_argument("--end", type=epoch, required=True)
+    paper_replay.add_argument("--symbol", default="SPY")
+    paper_replay.add_argument("--variance", choices=("garch", "ewma"), default="garch")
+    paper_tick = subs.add_parser("paper-service-tick", help="Service the persistent paper account from a measured file feed; no broker")
+    paper_tick.add_argument("--root", type=Path, required=True)
+    paper_tick.add_argument("--input", type=Path, required=True)
+    paper_tick.add_argument("--session", type=Path, required=True)
+    paper_tick.add_argument("--settings", type=Path, required=True)
+    paper_report = subs.add_parser("paper-report", help="Reconstruct orders, positions and net paper P&L")
+    paper_report.add_argument("--root", type=Path, required=True)
+    paper_report.add_argument("--format", choices=("json", "text"), default="json")
+    paper_report.add_argument("--out", type=Path)
+    paper_verify = subs.add_parser("verify-paper", help="Independently reconstruct paper-account arithmetic and retained event references")
+    paper_verify.add_argument("--root", type=Path, required=True)
+    continuation = subs.add_parser("continuation-experiment", help="Frozen bar-only diagnostic; no execution")
+    continuation.add_argument("--input", type=Path, required=True)
+    continuation.add_argument("--plan", type=Path, required=True)
+    continuation.add_argument("--out", type=Path, required=True)
+    continuation_verify = subs.add_parser("verify-continuation")
+    continuation_verify.add_argument("--run", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "director":
+    if args.command == "continuation-experiment":
+        from .continuation import run_continuation
+        result = run_continuation(args.input, args.plan, args.out)
+    elif args.command == "verify-continuation":
+        from .continuation import verify_continuation
+        result = verify_continuation(args.run)
+    elif args.command == "paper-demo":
+        from .paper_runtime import PaperSession, replay
+        doc, start, _ = demo_document(quotes=args.world != "no-quotes")
+        doc["source"] = "SYNTHETIC_PAPER_" + args.world.upper().replace("-", "_") + "_EXECUTION_CONTROL_NOT_EDGE"
+        if args.world == "adverse":
+            doc["control_scope"] = "Adverse future-quote execution sensitivity; same pre-decision information; not market performance."
+            for row in doc["observations"]:
+                if row["kind"] == "quote" and row["event_epoch"] > start:
+                    factor = 1 - .0005 * ((row["event_epoch"] - start) / 60)
+                    row["bid"] *= factor
+                    row["ask"] *= factor
+        calendar = PaperSession(start - 300, start - 300 + 390 * 60, "XNYS",
+                                "SYNTHETIC_CALENDAR_FIXTURE", start - 3600)
+        result = replay(doc, args.out, start=start, end=start + 900, session=calendar,
+                        config=Config(variance=args.variance))
+    elif args.command == "paper-replay":
+        from .paper_runtime import PaperSession, replay
+        from .paper_service import read_json
+        result = replay(read_json(args.input), args.out, start=args.start, end=args.end,
+                        session=PaperSession(**read_json(args.session, limit=16384)),
+                        config=Config(symbol=args.symbol, variance=args.variance))
+    elif args.command == "paper-service-tick":
+        from .paper_service import tick_files
+        result = tick_files(args.root, input_path=args.input, session_path=args.session, settings_path=args.settings)
+    elif args.command == "paper-report":
+        from .paper_runtime import report
+        result = report(args.root)
+        if args.out:
+            with args.out.open("x") as handle:
+                handle.write(json.dumps(result, indent=2) + "\n")
+    elif args.command == "verify-paper":
+        from .paper_book import verify_paper_book
+        result = verify_paper_book(args.root / "paper.sqlite")
+    elif args.command == "brain-status":
+        from .codex_planner import codex_status
+        result = codex_status()
+    elif args.command == "director":
         from .director import run_director
         from .research import ResearchPlan
         result = run_director(args.input, args.out,
@@ -128,7 +201,7 @@ def main():
             config=Config(symbol=args.symbol, variance=args.variance),
             market_symbol=args.market_symbol, sector_symbol=args.sector_symbol,
             proposal=_director_proposal(args.proposal) if args.proposal else None,
-            model=args.model)
+            model=args.model, codex_model=args.codex_model)
     elif args.command == "director-demo":
         import tempfile
         from .director import run_director
@@ -204,16 +277,24 @@ def main():
         with args.out.open("x") as handle:
             handle.write(canonical(result))
         result = {"observations": len(result["observations"]), "availability": "BAR_COMPLETION_ASSUMPTION_V1"}
-    if args.command == "shadow-report" and args.format == "text":
+    if args.command == "paper-report" and args.format == "text":
+        from .paper_service import report_text
+        print(report_text(result))
+    elif args.command == "shadow-report" and args.format == "text":
         from .runtime import report_text
         print(report_text(result))
     else:
         print(json.dumps(result, indent=2))
+    if args.command == "verify-continuation" and result.get("status") != "VALID":
+        raise SystemExit(2)
     if result.get("status") == "MISMATCH" or result.get("accounting", {}).get("status") == "MISMATCH":
         raise SystemExit(2)
     if result.get("status") == "BLOCKED_NO_MARKET_DATA":
         raise SystemExit(3)
     if args.command == "shadow-tick" and result.get("status") not in ("SHADOW_OBSERVED", "IDLE_OUTSIDE_REGULAR_CLOCK_WINDOW"):
+        raise SystemExit(3)
+    if args.command == "paper-service-tick" and (result.get("status", "").startswith("BLOCKED")
+            or result.get("status") == "MODEL_FAILED_EXIT_SERVICE_RETAINED"):
         raise SystemExit(3)
 
 

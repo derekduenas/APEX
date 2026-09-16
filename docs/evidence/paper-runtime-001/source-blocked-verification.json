@@ -1,0 +1,13 @@
+{
+  "authority": "SIMULATED_PAPER_ONLY_NO_BROKER_OR_REAL_CAPITAL",
+  "cash": "10000.00",
+  "events": 2,
+  "fills": 0,
+  "head": "8e1da4b5f29200d8aa12ba66ef7652acaa6090749c553398fe7be5ca135ff5cc",
+  "mode": "LIVE_PAPER",
+  "orders": 0,
+  "problems": [],
+  "realized_net": "0.00",
+  "scope": "Independent Decimal fill/account reconstruction and event completeness; shared timing/provenance validators; not broker execution or external authenticity",
+  "status": "VALID"
+}

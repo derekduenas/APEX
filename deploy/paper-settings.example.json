@@ -1,0 +1,31 @@
+{
+  "schema": "APEX_PAPER_SERVICE_V1",
+  "model": {
+    "symbol": "SPY",
+    "starting_cash": "10000.00",
+    "max_notional": "1000.00",
+    "horizon_minutes": 15,
+    "scan_minutes": 15,
+    "training_returns": 780,
+    "paths": 1000,
+    "seed": 41,
+    "max_quote_age": 15,
+    "exit_window_seconds": 120,
+    "minimum_probability": 0.55,
+    "variance": "garch",
+    "commission_per_share": "0.005",
+    "minimum_commission": "0.01",
+    "fee_basis": "ILLUSTRATIVE_COST_ASSUMPTION_V1"
+  },
+  "account": {
+    "starting_cash": "10000.00",
+    "max_notional": "1000.00",
+    "commission_per_share": "0.005",
+    "minimum_commission": "0.01",
+    "slippage_bps": "1.0",
+    "min_latency_seconds": 1.0,
+    "max_quote_age_seconds": 15.0,
+    "order_ttl_seconds": 120.0,
+    "feed": "sip"
+  }
+}

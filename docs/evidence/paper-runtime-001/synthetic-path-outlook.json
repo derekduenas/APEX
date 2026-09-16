@@ -1,0 +1,149 @@
+{
+  "admission_effect": "DIAGNOSTIC_ONLY_UNCHANGED_PAPER_POLICY",
+  "calibration": "UNVALIDATED_MODEL_SCENARIOS_NOT_CALIBRATED_MARKET_PROBABILITIES",
+  "created_epoch": 1789133700.0,
+  "forecast_id": "e68a36ee7d27cda1817642342a3b3027d9a7aa9bb097a4f6db300d8f387e900b",
+  "limitations": [
+    "Shared innovations are conditional on the fitted model, not independent market evidence.",
+    "Stress worlds are declared sensitivities, not inferred alternative-world probabilities.",
+    "Price and excursion quantiles are not guaranteed bounds; intraminute paths are unobserved.",
+    "Same horizon law rebased to current quote is an assumption.",
+    "Illustrative spread and fees omit queue priority and endogenous market impact."
+  ],
+  "mean_net_sign_disagrees_across_worlds": true,
+  "parameter_uncertainty": "NOT_ESTIMATED",
+  "paths_digest": "3e5e96efca74fc112e35e7ef0b60ab07b893aa7c6797c17f2ba2858674f7abb6",
+  "price_anchor": 112.7338,
+  "quote_id": "0a8ce58620ed2ca2b0d58aeb36db840349f2ab8118a91a02ac5c532b381494d6",
+  "regime_transition_model": "NOT_ESTIMATED",
+  "schema": "APEX_PAPER_PATH_OUTLOOK_V1",
+  "status": "MODELED_OUTLOOK",
+  "target_epoch": 1789134600.0,
+  "uncertainty_scope": "Three deterministic sensitivity worlds; no calibrated epistemic uncertainty estimate",
+  "world_probabilities": null,
+  "worlds": {
+    "ADVERSE_DIRECTION_HIGH_VOL": {
+      "counterfactual": {
+        "basis": "FIXED_CURRENT_SPREAD_AND_COMMISSION_COUNTERFACTUAL_NOT_PAPER_FILL_PNL",
+        "mean_net": -3.008952187771784,
+        "net_quantiles": {
+          "0.05": -5.744799368954755,
+          "0.5": -2.9773660571662095,
+          "0.95": -0.32982241262064255
+        },
+        "quantity": 8,
+        "simulated_fraction_net_positive": 0.03,
+        "worst_five_percent_mean_net": -6.391111528941163
+      },
+      "horizon_price_quantiles": {
+        "15": {
+          "0.05": 112.04570007888064,
+          "0.5": 112.39162924285421,
+          "0.95": 112.7225721984224
+        },
+        "5": {
+          "0.05": 112.42403105388831,
+          "0.5": 112.6106822064398,
+          "0.95": 112.81655161887251
+        }
+      },
+      "path_max_return_quantiles": {
+        "0.05": 0.0,
+        "0.5": 2.1325550114137393e-05,
+        "0.95": 0.0013618549939420574
+      },
+      "path_min_return_quantiles": {
+        "0.05": -0.006201374008191041,
+        "0.5": -0.0032528247786372533,
+        "0.95": -0.0008616781541780085
+      },
+      "terminal_price_quantiles": {
+        "0.05": 112.04570007888064,
+        "0.5": 112.39162924285421,
+        "0.95": 112.7225721984224
+      }
+    },
+    "FITTED_DIRECTION": {
+      "counterfactual": {
+        "basis": "FIXED_CURRENT_SPREAD_AND_COMMISSION_COUNTERFACTUAL_NOT_PAPER_FILL_PNL",
+        "mean_net": 2.4672797338340553,
+        "net_quantiles": {
+          "0.05": 0.6316827511189741,
+          "0.5": 2.488807968933811,
+          "0.95": 4.263697024770415
+        },
+        "quantity": 8,
+        "simulated_fraction_net_positive": 0.988,
+        "worst_five_percent_mean_net": 0.19765870377807004
+      },
+      "horizon_price_quantiles": {
+        "15": {
+          "0.05": 112.84276034388986,
+          "0.5": 113.07490099611672,
+          "0.95": 113.2967621280963
+        },
+        "5": {
+          "0.05": 112.71668666145322,
+          "0.5": 112.8414101871025,
+          "0.95": 112.9788957964579
+        }
+      },
+      "path_max_return_quantiles": {
+        "0.05": 0.0012408825565537573,
+        "0.5": 0.0031097895002362153,
+        "0.95": 0.005035148654346987
+      },
+      "path_min_return_quantiles": {
+        "0.05": -0.0006754244682327604,
+        "0.5": 0.0,
+        "0.95": 0.0
+      },
+      "terminal_price_quantiles": {
+        "0.05": 112.84276034388986,
+        "0.5": 113.07490099611672,
+        "0.95": 113.2967621280963
+      }
+    },
+    "ZERO_DIRECTION": {
+      "counterfactual": {
+        "basis": "FIXED_CURRENT_SPREAD_AND_COMMISSION_COUNTERFACTUAL_NOT_PAPER_FILL_PNL",
+        "mean_net": -0.2681994094448957,
+        "net_quantiles": {
+          "0.05": -2.0982454733454508,
+          "0.5": -0.24673627659054093,
+          "0.95": 1.5227854436345136
+        },
+        "quantity": 8,
+        "simulated_fraction_net_positive": 0.405,
+        "worst_five_percent_mean_net": -2.5309570145790077
+      },
+      "horizon_price_quantiles": {
+        "15": {
+          "0.05": 112.50151931583181,
+          "0.5": 112.73295796542618,
+          "0.95": 112.95414818045431
+        },
+        "5": {
+          "0.05": 112.60295201285155,
+          "0.5": 112.72754968857761,
+          "0.95": 112.86489657066973
+        }
+      },
+      "path_max_return_quantiles": {
+        "0.05": 0.0,
+        "0.5": 0.0006384812594414369,
+        "0.95": 0.002253738253609416
+      },
+      "path_min_return_quantiles": {
+        "0.05": -0.002274968998643656,
+        "0.5": -0.0006271408980021986,
+        "0.95": 0.0
+      },
+      "terminal_price_quantiles": {
+        "0.05": 112.50151931583181,
+        "0.5": 112.73295796542618,
+        "0.95": 112.95414818045431
+      }
+    }
+  }
+}
